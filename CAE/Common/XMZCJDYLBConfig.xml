@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config> 
+<SqlConfig 
+      Year='2014'
+      本年支出Sql="select sum(md) from   {0}..gl_accvouch where citem_id='{1}' and ccode like '5001%'   and dbill_date between '{2}' and '{3}'"
+      本年借款Sql="
+         select sum(mb) from {0}..gl_accmultiass 
+            where      iperiod={1} 
+                   and citem_id='{2}' and (ccode like '121502%' or ccode like '11004%')
+            Union All 
+         select SUM(MD)-SUM(MC) from {0}..gl_accvouch  
+            where citem_id='{2}' and (ccode like '121502%' or ccode like '11002%')    and dbill_date between '{3}' and '{4}'
+      "
+      以前借款Sql="
+          select sum(mb) from {0}..gl_accmultiass where  iperiod={1} and citem_id='{2}' and ccode like '12150304%'
+            Union All
+          select  (sum(md)-sum(mc)) from  {0}..gl_accvouch where citem_id='{2}' and ccode like '12150304%'   and dbill_date between '{3}' and '{4}'
+      "
+      本年安排Sql="select (sum(mc)-sum(md)) as a,{0} as b from {1}..gl_accvouch where citem_id = '{2}' and ccode like '4001%' and dbill_date between '{3}' and '{4}'"
+    />
+</Config>

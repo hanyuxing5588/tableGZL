@@ -1,0 +1,441 @@
+﻿<script type="text/javascript">
+    // 配置工资项的计算方式，注意，如果修改配置后，界面不能正常显示，那么一定是配置的时候发生了错误
+    // 常见的错误是出现全角逗号，或是缺少";"也就是缺少分号，或者缺少 "，也可能是配置的工资项根本不存在
+    // 配置的公式写在两个双引号中间，用工资项的key代表工资项，允许使用半角小括号,每个key用中括号括起来
+
+    // 如果查找不出问题，将这段代码复制下来发给开发人员
+
+        
+    /*************   配置个人收入汇总表   ***********************/
+    //工资（含津贴、补贴）=岗位工资+薪级工资+工改保留+津补+岗补2007+住房公积金*2-代扣税
+    var gGZSR = "[001]+[002]+[003]+[004]+[005]+[022]+[022]-[043]";
+
+
+    //绩效津贴=实发合计+住房公积金*2-工资（含津贴、补贴）+年终奖实发
+    var gJTQT = "[039]-[001]-[002]-[003]-[004]-[005]+[043]+[046]";
+
+    /*************  配置领导干部个人有关事项报告表  ***************/
+    //  工资（含津贴、补贴）= 实发合计- 绩效津贴
+    var gGZ =gGZSR
+
+    // 奖金 =绩效津贴
+    var gJJ = gJTQT
+
+    //   扣住房公积金（按年合计） *2；
+    var gQT = "[022]-[022]"; 
+    // 以上是配置工资项计算方式的地方
+
+    var gYearCom = '#grsrcx-SA-Year';
+    $(document).ready(function () {
+        // 设置年
+
+        var myDate = new Date();
+        var year = myDate.getFullYear();
+        $(gYearCom).combobox('setValue', year);
+        SearchSAInfoEx(year);
+        $(gYearCom).combobox({
+            onSelect: function (newValue, oldValue) {
+                SearchSAInfo();
+            }
+        });
+
+        $('#grsrcx-select').bind('click', function () {
+            SearchSAInfo();
+        });
+        $('#grsrcx-shuchu').bind('click', function () {
+            ExportExcel();
+        });
+        $('#grsrcx-tuichu').bind('click', function () {
+            $($(parent.document).find("#closeTab")).click();
+        });
+        //自适应窗体大小
+        SetFitWindows();
+    });
+
+
+    //自适应窗体大小
+    function upcenterlayoutresize() {
+        var cv = $('#up-layout').layout('panel', 'center').panel('panel').innerWidth();
+        var ch = $('#up-layout').layout('panel', 'center').panel('panel').innerHeight();
+        $('#grsrcx_grid').datagrid('resize', { width: cv - 3, height: ch - 2 });
+    };
+    function downcenterlayoutresize() {
+        var cv = $('#down-layout').layout('panel', 'center').panel('panel').innerWidth();
+        var ch = $('#down-layout').layout('panel', 'center').panel('panel').innerHeight();
+        $('#grsrcx_grid2').datagrid('resize', { width: cv - 3, height: ch - 2 });
+    };
+    function downwestnorthlayoutresize() {
+        var cv = $('#down-west-layout').layout('panel', 'north').panel('panel').innerWidth();
+        var ch = $('#down-west-layout').layout('panel', 'north').panel('panel').innerHeight();
+        $('#grsrcx_grid3').datagrid('resize', { width: cv - 3, height: ch - 2 });
+    };
+    function downwestcenterlayoutresize() {
+        var cv = $('#down-west-layout').layout('panel', 'center').panel('panel').innerWidth();
+        var ch = $('#down-west-layout').layout('panel', 'center').panel('panel').innerHeight();
+        $('#grsrcx_grid4').datagrid('resize', { width: cv - 3, height: ch - 2 });
+    };
+    function SetFitWindows() {
+        upcenterlayoutresize();
+        downcenterlayoutresize();
+        downwestnorthlayoutresize();
+        downwestcenterlayoutresize();
+        $('#up-layout').layout('panel', 'center').panel({
+            onResize: function (width, height) {
+                upcenterlayoutresize();
+            }
+        });
+        $('#down-layout').layout('panel', 'center').panel({
+            onResize: function (width, height) {
+                downcenterlayoutresize();
+            }
+        });
+        $('#down-west-layout').layout('panel', 'north').panel({
+            onResize: function (width, height) {
+                downwestnorthlayoutresize();
+            }
+        });
+        $('#down-west-layout').layout('panel', 'center').panel({
+            onResize: function (width, height) {
+                downwestcenterlayoutresize();
+            }
+        });
+     };
+
+
+    // 函数区域
+    // 设置年
+
+    function SetYear() {
+        var myDate = new Date();
+        var year = myDate.getFullYear();
+        $(gYearCom).combobox('setValue', year);
+    }
+    function SearchSAInfoEx(year) {
+        $.ajax({
+            url: '/Report/GetLoadGRSRCXData',
+            data: { Year: year, GZSR: gGZSR, JTQT: gJTQT, GZ: gGZ, JJ: gJJ, QT: gQT },
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", '网络超时,请重新登录', 'error');
+            },
+            success: function (data) {
+                if (!data.success) {
+                    $.messager.alert('提示', data.msg);
+                } else {
+                    debugger
+                    // 数据返回来了，要加载
+                    var options = {};
+                    var colums = eval(data.column);
+                    //                    colums.splice(0, 1);
+                    //                    colums.splice(0, 1);
+                    options.columns = colums;
+                    debugger
+                  
+                    // options.frozenColumns = [{ field: 'PersonName',frozen:true, title: '人员名称', width: 100, halign: 'center', align: 'left' }, { frozen:true,field: 'Time', title: '发放年月', width: 100, halign: 'center', align: 'left'}];
+                    $('#grsrcx_grid').datagrid(options);
+                    // 工资数据
+                    if (data.saData != "") {
+                        var saData = JSON.parse(data.saData);
+                        $('#grsrcx_grid').datagrid('loadData', saData);
+                    }
+
+                    // 收入汇总
+
+                   // if (data.HzData != "") {
+//                    if (data.ReportData != "") {
+//                       // var hzData = JSON.parse(data.HzData);
+//                        $('#grsrcx_grid3').datagrid('loadData', reportData);
+//                    }
+
+                    // 个人事项
+                    if (data.ReportData != "") {
+                        var reportData = JSON.parse(data.ReportData);
+                        $('#grsrcx_grid4').datagrid('loadData', reportData);
+                        $('#grsrcx_grid3').datagrid('loadData', reportData);
+                    }
+
+                    if (data.lwfData != "") {
+                        var lwfData = JSON.parse(data.lwfData);
+                        $('#grsrcx_grid2').datagrid('loadData', lwfData);
+                    }
+
+                }
+            }
+        });
+    }
+    // 根据年查询个人的收入情况
+    function SearchSAInfo() {
+        $('#grsrcx_grid').datagrid('loadData', { total: 0, rows: [] });
+        $('#grsrcx_grid2').datagrid('loadData', { total: 0, rows: [] });
+        $('#grsrcx_grid3').datagrid('loadData', { total: 0, rows: [] });
+        $('#grsrcx_grid4').datagrid('loadData', { total: 0, rows: [] });
+        var year = $(gYearCom).combobox('getValue');
+        SearchSAInfoEx(year);
+    }
+
+    var ExportExcel = function () {
+        var l1 = $('#grsrcx_grid').datagrid('getRows');
+        var l2 = $('#grsrcx_grid2').datagrid('getRows');
+        var l3 = $('#grsrcx_grid3').datagrid('getRows');
+        var l4 = $('#grsrcx_grid4').datagrid('getRows');
+        if (l1 <= 1 && l2 <= 1 && l3 < 1 && l4 < 1) {
+            $.messager.alert('系统提示', '没有要输出的数据！');
+            return;
+        }
+
+        $.ajax({
+            url: "/Report/ExportGRSRReport",
+            data: {},
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", $.view.warning, 'error');
+            },
+            success: function (data) {
+                if (data.File != "") {                    
+                    var filePath = encodeURIComponent(data.File);
+                    window.open("/Report/ExportGRSRReportEx?FilePath=" + filePath);
+                }
+                else {
+                    $.messager.alert("提示", "Excel导出失败");
+                }
+            }
+        });
+    }
+</script>
+<body>
+    <div class="easyui-layout" id="grsrcx-dataregion" data-options="fit:true" z="1">
+       <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+             <a href="#" class="easyui-linkbutton" id="grsrcx-print"
+                      data-options="plain:'true',iconCls:'icon-dayin',
+                  scope:'grsrcx'">打印</a>
+            <a href="#" b-type="1"  class="easyui-linkbutton" id="grsrcx-shuchu"
+                data-options="plain:'true',iconCls:'icon-shuchu',                 
+                forbidstatus:[-1]">输出</a>
+@*            <a href="#" class="easyui-linkbutton" id="grsrcx-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  scope:'grsrcx',
+                  forbidstatus:[-1]">查询</a>    *@       
+            <a href="#" class="easyui-linkbutton" id="grsrcx-help" data-options="
+            plain:'true',iconCls:'icon-bangzhu', scope:'grsrcx',
+            bindmethod:{ 'click': ['help'] }">帮助</a>  
+            <a href="#" class="easyui-linkbutton" id="grsrcx-tuichu"
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'grsrcx'">退出</a>
+            </div>
+        </div>
+       <div data-options="region:'center'">
+           <div class="easyui-layout" data-options="fit:true">
+               <div b-type="1" id="grsrcx-historydatafilter" data-options="region:'north',height:30" style="margin: 0px; padding: 0px;">
+                    <table border="0" style="height: 27px; padding: 0px; margin: 0">
+                        <tr>
+                            <td>
+                                <label for="field1" style="width:80px;">年度</label>
+                            </td>
+                            <td>
+                                <select id="grsrcx-SA-Year" class="easyui-combobox"  data-options="editable:false"; style="width:80px;">  
+                                    <option value="2011">2011</option>  
+                                    <option value="2012">2012</option>
+                                    <option value="2013">2013</option>
+                                    <option value="2014">2014</option>  
+                                    <option value="2015">2015</option>
+                                    <option value="2016">2016</option>    
+                                    <option value="2017">2017</option>  
+                                    <option value="2018">2018</option>
+                                    <option value="2019">2019</option>    
+                                    <option value="2020">2020</option>  
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>    
+                                    <option value="2023">2023</option>  
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>    
+                                    <option value="2026">2026</option>  
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>    
+                                    <option value="2029">2029</option>  
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>    
+                                    <option value="2032">2032</option>  
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>    
+                                    <option value="2035">2035</option>  
+                                    <option value="2036">2036</option>
+                                    <option value="2037">2037</option>    
+                                    <option value="2038">2038</option>  
+                                    <option value="2039">2039</option>
+                                    <option value="2040">2040</option>    
+                                    <option value="2041">2041</option>  
+                                    <option value="2042">2042</option>
+                                    <option value="2043">2043</option>    
+                                    <option value="2044">2044</option>  
+                                    <option value="2045">2045</option>
+                                    <option value="2046">2046</option>    
+                                    <option value="2047">2047</option>  
+                                    <option value="2048">2048</option>
+                                    <option value="2049">2049</option>    
+                                    <option value="2050">2050</option>  
+                                </select> 
+                            </td>                     
+                        </tr>
+                    </table>                              
+               </div>
+               <div data-options="region:'center',fit:true"">
+                   <div class="easyui-layout" data-options="fit:true" id="up-layout">
+                       <div b-type="1" id="grsrcx-historydatafilter" data-options="region:'center',split:true" style="margin: 0px; padding: 0px;">
+                           <table class="easyui-edatagrid" id="grsrcx_grid" style="overflow: auto" data-options="
+                                                        fitColumns:false,
+                                                        pagination:false,
+                                                        method:'get',
+                                                        singleSelect:true,
+                                                        checkOnSelect:true,
+                                                        rownumbers:true,
+                                                        editable:false,
+                                                        scope:'ysbz',
+                                                        single:false,
+                                                        forbidstatus:[4,3]
+                                                        ">
+                                <thead data-options="frozen:true">
+                                    <tr>
+                                        <th data-options="field:'PersonName',width:100",halign='center'>人员名称</th>
+                                        <th data-options="field:'Time',width:100",halign='center'>发放年月</th>
+                                    </tr>
+                                </thead>
+                                <thead>
+
+                                </thead>
+                   
+                           </table>
+                       </div>
+                       <div data-options="region:'south',split:true" style="height:250px;">
+                           <div class="easyui-layout" data-options="fit:true" id="down-layout">
+                               <div data-options="region:'center',split:true">
+                                    <table class="easyui-edatagrid" id="grsrcx_grid2" style="overflow: auto" data-options="
+                                                fitColumns:true,
+                                                pagination:false,
+                                                method:'get',
+                                                singleSelect:true,
+                                                checkOnSelect:true,
+                                                height:210,
+                                                width:620,
+                                                rownumbers:true,
+                                                editable:false,
+                                                scope:'ysbz',
+                                                single:false,
+                                                columns:[[
+                                                    {field:'name',title:'职工姓名',width:80,halign:'center',align: 'left'}, 
+                                                    {field:'time',title:'发放时间',width:80,halign:'center',align: 'left'}, 
+                                                    {field:'money',title:'实领金额',width:80,halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}}, 
+                                                    {field:'memo',title:'其他劳务收入摘要',width:200,halign:'center',align: 'left'}, 
+
+                                                ]],
+                                                forbidstatus:[4,3]
+                                                ">
+                                        <thead>
+
+                                        </thead>
+                   
+                                    </table>
+                               </div>
+                               <div data-options="region:'west',width:600,split:true"  >
+                                   <div class="easyui-layout" data-options="fit:true" id="down-west-layout">
+                                       <div data-options="region:'north',height:103,split:true">
+                                           <table class="easyui-edatagrid" id="grsrcx_grid3" style="overflow: auto" data-options="
+                                                        fitColumns:true,
+                                                        pagination:false,
+                                                        method:'get',
+                                                        singleSelect:true,
+                                                        checkOnSelect:true,
+                                                        height:102,
+                                                        width:590,
+                                                        rownumbers:true,
+                                                        editable:false,
+                                                        scope:'ysbz',
+                                                        single:false,
+                                                        forbidstatus:[4,3]
+                                                        ">
+                                                <thead>
+                                                    <tr>
+                                                        <th data-options="" colspan="3">个人收入汇总表</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th data-options="" colspan="2">本人的工资及各类奖金、津贴、补贴等</th>
+                                                        <th data-options="" >单位：元/年</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th data-options="field:'total', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="100">合计</th>
+                                                        <th data-options="field:'gz', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="150">工资(含津贴、补贴)</th>
+                                                        <th data-options="field:'jj', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="100">绩效工资</th>
+                                                       @* <th data-options="field:'qt', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="100">其他(公积金)</th>*@
+                                                    </tr>
+                                                </thead>
+                   
+                                           </table>
+                                       </div>
+                                       <div data-options="region:'center',height:103,split:true" >
+                                           <table class="easyui-edatagrid" id="grsrcx_grid4" style="overflow: auto" data-options="
+                                                        fitColumns:true,
+                                                        pagination:false,
+                                                        method:'get',
+                                                        singleSelect:true,
+                                                        checkOnSelect:true,
+                                                        height:102,
+                                                        width:590,
+                                                        rownumbers:true,
+                                                        editable:false,
+                                                        scope:'ysbz',
+                                                        single:false,
+
+                                                        forbidstatus:[4,3]
+                                                        ">
+                                                <thead>
+                                                    <tr>
+                                                        <th data-options="" colspan="3">领导干部个人有关事项报告</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th data-options="" colspan="2">本人的工资及各类奖金、津贴、补贴等</th>
+                                                        <th data-options="" >单位：元/年</th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th data-options="field:'total', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="100">合计</th>
+                                                        <th data-options="field:'gz', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="150">工资(含津贴、补贴)</th>
+                                                        <th data-options="field:'jj', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="100">绩效工资</th>
+                                                        @*<th data-options="field:'qt', halign:'center',align: 'right',styler: function(value,row,index){return 'color:blue';}"  width="100">其他(公积金)</th>*@
+                                                    </tr>
+                                                </thead>
+                   
+                                           </table>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                    
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+       <label id="grsrcx-extendregion" style="display: none">
+           <input id="grsrcx-status" type="text"></input>
+           <input id="initscope" type="text" value="grsrcx"></input>
+           <input id="initstatus" type="text" value=@ViewData["status"]></input>
+           <input id="initguid" type="text" value=@ViewData["guid"]></input>
+       </label>
+</div>
+<script>
+    $(function () {
+//        $('#grsrcx_grid').datagrid({
+//            height: $('body').height() - 320
+//        });
+        $('#grsrcx_grid').datagrid({
+            height: $('body').height() - 310
+        });
+    });
+//    (function () {
+//        $('#grsrcx_grid').datagrid({
+//            height: $('body').height() - 350
+//        });
+//    })()
+</script>
+</body>

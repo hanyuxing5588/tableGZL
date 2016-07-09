@@ -1,0 +1,22 @@
+﻿--在ss_menu表中增加scope字段sql
+alter table ss_menu add scope nvarchar(50) null
+--修改ss_menu表中scope字段sql
+update ss_menu set scope = 'xjbxd' where guid ='93D5C07A-B030-4FCA-A3D4-FAEB99C58E64' --现金报销单
+update ss_menu set scope = 'lwflkd' where guid ='8275EF66-4073-4070-9630-CEC36300C389' --劳务费报销单
+update ss_menu set scope = 'sxfbxd' where guid = '9790456E-2CF0-4901-8C34-D32A1DCAA9F3' --手续费报销单
+-----------------添加数据 2014-6-25
+
+
+INSERT INTO [dbo].[SS_Menu]([GUID], [MenuKey], [MenuName], [GUID_MenuClass], [PGUID], [GUID_Auth], [scope])
+VALUES(newid(),
+'08010204',
+'个税申报表',
+'9A281527-DF98-42AA-AFFE-B863851C6FC9',
+'A788CB75-0B69-4F2E-8F61-AB4FD454D4D2',
+'F5172B03-2116-4930-B128-4B4D1436801A',
+'Report/gssbb'
+)
+
+---------------------------------------------------------------
+
+

@@ -1,0 +1,240 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>收款凭单</title>
+    <style type="text/css">
+        body
+        {
+            font-size: 18px;
+            margin: auto auto;
+            padding: 0px;
+        }
+        .Layout
+        {
+            margin: auto auto;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+        .xj
+        {
+            width: 789px;
+            height: 80px;
+            text-align: center;
+            margin: 0px;
+        }
+        .xj .xj_pos
+        {
+            margin-left: 142px;
+            width: 383px;
+            font-family: 华文细黑;
+            font-size: 30px;
+            font-weight: bold;
+            line-height: 43px;
+        }
+        .dh
+        {
+            width: 203px;
+            line-height: 43px;
+            height: 43px;
+            float: right;
+            margin-top: -40px;
+            text-align: left;
+            font-family: 宋体;
+            font-weight: bold;
+        }
+        .xj_bg
+        {
+            width: 789px;
+            font-family: 华文楷体;
+            font-size: 20px;
+            padding: 0px;
+            margin: 0px;
+            padding-top: 10px;
+        }
+        .xj_bg_div1
+        {
+            float: left;
+            padding: 3px;
+        }
+        .xj_bg_div2
+        {
+            padding: 3px;
+        }
+        
+        .tab_foot
+        {
+            width: 789px;
+            height: 1px;
+            margin: 0px auto;
+            font-family: 华文楷体;
+            font-size: 17px;
+            vertical-align: bottom;
+            float:left;
+        }
+        .tabfoot_div
+        {
+            line-height: 1px;
+            text-align: center left;
+            float: left;
+            padding-left:11px;
+            margin-top:40px;
+        }
+        .jine div
+        {
+            height: 46px;
+            line-height: 46px;
+            float: left;
+            text-align: center;
+        }
+        
+        
+        table
+        {
+            border-collapse: collapse; /*边框合并属性*/
+            margin-top: 20px;
+            font-family: 华文楷体;
+            font-size: 18px;
+            height: 395px;
+            width:870px;
+            float: left;
+            table-layout:fixed;
+        }
+        th
+        {
+            border: 1px solid #000000;
+            height: 45px;
+            /*background: #C0C0C0;*/
+            text-align: center;
+            line-height: 55px;
+        }
+        .cont_font
+        {
+        	text-align:left; padding-left:10px;
+        }
+        td
+        {
+            border: 1px solid #000000;
+            height: 45px;
+            text-align: center;
+            word-wrap:break-word;
+            line-height:13px;
+        }
+    </style>
+    <style type="text/css" media="print">
+        .noprint
+        {
+             display:none;
+             
+        }
+    </style>
+    <link href="../../Content/css/Print/printView.css" rel="stylesheet" type="text/css" />
+    <script src="../../Content/commonjs/print/basePrint.js" type="text/javascript"></script>
+    <script src="../../Content/commonjs/print/print.js" type="text/javascript"></script>
+</head>
+<body>
+    <div id="print" style="position: relative; height: 100%; line-height: 100%;margin-left:64px;margin-top:34px;" options="{'extendcontent':{'SK_Main':{'gist':'rowcount','model':'page','target':'content'}}}">
+        <div id="content" class="Layout">
+            <div class="xj">
+                <div class="xj_pos">
+                    收&nbsp;&nbsp;&nbsp;&nbsp;款&nbsp;&nbsp;&nbsp;&nbsp;单                 </div>
+                <div style="width: 300px; height: 5px; margin-left: 180px; border-top: 1px solid black;
+                    border-bottom: 1px solid black;">
+                </div>
+                <div class="dh">
+                    <span>单号&nbsp;<span id="SK_Main-DocNum">编号</span>&nbsp;<span id="pagination"></span></span>
+                </div>
+                <div style="width: 383px; font-size: 14px; height: 31px; line-height: 31px; margin: 0 150px;
+                    padding-top: 10px">
+                    <span id="SK_Main-DocDate">时间日期</span></div>
+            </div>
+            <div>
+                <table id="SK_Main">
+                    <tbody>
+                        <tr>
+                            <td field="colindex" rowspan="2" style="width: 55px;">
+                                序号
+                            </td>
+                            <td field="" rowspan="2" style="width: 40px;">
+                                缴款
+                            </td>
+                            <td field="" style="width: 60px;">
+                                单位
+                            </td>
+                            <td field="" colspan="6" style="text-align:left; padding-left:10px;">
+                                <span id="SK_Main-CustomerName"></span>
+                            </td>
+                            <td style="border: 0px; width:32px;">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td field="">部门</td>
+                            <td class="cont_font" colspan="2"><span id="SK_Main-DepartmentName"></span></td>
+                            <td field="">合同号</td>
+                            <td field="" colspan="3" class="cont_font"><span id="SK_Main-ContractNumber"></span></td>
+                            <td field="" rowspan="2" class="noprint" style="border: 0px; line-height:35px;">附<br />单<br />据                             </td>
+                        </tr>
+                        <tr>
+                        <td>1</td>
+                            <td field="" colspan="2">备注</td>
+                            <td field="" colspan="6" class="cont_font"><span id="SK_Main-DocMemo"></span></td>
+                            
+                        </tr>
+                        <tr>
+                        <td>2</td>
+                            <td field="" colspan="2">项目名称</td>
+                            <td field="" colspan="3" class="cont_font"><span id="SK_Main-ProjectName"></span></td>
+                            <td field="">项目编码</td>
+                            <td field="" colspan="2" class="cont_font"><span id="SK_Main-ProjectKey"></span></td>
+                            <td field="" style="border: 0px;"><span id="SK_Main-BillCount"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                        <td>3</td>
+                            <td field="" colspan="2">收款类型</td>
+                            <td field="" colspan="6" class="cont_font"><span id ="SK_Main-SKTypeName"></span></td>
+                            <td field="" class="noprint" style="border: 0px;" >张                             </td>
+                        </tr>
+                        <tr>
+                        <td>4</td>
+                            <td field="" colspan="2">(大写)</td>
+                            <td field="" colspan="4" class="cont_font"><span id="SK_Main-moneychinese"></span></td>
+                            <td field="">(小写)</td>
+                            <td field="" class="cont_font"><span id="SK_Main-Total_SK"></span></td>
+                            <td field="" style="border: 0px;">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab_foot">
+                <div class="tabfoot_div" style="width: 247px;">
+                    &nbsp; 会计审核：<span></span>
+                </div>
+                <div class="tabfoot_div" style="width: 220px;">
+                    &nbsp;出纳：<span></span>
+                </div>
+                <div class="tabfoot_div" style="width: 227px;">
+                    &nbsp; 收款人：<span id="SK_Main-PersonName"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="noprint" style="float: left; height:10%;  margin-top:100px; margin-left:-550px">            
+                <a  id="btn_print" class="l-btn l-btn-plain" href="javascript:void(0)">
+                <span class="l-btn-left"><span class="l-btn-text icon-dayin l-btn-icon-left">打印</span></span>
+                </a>
+                <a id="btn_cancel" class="l-btn l-btn-plain" href="javascript:void(0)">
+                <span class="l-btn-left"><span class="l-btn-text icon-quxiao l-btn-icon-left">取消</span></span> 
+                </a>
+     </div>
+     <div style="display:none">
+            <input id="dataguid" type="hidden" value="@ViewData["guid"]"/>
+            <input id="scope" type="hidden" value="@ViewData["ModelUrl"]"/>
+            <input id="moneychinese" type="hidden" value="@ViewData["moneychinese"]" />
+            <input id="moneyunmber" type="hidden" value="@ViewData["moneyunmber"]" />
+            <input  id="moneychineseField" type="hidden" value="@ViewData["moneychineseField"]" /> 
+            <input  id="moneyunmberField" type="hidden" value="@ViewData["moneyunmberField"]" />
+     </div>
+</body>
+</html>

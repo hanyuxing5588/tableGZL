@@ -1,0 +1,60 @@
+﻿<script>
+    $.xianshi = function (value1, row, index) {
+        if (!value1) {
+            return "开始";
+        }
+        return value1;
+    };
+</script>
+<body>
+    <div class="easyui-layout" id="process-dataregion" data-options="fit:true" z="1">
+        <div data-options="region:'north'" style="height: 51px">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#" class="easyui-linkbutton" id="process-edit" data-options="plain:'true',iconCls:'icon-queding',
+                     bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'process',          
+                    window:'b-window',
+                   scope:'parti',status:'0'">确定</a> 
+                   </div>
+        </div>
+        <div data-options="region:'center',fit:true">
+            <table border="0" width="100%">
+                <tr>
+                    <td colspan="6" style="width: 240px; height: 60px">
+                        <div style="font-size: x-large; text-align: center;">
+                            流程办理信息</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                       <table style="height:450px;padding:5px" id="@ViewData["ModelUrl"]-process" class="easyui-datagrid"  
+                       b-type="1" 
+                       data-options="
+                        fitColumns:false,
+                        method:'get',
+                        singleSelect:true,
+                        checkOnSelect:true,
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true"><thead>
+                    <tr>
+                    <th field="nodeID" hidden="true"></th>
+                    <th field="nodeName" align="center" data-options="formatter:function(value,row,index){
+                                 return   $.xianshi(value,row,index) 
+                            }"
+                    width="200" >岗位</th>                       
+                    <th field="passPersons" align="center" width="150" >审核人</th>            
+                    <th field="reciveDate" align="center" width="150" >提交时间</th>              
+                    <th field="sendDate" align="center" width="150" >处理时间</th> 
+                     <th field="passState" align="center" width="100" >处理状态</th>  
+                      <th field="comment" align="center" width="200" >处理意见</th>                     
+                    </tr></thead></table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>

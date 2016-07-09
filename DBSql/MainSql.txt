@@ -1,0 +1,106 @@
+﻿SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+/*
+//名    称：Bx_InviteFeeView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2013-12-31
+//功    能：劳务费视图信息
+*/
+
+ALTER  view Bx_InviteFeeView
+as
+SELECT dbo.BX_InviteFee.GUID, dbo.BX_InviteFee.GUID_BX_Main, 
+      dbo.BX_InviteFee.IsTotalTax, dbo.BX_InviteFee.GUID_InvitePerson, 
+      dbo.SS_InvitePerson.InvitePersonName, dbo.SS_InvitePerson.InvitePersonIDCard, 
+      dbo.BX_InviteFee.Total_BX, dbo.BX_InviteFee.Total_Tax, 
+      dbo.BX_InviteFee.Total_Real, dbo.SS_InvitePerson.CredentialTypekey, 
+      dbo.SS_CredentialType.CredentialTypeName AS InvitePersonIDCardType, 
+      dbo.BX_InviteFee.OrderNum,dbo.BX_InviteFee.FeeMemo,SS_CredentialType.CredentialTypeName
+FROM dbo.SS_CredentialType INNER JOIN
+      dbo.SS_InvitePerson ON 
+      dbo.SS_CredentialType.CredentialTypekey = dbo.SS_InvitePerson.CredentialTypekey RIGHT
+       OUTER JOIN
+      dbo.BX_InviteFee ON 
+      dbo.SS_InvitePerson.GUID = dbo.BX_InviteFee.GUID_InvitePerson
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+/*
+//名    称：BX_MainView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2013-12-31
+//功    能：报销主表视图信息
+//修改内容：添加DocTypeUrl字段，应用于作用域类型，或者单据类型
+*/
+ALTER  VIEW dbo.BX_MainView
+AS
+SELECT dbo.BX_Main.GUID, dbo.BX_Main.DocNum, dbo.BX_Main.OAOTS, 
+      dbo.BX_Main.DocDate, dbo.BX_Main.BillCount, dbo.BX_Main.DocMemo, 
+      dbo.BX_Main.DocState, dbo.BX_Main.MakeDate, dbo.BX_Main.ModifyDate, 
+      dbo.BX_Main.SubmitDate, dbo.BX_Main.GUID_YWType, 
+      dbo.SS_YWType.YWTypeKey, dbo.SS_YWType.YWTypeName, 
+      dbo.BX_Main.GUID_DW, dbo.SS_DW.DWKey, dbo.SS_DW.DWName, 
+      dbo.BX_Main.GUID_Maker, SS_Operator_2.OperatorName AS Maker, 
+      dbo.BX_Main.GUID_Modifier, SS_Operator_1.OperatorName AS Modifier, 
+      dbo.BX_Main.GUID_DocType, dbo.SS_DocType.DocTypeKey, 
+      dbo.SS_DocType.DocTypeName, dbo.BX_Main.GUID_Person, 
+      dbo.SS_Person.PersonKey, dbo.SS_Person.PersonName, 
+      dbo.BX_Main.GUID_Department, dbo.SS_Department.DepartmentKey, 
+      dbo.SS_Department.DepartmentName, dbo.BX_Main.GUID_UIType, 
+      dbo.SS_UIType.UITypeKey, dbo.SS_UIType.UITypeName,dbo.SS_DocType.DocTypeUrl
+FROM dbo.BX_Main LEFT OUTER JOIN
+      dbo.SS_UIType ON 
+      dbo.BX_Main.GUID_UIType = dbo.SS_UIType.GUID LEFT OUTER JOIN
+      dbo.SS_Person ON 
+      dbo.BX_Main.GUID_Person = dbo.SS_Person.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.BX_Main.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.BX_Main.GUID_DW = dbo.SS_DW.GUID LEFT OUTER JOIN
+      dbo.SS_DocType ON 
+      dbo.BX_Main.GUID_DocType = dbo.SS_DocType.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.BX_Main.GUID_Modifier = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_2 ON 
+      dbo.BX_Main.GUID_Maker = SS_Operator_2.GUID LEFT OUTER JOIN
+      dbo.SS_YWType ON dbo.BX_Main.GUID_YWType = dbo.SS_YWType.GUID
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--SS_MenuClass
+--在ss_menuclass表中增加语句sql
+insert into ss_menuclass values(newid(),'00','常用')
+
+--SS_DocType表--添加字段
+Alter table SS_DocType add DocTypeUrl nvarchar(50)
+--修改数据
+update SS_DocType set DocTypeUrl='xjbxd' where doctypeKey='02'
+update SS_DocType set DocTypeUrl='lwflkd' where doctypeKey='04'
+
+--SS_Menu表
+--在ss_menu表中增加scope字段sql
+alter table ss_menu add scope nvarchar(50) null
+--修改ss_menu表中scope字段sql
+update ss_menu set scope = 'xjbxd' where guid ='93D5C07A-B030-4FCA-A3D4-FAEB99C58E64'
+update ss_menu set scope = 'lwflkd' where guid ='8275EF66-4073-4070-9630-CEC36300C389'
+
+--SS_Operator
+--修改密码sql
+update ss_operator set [password] = '7F49AE8FE5A716E40CD0B8A8CF9716B5' 

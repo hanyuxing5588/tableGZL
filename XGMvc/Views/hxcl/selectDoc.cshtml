@@ -1,0 +1,178 @@
+﻿<body>
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+<div b-type="1" data-options="region:'north',tools:'#tbar'" style="height:51px">
+<div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">
+                   
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="history-haffirm" b-action="haffirm" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitOriginal'] },
+                   bindparms:{'submitOriginal':['history-CN_Main']},
+                   window:'b-window',
+                   scope:'history',
+                   iconCls:'icon-queren'">确认</a>
+
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="history-hselect" b-action="hselect" data-options=" 
+                   bindmethod:{ 'click': ['historySearch'] },
+                   bindparms:{'historySearch':['/hxcl/History','history-CN_Main','history','historydatafilter']},
+                   scope:'history',
+                   plain:'true',iconCls:'icon-chaxun'" >查询</a>
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="history-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['hxselect']},
+                    scope:'history', 
+                    window:'b-window',         
+                    iconCls:'icon-quxiao'">取消</a>
+</div>
+</div>
+<div data-options="region:'west',split:'true'" style="width:270px"><div class="easyui-tabs" data-options="fit:true">
+<div title="人员">
+<ul class="easyui-tree" id="history-tree-historyper" data-options="
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/hxcl/History','history-CN_Main','history','historydatafilter']},
+                  url:'/Tree/GetPersonTree',
+                  method:'post'"></ul></div>
+<div title="部门">
+<ul class="easyui-tree" id="history-tree-historydep" data-options="
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/hxcl/History','history-CN_Main','history','historydatafilter']},
+                  url:'/Tree/GetDepartmentTree',
+                  method:'post'"></ul></div>
+                  <div title="项目">
+<ul class="easyui-tree" id="history-tree-historyproject" data-options="
+                  bindmethod:{ 'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/hxcl/History','history-CN_Main','history','historydatafilter']},
+                  url:'/Tree/GetProjectTree',
+                  method:'post'"></ul></div>
+</div></div>
+<div b-type="1" data-options="region:'center'" >
+<div b-type="1" id="history-historydatafilter" data-options="region:'north'"   style="height:40px">
+<table border="0" style="width:100%;">
+<tr>
+    <td style="width:5%;">
+        <label for="field1">业务类型</label>
+    </td>
+    <td style="width:5%;">
+        <select id="history-history-DocYWType" class="easyui-combobox"  data-options="editable:false,tempValue:0"; name="dept" style="width:100px;">  
+            <option value="0">报销管理</option>  
+            <option value="1">收入管理</option>            
+            <option value="2">往来管理</option> 
+            <option value="3">提现管理</option>
+            <option value="4">收款管理</option> 
+            <option value="5">公务卡汇总管理</option>
+            <option value="6">专用基金管理</option>             
+        </select> 
+    </td>
+   <td style="width:5%;">
+        <label for="field1">报销年度</label>
+    </td>
+   <td style="width:5%;">
+        <select id="history-history-Year" class="easyui-combobox"  data-options="editable:false,tempValue:new Date().getFullYear()"; style="width:60px;">  
+            <option value="2011">2011</option>  
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+            <option value="2014">2014</option>  
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>    
+            <option value="2017">2017</option>  
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>    
+            <option value="2020">2020</option>  
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>    
+            <option value="2023">2023</option>  
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>    
+            <option value="2026">2026</option>  
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>    
+            <option value="2029">2029</option>  
+            <option value="2030">2030</option>
+            <option value="2031">2031</option>    
+            <option value="2032">2032</option>  
+            <option value="2033">2033</option>
+            <option value="2034">2034</option>    
+            <option value="2035">2035</option>  
+            <option value="2036">2036</option>
+            <option value="2037">2037</option>    
+            <option value="2038">2038</option>  
+            <option value="2039">2039</option>
+            <option value="2040">2040</option>    
+            <option value="2041">2041</option>  
+            <option value="2042">2042</option>
+            <option value="2043">2043</option>    
+            <option value="2044">2044</option>  
+            <option value="2045">2045</option>
+            <option value="2046">2046</option>    
+            <option value="2047">2047</option>  
+            <option value="2048">2048</option>
+            <option value="2049">2049</option>    
+            <option value="2050">2050</option>  
+        </select> 
+    </td>
+   <td style="width:5%;">
+        <label for="field1">月份</label>
+    </td>
+    <td style="width:5%;">
+        <select id="history-history-Month" class="easyui-combobox"  data-options="editable:false,tempValue:new Date().getMonth() + 1"; style="width:50px;">  
+            <option value="0">全部</option>  
+            <option value="1">01</option>  
+            <option value="2">02</option>
+            <option value="3">03</option>  
+            <option value="4">04</option>  
+            <option value="5">05</option>  
+            <option value="6">06</option>
+            <option value="7">07</option>  
+            <option value="8">08</option>
+            <option value="9">09</option>  
+            <option value="10">10</option>  
+            <option value="11">11</option>  
+            <option value="12">12</option>        
+        </select> 
+    </td>
+    <td style="width:5%;">
+        <label for="field1">单据号</label>
+    </td>
+   <td style="width:20%;">
+        <input id="history-history-DocNum" class="easyui-validatebox" data-options="validType:'isDocNum'"  style="width:100px;" />  
+
+         <input id="history-history-ModelUrl" class="easyui-validatebox" type="hidden" name="ModelUrl" value="@ViewData["ModelUrl"]"/>
+    </td>
+</tr>
+</table>
+</div>
+<div b-type="1" data-options="region:'center',fit:true" >
+<table style="height:465px;padding:5px"  class="easyui-datagrid"  id="history-CN_Main" b-type="1" 
+        data-options="
+        fitColumns:false,
+        method:'get',
+        formatters:{'Total_XX':'numberbox'},
+        checkOnSelect:true,
+        pagination:true,
+        striped: false,
+        pageSize:20,
+        pageList:[20,50,100],
+        rownumbers:true
+        ">
+        <thead>
+            <tr>
+            <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+            <th field="GUID" hidden="true"></th>
+            <th field="DocNum"align="left" width="80" >单据编号</th> 
+            <th field="DWName"align="left" width="150" >单位名称</th>                 
+            <th field="DepartmentName" align="left" width="130" >部门名称</th>
+            <th field="PersonName"align="left" width="80" >人员名称</th>
+            <th field="DocTypeName"align="left" width="100" >报销类别</th>
+            <th field="DocDate"align="right" width="80" >单据日期</th>
+            <th field="Total_XX"align="right" width="80" >金额</th>
+            <th field="DocMemo"align="left" width="200" >摘要</th>                
+            </tr>
+        </thead>
+</table>
+</div>
+</div>
+</body>

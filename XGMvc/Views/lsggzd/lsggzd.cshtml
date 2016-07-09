@@ -1,0 +1,889 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "临时工工资单";
+}
+
+<div class="easyui-layout" id="lsggzd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'lsggzd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/lsggzd',['lsggzd-BX_Main-moneychinese','lsggzd-BX_Main-moneyunmber']]}">打印</a>
+
+                    <a href="#" class="easyui-linkbutton" id="lsggzd-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'lsggzd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/lsggzd',['lsggzd-BX_Main-moneychinese','lsggzd-BX_Main-moneyunmber']]}">预览</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'lsggzd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="lsggzd-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'lsggzd',status:'1',
+                   bindparms:{'newDoc':['/lsggzd/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="lsggzd-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'lsggzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'lsggzd',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="lsggzd-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'lsggzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'lsggzd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="lsggzd-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['lsggzd-BX_Detail']},
+                   scope:'lsggzd',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['lsggzd-BX_Detail']},scope:'lsggzd',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['lsggzd-BX_Detail']},scope:'lsggzd',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="lsggzd-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/lsggzd','lsggzd-BX_Detail','parti']},scope:'lsggzd', forbidstatus:[3]">明细</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/lsggzd','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'lsggzd'">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="lsggzd-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                      columnMap:{
+                        'lsggzd-BX_Detail-GUID':'GUID',
+                        'lsggzd-BX_Detail-GUID_BGCode':'GUID_BGCode',  
+                        'lsggzd-BX_Detail-BGCodeKey':'BGCodeKey',                     
+                        'lsggzd-BX_Detail-GUID_Project':'GUID_Project',
+                        'lsggzd-BX_Detail-ProjectKey':'ProjectKey',
+                        'lsggzd-BX_Detail-GUID_Department':'GUID_Department',
+                        'lsggzd-BX_Detail-Total_Real':'ThisTimeTotal'                        
+                     },
+                     columnMapText:{
+                        'lsggzd-BX_Detail-GUID_BGCode':'BGCodeName', 
+                        'lsggzd-BX_Detail-GUID_Project':'ProjectName', 
+                        'lsggzd-BX_Detail-GUID_Department':'DepartmentName',
+                        'lsggzd-CN_PaymentNumber-GUID_BGResource':'GUID_BGResource',
+                        'lsggzd-CN_PaymentNumber-BGSourceName':'BGSourceName',
+                        'lsggzd-BX_Detail-GUID_BGType':'BGTypeName'
+                     },
+                     configBudget:{
+                        'lsggzd-BX_Main-DWKey':'validatebox',
+                        'lsggzd-BX_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{
+                        'BudgetStatistics':[
+                            '/BudgetStatistics/lsggzd',
+                            '/BudgetStatistics/BudgetStatistics',
+                            'BudgetStatistics-BG_Main',
+                            'lsggzd-BX_Main-DocDate',
+                            'lsggzd-BX_Detail',
+                            'BudgetStatistics',
+                            '02' @*报销管理*@
+                     ]},
+                     window:'b-window',
+                     scope:'lsggzd'">预算</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'lsggzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['lsggzd-BX_Main-DocState','9']},scope:'lsggzd',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'lsggzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['lsggzd-BX_Main-DocState','6']},scope:'lsggzd',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>
+
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                       'examine':
+                           {
+                                'datagrid':['lsggzd-BX_Detail'],
+                                'validatebox':['lsggzd-BX_Main-DocMemo'],
+                                'datebox':['lsggzd-BX_Main-DocDate'],
+                                'combogrid':['lsggzd-BX_Main-GUID_Person','lsggzd-BX_Main-GUID_DW','lsggzd-BX_Main-GUID_Department'],
+                                 'numberbox':['lsggzd-BX_Main-BillCount']}
+                            },
+                   scope:'lsggzd',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'lsggzd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/lsggzd/Save','lsggzd-examine']},scope:'lsggzd',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="lsggzd-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'lsggzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/lsggzd/CommitFlow']},scope:'lsggzd',
+                   forbidstatus:[1,2,3]">提交</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'lsggzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'lsggzd',
+                   forbidstatus:[1,2,3]">退回</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="lsggzd-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/lsggzd','history-BX_Main','history']},
+                    window:'b-window',scope:'lsggzd'">历史</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="lsggzd-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/lsggzd','/Process/process','lsggzd-process','process']},
+                   window:'b-window',scope:'lsggzd',
+                   forbidstatus:[1,2,3]">流程</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-app" data-options="
+                    plain:'true',iconCls:'icon-shenpidan', scope:'zpsld',forbidstatus:[4],
+                    bindmethod:{ 'click': ['app'] }">审批单</a>
+
+                   <a href="#" class="easyui-linkbutton" id="lsggzd-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'lsggzd',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="lsggzd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'lsggzd'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="lsggzd-tree-per" data-options="associate:{
+                    'lsggzd-BX_Main-GUID_Person':['GUID','PersonName'],
+                    'lsggzd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'lsggzd-BX_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                      'gridId':'lsggzd-BX_Detail',
+                  'map': {
+                        'lsggzd-BX_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                   griddefaultassociate:{
+                        'gridId':'lsggzd-BX_Detail',
+                        'defaultdatamap': {
+                            'GUID_Department':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID_Department':'GUID_Department'
+                            }
+                    },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="lsggzd-tree-dep" data-options="associate:{
+                    'lsggzd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'lsggzd-BX_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                      'gridId':'lsggzd-BX_Detail',
+                  'map': {
+                        'lsggzd-BX_Detail-GUID_Department':['GUID','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'lsggzd-BX_Detail',
+                        'defaultdatamap': {
+                            'GUID':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID':'GUID_Department'
+                            }
+                    },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="lsggzd-tree-dw" data-options="associate:{
+                    'lsggzd-BX_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="lsggzd-tree-code" data-options="gridassociate:{
+                      'gridId':'lsggzd-BX_Detail',
+                      'map': {
+                        'lsggzd-BX_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                        'lsggzd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'lsggzd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                        'lsggzd-CN_PaymentNumber-PaymentNumber':['clear'],
+                        'lsggzd-BX_Detail-BGCodeKey':['GUID','BGCodeKey']
+                      },
+                      'append':'true'
+                  },
+                 
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="lsggzd-tree-project" data-options="gridassociate:{
+                    'gridId':'lsggzd-BX_Detail',
+                    'map':{
+                    'lsggzd-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                    'lsggzd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                    'lsggzd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                    'lsggzd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                   @* 'lsggzd-CN_PaymentNumber-PaymentNumber':['clear'] *@
+                    'lsggzd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                    'lsggzd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="lsggzd-abandonedStatus" statusControlID="lsggzd-BX_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        临时工工资单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>报销单号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="lsggzd-BX_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>报销日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="lsggzd-BX_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }
+
+                    "></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>报销人</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="lsggzd-BX_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        gridassociate:{
+                              'gridId':'lsggzd-BX_Detail',
+                          'map': {
+                                'lsggzd-BX_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                              }
+                          },
+                        griddefaultassociate:{
+                            'gridId':'lsggzd-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department'
+                                },
+                                'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                                },
+                                'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department'
+                                }
+                        },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        associate:
+                            {
+                                'lsggzd-BX_Main-GUID_DW':['GUID_DW'],
+                                'lsggzd-BX_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="lsggzd-BX_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'220'}]],
+                        width:180,
+                        panelWidth:400,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="lsggzd-BX_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:'true',width:'110'},
+                            {field:'DWName',title:'所属单位名称',width:'110'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'lsggzd-BX_Main-GUID_DW':['GUID_DW']},
+                        gridassociate:{
+                      'gridId':'lsggzd-BX_Detail',
+                      'map': {
+                            'lsggzd-BX_Detail-GUID_Department':['GUID','DepartmentName']
+                          }
+                      },
+                      griddefaultassociate:{
+                            'gridId':'lsggzd-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department'
+                                },
+                                'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                                },
+                                'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department'
+                                }
+                        },
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="lsggzd-BX_Main-DocMemo"  style="width: 500px;" maxlength="200"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                       <font color="red">*</font>附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="lsggzd-BX_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="lsggzd-BX_Detail" data-options="
+                    orderNum:'lsggzd-BX_Detail-OrderNum',
+                    requireCol:[
+                        'lsggzd-BX_Detail-GUID_BGCode',
+                        'lsggzd-BX_Detail-Total_Real',
+                        'lsggzd-BX_Detail-FeeMemo',
+                        'lsggzd-CN_PaymentNumber-IsGuoKu',
+                        'lsggzd-BX_Detail-GUID_Department',
+                        'lsggzd-BX_Detail-GUID_SettleType',
+                        'lsggzd-BX_Detail-GUID_BGType'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:260,
+                    width:900,
+                    rownumbers:true,
+                    scope:'lsggzd',
+                    single:false,
+                    formatters:{'lsggzd-CN_PaymentNumber-IsGuoKu':'boolbox','lsggzd-BX_Detail-Total_Real':'numberbox'},
+                    disableColMap:{
+                            'lsggzd-CN_PaymentNumber-IsGuoKu':['lsggzd-CN_PaymentNumber-GUID_FunctionClass','lsggzd-BX_Detail-GUID_Project']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['lsggzd','lsggzd-BX_Detail','lsggzd-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'lsggzd-BX_Detail-ProjectKey',
+                        'lsggzd-BX_Detail-GUID_Project',
+                        'lsggzd-BX_Detail-GUID_SettleType',
+                        'lsggzd-CN_PaymentNumber-IsGuoKu',
+                        'lsggzd-CN_PaymentNumber-IsProject',
+                        'lsggzd-BX_Detail-GUID_Department',
+                        'lsggzd-BX_Detail-GUID_BGType',
+                        'lsggzd-CN_PaymentNumber-GUID_FunctionClass',
+                        'lsggzd-CN_PaymentNumber-GUID_BGResource',
+                        'lsggzd-BX_Detail-GUID_Person'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'lsggzd-BX_Detail-Total_Real',target:['lsggzd-BX_Main-moneyunmber','lsggzd-BX_Main-moneychinese']},
+                        {name:'cconcat',field:'lsggzd-BX_Detail-FeeMemo',target:['lsggzd-BX_Main-DocMemo']}
+                    ]">
+                        <thead>
+                            <tr>
+                                <th field="lsggzd-CN_PaymentNumber-GUID_ProjectEx" hidden="true"></th> @*附加项目*@
+                                <th field="lsggzd-CN_PaymentNumber-ExtraCodeEx" hidden="true"></th> @*附加项目码*@
+                                <th field="lsggzd-CN_PaymentNumber-ExtraCode" hidden="true"></th> @*附加码*@
+                                <th field="lsggzd-CN_PaymentNumber-FinanceCode" hidden="true"></th> @*财政码*@
+                                <th field="lsggzd-CN_PaymentNumber-EconomyClassKey" hidden="true"></th> @*经济分类码*@
+                                <th field="lsggzd-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>@*支出类型码*@
+                                <th field="lsggzd-CN_PaymentNumber-BGSourceKey" hidden="true"></th>@*预算来源码*@
+                                <th field="lsggzd-CN_PaymentNumber-BGType" hidden="true"></th>@*预算类型码*@
+
+                                <th field="lsggzd-BX_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="lsggzd-BX_Detail-GUID_Person" hidden="true">
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                </th> 
+                                <th field="lsggzd-CN_PaymentNumber-BGSourceName" hidden="true">
+                                </th>
+                               <th  field="lsggzd-BX_Detail-BGCodeKey" title="科目编码" hidden="true" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'lsggzd-BX_Detail',
+                                     map:{
+                                        'lsggzd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'lsggzd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'lsggzd-BX_Detail-GUID_BGCode':['GUID','BGCodeName']
+                                        @*'lsggzd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'BGCodeKey',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeKey',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                               <th field="lsggzd-BX_Detail-GUID_BGCode" title="科目名称" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'lsggzd-BX_Detail',
+                                     map:{
+                                        'lsggzd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'lsggzd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'lsggzd-BX_Detail-BGCodeKey':['BGCodeKey','BGCodeKey']
+                                       @* 'lsggzd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                        }
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                      panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+
+
+                                <th field="lsggzd-BX_Detail-Total_Real" title="金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    金额
+                                </th>
+                                <th field="lsggzd-BX_Detail-FeeMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        customValue:true,
+                                        panelWidth:320,
+                                        panelHeight:300,
+                                        remoteUrl:'/Combogrid/BGCodeMemo',
+                                        method:'get',
+                                        idField:'FeeMemo',
+                                        textField:'FeeMemo',
+                                        filterField:'FeeMemo',
+                                        associateControl:{
+                                                gridId:'lsggzd-BX_Detail',map:['lsggzd-BX_Detail-GUID_BGCode']
+                                            },
+                                        isLoad:false,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'GUID_BGCode',title:'GUID_BGCode',hidden:true},
+                                            {field:'FeeMemo',title:'摘要',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    摘要
+                                </th>
+                                <th field="lsggzd-BX_Detail-ProjectKey" width="90" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:300,
+                                        panelHeight:255,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        gridassociate:{
+                                                gridId:'lsggzd-BX_Detail',
+                                        map:{
+                                            'lsggzd-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                                            'lsggzd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'lsggzd-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'lsggzd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'lsggzd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'lsggzd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'ExtraCode',hidden:'true'},
+                                            {field:'FinanceCode',hidden:'true'},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'编码',width:'80'},
+                                            {field:'ProjectName',title:'名称',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="lsggzd-BX_Detail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="230" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:300,
+                                      panelHeight:255,
+                                      remoteUrl:'/Combogrid/ProjectView',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      gridassociate:{
+                                              gridId:'lsggzd-BX_Detail',
+                                          map:{
+                                              'lsggzd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                              'lsggzd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                              'lsggzd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                              'lsggzd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                              'lsggzd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                      columns:[[
+                                        {field:'GUID',title:'GUID',hidden:true},
+                                        {field:'IsFinance',hidden:true},
+                                        {field:'IsProject',hidden:true},
+                                        {field:'ExtraCode',hidden:'true'},
+                                        {field:'FinanceCode',hidden:'true'},
+                                        {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                        {field:'ProjectKey',title:'编码',width:'80'},
+                                        {field:'ProjectName',title:'名称',width:'300'}
+                                      ]]
+                                    }
+                                }">
+                                    项目名称
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="lsggzd-BX_Detail-GUID_Department" title="部门" sortable="false" align="center"
+                                    width="150" editor="{
+                              type:'combogrid',
+                              options:{
+                                  panelWidth:420,  width:520,remoteUrl:'/Combogrid/Department',method:'get',idField:'GUID',textField:'DepartmentName',
+                                  filterField:'DepartmentKey,DepartmentName',
+                                  columns:[[
+                                    {field:'GUID',title:'名称',width:'60',hidden:true},
+                                    {field:'DepartmentKey',title:'部门编码',width:'60'},
+                                    {field:'DepartmentName',title:'部门名称',width:'200'},
+                                    {field:'DWName',title:'所属单位名称',width:'130'}
+                                ]]
+                              }
+                            }">
+                                    部门
+                                </th>
+                                <th field="lsggzd-BX_Detail-GUID_SettleType" title="结算方式" sortable="false" align="center"
+                                    width="90" editor="{
+                              type:'combogrid',
+                              options:{
+                                panelWidth:300,width:520,
+                                remoteUrl:'/Combogrid/SettleType',method:'get',idField:'GUID',textField:'SettleTypeName',filterField:'SettleTypeKey,SettleTypeName',
+                                columns:[[
+                                  {field:'GUID',title:'GUID',hidden:true},
+                                  {field:'SettleTypeKey',title:'编码',width:'160'},
+                                  {field:'SettleTypeName',title:'名称',width:'300'}
+                                ]]
+                              }
+                          }">
+                                    结算方式
+                                </th>
+                                <th field="lsggzd-BX_Detail-GUID_BGType" title="预算类型" sortable="false" align="center"
+                                    width="80" editor="{
+                              type:'combogrid',
+                              options:{
+                                panelWidth:300,width:520,
+                                remoteUrl:'/Combogrid/BGType',method:'get',idField:'GUID',textField:'BGTypeName',filterField:'BGTypeKey,BGTypeName',
+                                columns:[[
+                                  {field:'GUID',title:'GUID',hidden:true},
+                                  {field:'BGTypeKey',title:'编码',width:'160'},
+                                  {field:'BGTypeName',title:'名称',width:'300'}
+                                ]]
+                              }
+                          }">
+                                    预算类型
+                                </th>
+                                <th field="lsggzd-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="
+                            {
+                            type:'searchbox',
+                            options:{
+                            'particulars':['/particulars/lsggzd','lsggzd-BX_Detail','parti'],
+                            'window':'b-window'
+                            }
+                            }">
+                                    财政支付令</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="lsggzd-BX_Main-moneychinese" style="width: 495px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="lsggzd-BX_Main-moneyunmber"  style="width: 176px"
+                        data-options="
+                        setNotValue:true,
+                        precision:2,
+                        groupSeparator:',',
+                        decimalSeparator:'.',
+                        forbidstatus:[-1]
+                        ">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="lsggzd-BX_Main-GUID_Maker" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="lsggzd-BX_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="lsggzd-BX_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="lsggzd-BX_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="lsggzd-BX_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="lsggzd-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="lsggzd-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="lsggzd-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="lsggzd-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="lsggzd-BX_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="lsggzd-BX_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="lsggzd-extendregion" style="display: none">
+    <input id="lsggzd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="lsggzd-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="lsggzd-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

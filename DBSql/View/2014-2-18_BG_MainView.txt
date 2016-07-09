@@ -1,0 +1,78 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[BG_MainView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[BG_MainView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：BG_MainView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-2-18
+//功    能：预算视图信息
+*/
+CREATE  VIEW dbo.BG_MainView
+AS
+SELECT dbo.BG_Main.GUID, dbo.BG_Main.DocNum, dbo.BG_Main.GUID_BGSetup, 
+      dbo.BG_SetupView.BGSetupName, dbo.BG_SetupView.BGSetupKey, 
+      dbo.BG_SetupView.GUID_MoneyUnit, dbo.BG_SetupView.MoneyUnitKey, 
+      dbo.BG_SetupView.MoneyUnitName, dbo.BG_SetupView.UnitMultiple, 
+      dbo.BG_SetupView.BGPeriodType, dbo.BG_SetupView.DocTypeKey AS Expr2, 
+      dbo.BG_SetupView.DocTypeName AS Expr3, dbo.BG_SetupView.GUID_DocType AS Expr1, 
+      dbo.BG_SetupView.GUID_BGType, dbo.BG_SetupView.BGTypeKey, 
+      dbo.BG_SetupView.BGTypeName, dbo.BG_SetupView.GUID_BGStep, 
+      dbo.BG_SetupView.BGStepKey, dbo.BG_SetupView.BGStepName, 
+      dbo.BG_Main.DocVerson, dbo.BG_Main.BGPeriod, dbo.BG_Main.GUID_DW, 
+      dbo.SS_DW.DWKey, dbo.SS_DW.DWName, dbo.BG_Main.GUID_Department, 
+      dbo.SS_Department.DepartmentKey, dbo.SS_Department.DepartmentName, 
+      dbo.BG_Main.GUID_Person, dbo.SS_Person.PersonKey, 
+      dbo.SS_Person.PersonName, dbo.BG_Main.GUID_Project, 
+      dbo.SS_Project.ProjectKey, dbo.SS_Project.ProjectName, dbo.SS_Project.IsFinance, 
+      dbo.SS_Project.IsBalanced, dbo.BG_Main.DocState, dbo.BG_Main.GUID_Maker, 
+      SS_Operator_1.OperatorName AS Maker, dbo.BG_Main.GUID_Modifier, 
+      SS_Operator_1.OperatorName AS Modifier, dbo.BG_Main.MakeDate, 
+      dbo.BG_Main.ModifyDate, dbo.BG_Main.SubmitDate, dbo.BG_Main.GUID_YWType, 
+      dbo.SS_YWType.YWTypeKey, dbo.SS_YWType.YWTypeName, 
+      dbo.BG_Main.DocDate, dbo.BG_Main.GUID_DocType, 
+      dbo.SS_DocTypeView.DocTypeKey, dbo.SS_DocTypeView.DocTypeName, 
+      dbo.BG_Main.GUID_UIType, dbo.SS_UIType.UITypeKey, 
+      dbo.SS_UIType.UITypeName, dbo.BG_Main.GUID_BG_Assign, 
+      dbo.BG_Main.Total_BG, dbo.BG_Main.Total_BG_PreYear, 
+      dbo.BG_Main.Total_BG_CurYear, dbo.BG_Main.GUID_FunctionClass, 
+      dbo.SS_FunctionClass.FunctionClassKey, 
+      dbo.SS_FunctionClass.FunctionClassName, dbo.BG_Main.Invalid,
+      dbo.SS_FunctionClass.FinanceCode, dbo.SS_DocTypeView.DocTypeUrl
+FROM dbo.SS_Operator SS_Operator_1 RIGHT OUTER JOIN
+      dbo.SS_Project RIGHT OUTER JOIN
+      dbo.BG_Main LEFT OUTER JOIN
+      dbo.SS_FunctionClass ON 
+      dbo.BG_Main.GUID_FunctionClass = dbo.SS_FunctionClass.GUID ON 
+      dbo.SS_Project.GUID = dbo.BG_Main.GUID_Project LEFT OUTER JOIN
+      dbo.SS_UIType ON 
+      dbo.BG_Main.GUID_UIType = dbo.SS_UIType.GUID LEFT OUTER JOIN
+      dbo.SS_DocTypeView ON 
+      dbo.BG_Main.GUID_DocType = dbo.SS_DocTypeView.GUID LEFT OUTER JOIN
+      dbo.SS_YWType ON 
+      dbo.BG_Main.GUID_YWType = dbo.SS_YWType.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_2 ON 
+      dbo.BG_Main.GUID_Modifier = SS_Operator_2.GUID ON 
+      SS_Operator_1.GUID = dbo.BG_Main.GUID_Maker LEFT OUTER JOIN
+      dbo.SS_Person ON 
+      dbo.BG_Main.GUID_Person = dbo.SS_Person.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.BG_Main.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.BG_Main.GUID_DW = dbo.SS_DW.GUID LEFT OUTER JOIN
+      dbo.BG_SetupView ON dbo.BG_Main.GUID_BGSetup = dbo.BG_SetupView.GUID
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+

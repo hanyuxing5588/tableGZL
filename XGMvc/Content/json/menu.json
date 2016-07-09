@@ -1,0 +1,448 @@
+﻿var strJChild = [
+                    {
+                        "MenuName": "常用",
+                        "MenuKey": "00",
+                        "Child": [
+                            {
+                                "MenuName": "会计凭证",
+                                "MenuKey": "00000000"
+                            },
+                            {
+                                "MenuName": "核销处理",
+                                "MenuKey": "11111111"
+                            },
+                            {
+                                "MenuName": "报销单列表",
+                                "MenuKey": "07020111"
+                            },
+                            {
+                                "MenuName": "单据列表",
+                                "MenuKey": "070301"
+                            },
+                            {
+                                "MenuName": "应付单填制",
+                                "MenuKey": "33333333"
+                            },
+                            {
+                                "MenuName": "现金报销单",
+                                "MenuKey": "07020100"
+                            },
+                            {
+                                "MenuName": "支票领取",
+                                "MenuKey": "07020103"
+                            },
+                            {
+                                "MenuName": "支票申领单",
+                                "MenuKey": "44444444"
+                            },
+                            {
+                                "MenuName": "凭证科目规则",
+                                "MenuKey": "55555555"
+                            },
+                            {
+                                "MenuName": "其他报销单",
+                                "MenuKey": "07020108"
+                            },
+                            {
+                                "MenuName": "公务卡汇总报销单",
+                                "MenuKey": "07020117"
+                            },
+                            {
+                                "MenuName": "项目档案",
+                                "MenuKey": "66666666"
+                            },
+                            {
+                                "MenuName": "公务卡报销单",
+                                "MenuKey": "07020116"
+                            },
+                            {
+                                "MenuName": "收款凭证",
+                                "MenuKey": "77777777"
+                            },
+                            {
+                                "MenuName": "收入凭单",
+                                "MenuKey": "88888888"
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "报表",
+                        "MenuKey": "01",
+                        "Child": [
+                            {
+                                "MenuName": "执行进度查询",
+                                "MenuKey": "080101",
+                                "Child": [
+                                    {
+                                        "MenuName": "管理费用执行查询",
+                                        "MenuKey": "08010101"
+                                    },
+                                    {
+                                        "MenuName": "项目支出执行查询",
+                                        "MenuKey": "08010102"
+                                    }
+                                ]
+                            },
+                            {
+                                "MenuName": "个人收入查询",
+                                "MenuKey": "080102",
+                                "Child": [
+                                    {
+                                        "MenuName": "个人收入查询",
+                                        "MenuKey": "08010201"
+                                    },
+                                    {
+                                        "MenuName": "部门收入汇总",
+                                        "MenuKey": "08010202"
+                                    },
+                                    {
+                                        "MenuName": "个人薪资查询",
+                                        "MenuKey": "08010203"
+                                    }
+                                ]
+                            },
+                            {
+                                "MenuName": "管理决策支持",
+                                "MenuKey": "080103",
+                                "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "执行进度一览",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "报销",
+                        "MenuKey": "02",
+                        "Child": [
+                           {
+                               "MenuName": "全部",
+                               "MenuKey": "080103",
+                               "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "报销单列表",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                           },
+                            {
+                                "MenuName": "报销单填制",
+                                "MenuKey": "070201",
+                                "Child": [
+                                    {
+                                        "MenuName": "现金报销单",
+                                        "MenuKey": "07020100"
+                                    },
+                                    {
+                                        "MenuName": "资金申请单",
+                                        "MenuKey": "07020101"
+                                    },
+                                    {
+                                        "MenuName": "差旅报销单",
+                                        "MenuKey": "07020102"
+                                    },
+                                    {
+                                        "MenuName": "支票申领单",
+                                        "MenuKey": "07020103"
+                                    },
+                                    {
+                                        "MenuName": "劳务费领款单",
+                                        "MenuKey": "07020104"
+                                    },
+                                    {
+                                        "MenuName": "临时工工资单",
+                                        "MenuKey": "07020105"
+                                    },
+                                    {
+                                        "MenuName": "汇款审批单",
+                                        "MenuKey": "07020106"
+                                    },
+                                    {
+                                        "MenuName": "手续费报销单",
+                                        "MenuKey": "07020107"
+                                    },
+                                    {
+                                        "MenuName": "其他报销单",
+                                        "MenuKey": "07020108"
+                                    },
+                                    {
+                                        "MenuName": "期初报销单",
+                                        "MenuKey": "07020109"
+                                    },
+                                    {
+                                        "MenuName": "报销单列表",
+                                        "MenuKey": "07020111"
+                                    },
+                                    {
+                                        "MenuName": "公务卡报销单",
+                                        "MenuKey": "07020116"
+                                    },
+                                    {
+                                        "MenuName": "公务卡汇总报销单",
+                                        "MenuKey": "07020117"
+                                    }
+                                ]
+                            },
+                            {
+                                "MenuName": "借款管理",
+                                "MenuKey": "070202",
+                                "Child": [
+                                    {
+                                        "MenuName": "借款单填制",
+                                        "MenuKey": "07020201"
+                                    }
+                                ]
+                            },
+                            {
+                                "MenuName": "其他单据",
+                                "MenuKey": "070203",
+                                "Child": [
+                                    {
+                                        "MenuName": "收款凭单",
+                                        "MenuKey": "07020301"
+                                    },
+                                    {
+                                        "MenuName": "应付单",
+                                        "MenuKey": "07020302"
+                                    },
+                                    {
+                                        "MenuName": "货品购入",
+                                        "MenuKey": "07020303"
+                                    },
+                                    {
+                                        "MenuName": "货品领用",
+                                        "MenuKey": "07020304"
+                                    },
+                                    {
+                                        "MenuName": "物品入库单",
+                                        "MenuKey": "07020305"
+                                    },
+                                    {
+                                        "MenuName": "物品出库单",
+                                        "MenuKey": "07020306"
+                                    },
+                                    {
+                                        "MenuName": "物品退货单",
+                                        "MenuKey": "07020307"
+                                    },
+                                    {
+                                        "MenuName": "物品退库单",
+                                        "MenuKey": "07020308"
+                                    },
+                                    {
+                                        "MenuName": "物品期初单",
+                                        "MenuKey": "07020309"
+                                    },
+                                    {
+                                        "MenuName": "单据记账",
+                                        "MenuKey": "07020310"
+                                    },
+                                    {
+                                        "MenuName": "单据恢复记账",
+                                        "MenuKey": "07020311"
+                                    },
+                                    {
+                                        "MenuName": "月末结账",
+                                        "MenuKey": "07020312"
+                                    },
+                                    {
+                                        "MenuName": "物品总账",
+                                        "MenuKey": "07020313"
+                                    },
+                                    {
+                                        "MenuName": "物品明细账",
+                                        "MenuKey": "07020314"
+                                    },
+                                    {
+                                        "MenuName": "物品收发存汇总表",
+                                        "MenuKey": "07020315"
+                                    }
+                                ]
+                            },
+                            {
+                                "MenuName": "专用基金",
+                                "MenuKey": "070205",
+                                "Child": [
+                                    {
+                                        "MenuName": "专用基金列支单",
+                                        "MenuKey": "07020501"
+                                    }
+                                ]
+                            },
+                            {
+                                "MenuName": "单据列表",
+                                "MenuKey": "0703",
+                                "Child": [
+                                    {
+                                        "MenuName": "单据列表",
+                                        "MenuKey": "070301"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "出纳",
+                        "MenuKey": "03",
+                        "Child": [
+                            {
+                                "MenuName": "全部",
+                                "MenuKey": "080103",
+                                "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "执行进度一览",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "会计",
+                        "MenuKey": "04",
+                        "Child": [
+                            {
+                                "MenuName": "全部",
+                                "MenuKey": "080103",
+                                "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "执行进度一览",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "预算",
+                        "MenuKey": "05",
+                        "Child": [
+                            {
+                                "MenuName": "全部",
+                                "MenuKey": "080103",
+                                "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "执行进度一览",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "审批",
+                        "MenuKey": "06",
+                        "Child": [
+                            {
+                                "MenuName": "全部",
+                                "MenuKey": "080103",
+                                "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "执行进度一览",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "收入",
+                        "MenuKey": "07",
+                        "Child": [
+                            {
+                                "MenuName": "全部",
+                                "MenuKey": "080103",
+                                "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "执行进度一览",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "MenuName": "基础",
+                        "MenuKey": "08",
+                        "Child": [
+                            {
+                                "MenuName": "全部",
+                                "MenuKey": "080103",
+                                "Child": [
+                                    {
+                                        "MenuName": "执行率汇总表",
+                                        "MenuKey": "0801030101"
+                                    },
+                                    {
+                                        "MenuName": "执行进度排名",
+                                        "MenuKey": "0801030102"
+                                    },
+                                    {
+                                        "MenuName": "执行进度一览",
+                                        "MenuKey": "0801030103"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ];
+
+

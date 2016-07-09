@@ -1,0 +1,208 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "工资项数据加载方式设置";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //根据设置方式加载页面元素
+        var dic2Index = {};
+        $('#gzxsjjzfssz-SA_PlanItemEx').edatagrid({
+            onAfterEdit: function (rowIndex, rowData, changes) {                
+                var v0 = rowData["gzxsjjzfssz-SA_PlanItemEx-GUID"];
+                var v1 = $('#gzxsjjzfssz-SA_PlanItemSetup-GUID_SA_PlanItem').val();
+                var v2 = $($('#gzxsjjzfssz-SA_PlanItemEx')).edatagrid('getCellValue', { field: 'gzxsjjzfssz-SA_PlanItemEx-GUID_SetUp', rowindex: rowIndex });
+                var v3 = rowData["gzxsjjzfssz-SA_PlanItemEx-StartName"] == "是" ? true : false;
+                var Item = { "GUID": v0, "GUID_SA_PlanItem": v1, "GUID_SetUP": v2, "IsStart": v3 };
+                var gridOpts = $('#gzxsjjzfssz-SA_PlanItemEx').edatagrid('options');
+                var Obj = gridOpts.store = gridOpts.store || [];
+                if (!dic2Index[rowIndex]) {
+                    Obj.push(Item);
+                    dic2Index[rowIndex] = Obj.length;
+                } else {
+                    var index = dic2Index[rowIndex];
+                    var row = Obj[index - 1];
+                    row.GUID = Item.GUID;
+                    row.GUID_SA_PlanItem = Item.GUID_SA_PlanItem;
+                    row.GUID_SetUP = Item.GUID_SetUP;
+                    row.IsStart = Item.IsStart;
+                }
+
+            }
+
+        });
+
+    });
+    $.extend($.fn.tree.methods, {
+        //扩展tree给控件赋值的方法
+        ToControlAssign: function (node) {
+            
+            var me = this;
+            var opts = $(me).tree('options');
+            var requestUrl = opts.requestUrl;
+            var type = opts.type;
+            var gridId = '#' + opts.gridId;
+
+            $('#gzxsjjzfssz-SA_PlanItemSetup-GUID_SA_PlanItem').val(node.id);
+
+            $.ajax({
+                data: { guid: node.id, type: type },
+                url: requestUrl,
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    $.view.loadData('gzxsjjzfssz', data);
+                }
+            });
+
+        }
+    });
+    $.extend($.fn.linkbutton.methods, {
+        SaveDoc: function () {
+            debugger
+            var parms = $(this).linkbutton('getParms', 'SaveDoc');
+            var url, gridId;
+            if (parms && parms.length >= 2) {
+                url = parms[0];
+                gridId = '#' + parms[1];
+
+            }
+
+            var selRow = $(gridId).edatagrid('getSelected');
+            var selIndex = $(gridId).edatagrid('getRowIndex', selRow);
+            if (selIndex >= 0) {
+                $(gridId).edatagrid('endEdit', selIndex);
+            }
+
+           var obj = $(gridId).edatagrid('options').store;
+          
+
+            $.ajax({
+                url: url,
+                data: { "contions": JSON.stringify(obj) },
+                dataType: "json",
+                type: "POST",
+                success: function (data) {
+
+                    $.messager.alert('提示', data, 'info');
+                }
+            });
+
+        }
+    });
+
+
+</script>
+<div class="easyui-layout" id="gzxsjjzfssz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   <a href="#" class="easyui-linkbutton" id="gzxsjjzfssz-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['SaveDoc'] },
+                   bindparms:{'SaveDoc':['/JCxcsz/SaveDoc1','gzxsjjzfssz-SA_PlanItemEx']},scope:'gzxsjjzfssz',status:'4'">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="gzxsjjzfssz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'gzxsjjzfssz'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" id="item_tab" data-options="fit:true">
+            <div title="工资计划" id="Project-tree">
+                <ul class="easyui-tree" id="gzxsjjzfssz-tree-item" 
+                 data-options="
+                  requestUrl:'/JCxcsz/RequestData',
+                  gridId:'gzxsjjzfssz-SA_PlanItemEx',
+                  type:'Plan',
+                  bindmethod:{'onDblClick': ['ToControlAssign'] },
+                  url:'/Tree/GetSalaryPlanTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <div id="item_set">
+            <table id="table" border="0" style=" width:100%">
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PlanKey">
+                        工资项目编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="gzxsjjzfssz-SA_Plan-PlanKey" data-options="forbidstatus:[4]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PlanName">
+                        工资项目名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="gzxsjjzfssz-SA_Plan-PlanName" data-options="forbidstatus:[4]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                  <table class="easyui-edatagrid" id="gzxsjjzfssz-SA_PlanItemEx"   data-options="
+                    height:450,                   
+                    rownumbers:true">
+                        <thead>
+                            <tr>
+                                <th field="gzxsjjzfssz-SA_PlanItemEx-GUID" title="" hidden="true" align="center" width="80" ></th>
+                                <th field="gzxsjjzfssz-SA_PlanItemEx-ItemName" title="工资项" halign="center" align="left" width="150" >工资项</th>
+                                <th field="gzxsjjzfssz-SA_PlanItemEx-ItemTypeName" title="工资项类型"  halign="center"  align="left" width="80" >工资项类型</th>
+                                <th field="gzxsjjzfssz-SA_PlanItemEx-GUID_SetUp" title="工资数据加载类型"  halign="center"  width="120" 
+                                    align="left" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/SalarySetUp',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     textField:'SetUpName',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'SetUpName',title:'工资项目数据加载名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    工资数据加载类型
+                                </th>
+                                <th field="gzxsjjzfssz-SA_PlanItemEx-StartName" title="是否启用"  halign="center"  align="center" width="120" 
+                                editor="{
+                                    type:'combobox',
+                                    options:{
+								        valueField:'IsStart',
+								        textField:'StartName',
+                                        data:[{IsStart:'是',StartName:'是'},{IsStart:'否',StartName:'否'}],
+                                        panelHeight:50
+							        }
+                                }">是否启用</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+           
+        </div>
+    </div>
+    <input class="easyui-validatebox" id="gzxsjjzfssz-SA_PlanItemSetup-GUID_SA_PlanItem" type="hidden"></input>
+</div>
+<label id="gzxsjjzfssz-extendregion" style="display: none">
+    <input id="gzxsjjzfssz-status" type="text"></input>
+    <input id="initscope" type="text" value='gzxsjjzfssz'></input>
+    <input id="initstatus" type="text" value='4'></input>
+    <input id="initguid" type="text" value=''></input>
+</label>
+<div id="b-window" line="true"></div>
+<script type="text/javascript">
+    (function () {
+        var datagridId = "gzxsjjzfssz-SA_PlanItemEx";
+        var colCount = 4;
+        $.setControl("divWest", datagridId, colCount);
+    })();
+      
+</script>

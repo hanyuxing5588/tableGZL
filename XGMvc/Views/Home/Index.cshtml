@@ -1,0 +1,289 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <title>首页</title>
+    <link href="../../Scripts/jquery-easyui-1.3.4/themes/skin/green/base.css" rel="stylesheet" type="text/css" class="css_style1" />
+    <link href="../../Scripts/jquery-easyui-1.3.4/themes/skin/green/style.css" rel="stylesheet" type="text/css" class="css_style2" />
+    <link href="../../Scripts/jquery-easyui-1.3.4/themes/default.css" rel="stylesheet" type="text/css" />
+    <link href="../../Scripts/jquery-easyui-1.3.4/themes/skin/green/default.css" rel="stylesheet" type="text/css" class="css_style3" />
+    <link href="../../Scripts/jquery-easyui-1.3.4/themes/skin/green/common.css?r=1121122" rel="stylesheet" type="text/css" class="css_style4" />
+    <link href="../../Content/css/Home/DynamicAlert.css" rel="stylesheet" type="text/css" />
+    <link href="../../Content/css/Home/home.css" rel="stylesheet" type="text/css" />
+
+    <script src="../../Scripts/jquery-easyui-1.3.4/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery-easyui-1.3.4/jquery.easyui.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/jquery-easyui-1.3.4/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Content/js/Home/DynamicAlert.js" type="text/javascript"></script>
+    <script src="../../Content/commonjs/jquery.utils.js" type="text/javascript"></script>
+    <script src="../../Content/commonjs/jquery.tool.js" type="text/javascript"></script>
+    <script src="../../Content/js/Home/jquery.easytabs.js" type="text/javascript"></script>
+    <script src="../../Content/js/Home/menus.js?r=1110" type="text/javascript"></script>
+    <script src="../../Content/js/Home/retSig.js" type="text/javascript"></script>
+    <script src="../../Content/js/Home/jquery.selfPages.js" type="text/javascript"></script>
+    <script src="../../Content/js/Home/getAgencyTask.js?r=10" type="text/javascript"></script>
+    <style type="text/css">
+     html,boy
+     {
+        overflow-x:auto;
+        _overflow-x:auto;
+        overflow-y:hidden;	
+     }
+    </style>
+    <script type="text/javascript">
+        window.pageConfig = { compatible: true, navId: "firstPage" };
+    </script>
+    <script type="text/javascript">
+        function closeTab() {
+            var tab = $("#tt").tabs("getSelected");
+            var index = $("#tt").tabs("getTabIndex", tab);
+            $("#tt").tabs("close", index);
+        };
+        function initThems() {
+            var d = "content";
+            var b = [".css_style1", ".css_style2", ".css_style3", ".css_style4"]; //设置 css 外链标签id，要有对应名为 css_style 的css 外链。如果用class的话可以指定多个css 外链。
+
+            var color = ['red', 'green', 'blue', 'gray'];
+            var a = function (d) {
+                var f = jQuery(b[0]).attr("href").split("/")[jQuery(b[0]).attr("href").split("/").length - 2];
+                jQuery.each(b, function (h) {
+                    if (jQuery(b[h]).size() != 0) {
+                        jQuery(b[h]).attr("href", jQuery(b[h]).attr("href").replace(f, color[d]))
+                    }
+                })
+            };
+            if (jQuery.cookie(d)) {
+                a(jQuery.cookie(d));
+            }
+        };
+        $(document).ready(function () {
+            initThems();
+            $("div.item").tooltip();
+            $("#tt").tabs({
+                width: $(window).width() - 145,
+                height: "auto"
+            });
+            $("#pp").panel({
+                width: $(window).width() - 145,
+                height: "auto"
+            });
+            $(window).resize(function () {
+                $("#pp").panel("resize");
+            });
+            
+        });
+        
+
+    </script>
+    <script type="text/javascript">
+        //用户退出
+        function logonOut() {
+            $.ajax({
+                url: '/Logon/LogonOut',
+                cache: false,
+                async: true,
+                type: 'post',
+                datatype: 'Text',
+                success: function (data) {
+                    
+                    if (data == "ok") {
+                        win_Close();
+                    }
+                }
+            });
+        }
+        //关闭当前页面
+        var win_Close = function () {
+            if (confirm("您确定要退出本系统吗？")) {
+                window.opener = null;
+                window.open('', '_self');
+                window.close();
+            }
+        }
+
+        //用户注销
+        function logonCancle() {
+            $.ajax({
+                url: '/Logon/logonCancle',
+                cache: false,
+                async: true,
+                type: 'post',
+                datatype: 'Text',
+                success: function (data) {
+                    if (data == "ok") {
+                        window.location.href = "/Logon/Index";
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body class="tbdy">
+    @* div id='glb' 内部使用勿删*@
+    <div id='glb' style="display: none">
+        <input id="closeTab" type=button onclick="closeTab()" />
+    </div>
+    <script src="../../Content/js/Home/base.js" type="text/javascript" charset="ugf-8"></script>
+    <div id="shortcut-2013">
+        <div>
+           @* <input id="btnYes" type="button" value="Yes" onclick="retSingleTrue()" />
+            <input id="btnNo" type="button" value="No" onclick="retSingleFalse()" />*@
+           @* <input id="btnGrid" type="button" value="GetGridRows" onclick="getGridData();" />*@
+            <input id="btnRefresh" type="button" value="刷新待办列表" onclick="getAgencyTask();" />
+            <ul class="fl lh">
+                <li class="fore1 ld"><a href="javascript:addToFavorite()" rel="nofollow">加入收藏</a></li>
+            </ul>
+            <ul class="fr lh">
+                <li class="fore1 ld">
+                    <div class="theme">
+                        <div id="skin" class="item">
+                            <div class="tooltip_description" style="display: none">
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="fore2 ld"><s></s>登录人：<a>@ViewData["LogonUser"]</a></li>
+                <li class="fore3 ld"><s></s><a href="#" onclick="logonOut()">退出</a></li>
+                <li class="fore4 ld"><s></s><a href="#" onclick="logonCancle()">注销</a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="o-header-2013">
+        @* <div class="left">
+            <div id="nav-2013">
+                <div id="categorys-2013">
+                    <div class="mt">
+                        <h2>
+                            <a id="funListId" href="#">功能列表</a></h2>
+                    </div>
+                </div>
+            </div>
+            <div id="sortlist" class="m" clstag="firsttype|keycount|dd|sortlist">
+                <div class="mc">
+                </div>
+            </div>
+        </div>*@
+        <div class="left">
+            <div id="nav-2013">
+                <div id="categorys-2013">
+                    <div class="mt">
+                        <h2>
+                            <a id="funListId" href="#">功能列表</a></h2>
+                    </div>
+                </div>
+            </div>
+            <div id="sortlist" class="m" clstag="firsttype|keycount|dd|sortlist">
+                <div class="mc">
+                </div>
+            </div>
+        </div>
+        <div id="pp" class="middle">
+            <div id="tt" fit="true" border="true">
+                <div title="首页" data-options="closable:false" style="padding: 5px 10px 0 10px;">
+                    <div style="width: 64%; height: 30%; background: red; border: 0px solid black; float: left;
+                        color: #FFFFFF">
+                        <div class="line" style="width: auto; height: 100%; background-color: #FFFFFF;">
+                            <h1 style="width: auto; height: 12px; font-size: smaller; background-color: #FFFFFF;
+                                color: #529669; font-weight: 700; font-size: 14px; padding-left: 35px; position: relative;
+                                z-index: 1;">
+                                待办任务</h1>
+                            <img src="../../Content/images/Home/line.png" style="margin-top: 5px; position: relative;
+                                top: 6px; z-index: 1;" alt="" />
+                            <div class="newslist">
+                                <ul>
+                                    
+                                </ul>
+                            </div>
+                            <div id="pager" class="Pagination"></div>
+                        </div>
+                    </div>
+                    <div style="width: 34%; height: 30%; background: green; border: 0px solid black;
+                        float: left; color: #FFFFFF; margin-left: 15px;">
+                        <div class="line" style="width: auto; height: 100%; background-color: #FFFFFF;">
+                            <h1 style="width: auto; height: 12px; font-size: smaller; background-color: #FFFFFF;
+                                color: #529669; font-weight: 700; font-size: 14px; padding-left: 35px; position: relative;
+                                z-index: 1;">
+                                通知公告</h1>
+                            <img src="../../Content/images/Home/line.png" style="margin-top: 5px; position: relative;
+                                top: 6px; z-index: 1;" alt="" />
+                            <div class="todotask1">
+                                <ul>
+                                   
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 31%; height: 30%; background: #FFFFFF; border: 0px solid black;
+                        float: left; color: #FFFFFF; padding-top: 15px;">
+                        <div class="line" style="width: auto; height: 100%; background-color: #FFFFFF;">
+                            <h1 style="width: auto; height: 12px; font-size: smaller; background-color: #FFFFFF;
+                                color: #529669; font-weight: 700; font-size: 14px; padding-left: 35px; position: relative;
+                                z-index: 1;">
+                                政策法规</h1>
+                            <img src="../../Content/images/Home/line.png" style="margin-top: 5px; position: relative;
+                                top: 6px; z-index: 1;" alt="" />
+                            <div class="todotask1">
+                                <ul>
+                                  
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 31%; height: 30%; background: #FFFFFF; border: 0px solid black;
+                        float: left; color: #FFFFFF; margin-left: 16px; padding-top: 15px;">
+                        <div class="line" style="width: auto; height: 100%; background-color: #FFFFFF;">
+                            <h1 style="width: auto; height: 12px; font-size: smaller; background-color: #FFFFFF;
+                                color: #529669; font-weight: 700; font-size: 14px; padding-left: 48px; position: relative;
+                                z-index: 1;">
+                                法律法规</h1>
+                            <img src="../../Content/images/Home/line.png" style="margin-top: 5px; position: relative;
+                                top: 6px; z-index: 1;" alt="" />
+                            <div class="todotask1">
+                                <ul>
+                                  
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 34%; height: 30%; background: #FFFFFF; border: 0px solid black;
+                        float: left; color: #FFFFFF; margin-left: 15px; padding-top: 15px;">
+                        <div class="line" style="width: auto; height: 100%; background-color: #FFFFFF;">
+                            <h1 style="width: auto; height: 12px; font-size: smaller; background-color: #FFFFFF;
+                                color: #529669; font-weight: 700; font-size: 14px; padding-left: 47px; position: relative;
+                                z-index: 1;">
+                                制度</h1>
+                            <img src="../../Content/images/Home/line.png" style="margin-top: 5px; position: relative;
+                                top: 6px; z-index: 1;" alt="" />
+                            <div class="todotask1">
+                                <ul>
+                                 
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 34%; background: #FFFFFF; border: 0px solid black;
+                        float: left; margin-top: 15px;">
+                       @* <div id="tab-container" class='tab-container'>
+                            <ul class='etabs'>
+                                <li class='tab'><a href="#tabs1-html">项目执行进度</a></li>
+                            </ul>
+                            <div class='panel-container'>
+                                <div id="tabs1-html">
+                                    sdfsdfsdf
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        (function () { if (pageConfig.navId) { var object = document.getElementById("nav-" + pageConfig.navId); if (object) object.className += " curr"; } })();
+    </script>
+</body>
+</html>

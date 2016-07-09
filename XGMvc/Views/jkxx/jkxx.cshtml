@@ -1,0 +1,320 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "借款信息";
+}
+<div class="easyui-layout" id="jkxx-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="jkxx-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'jkxx',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/jkxx',['jkxx-BX_Main-moneychinese','jkxx-BX_Main-moneyunmber']]}">
+                打印</a> <a href="#" class="easyui-linkbutton" id="jkxx-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/jkxx/Save','jkxx-examine']},scope:'jkxx',status:'4',
+                   forbidstatus:[4]">保存</a> <a href="#" class="easyui-linkbutton" id="jkxx-xuandan"
+                       data-options="plain:'true',iconCls:'icon-xuandan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/jkxx','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'jkxx'">选单</a> <a href="#" class="easyui-linkbutton" id="jkxx-borrow"
+                        data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/jkxx','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'jkxx'">借款</a> <a href="#" class="easyui-linkbutton" id="jkxx-yichu"
+                        data-options="plain:'true',iconCls:'icon-yichu',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/jkxx','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'jkxx'">移除</a> <a href="#" class="easyui-linkbutton" id="jkxx-close"
+                        data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'jkxx'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <!--在center中布局-->
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'north',split:true" title="north" style="width: 600px;
+                height: 100px">
+                <table border="0" style="height: 50px; width: 100%; padding: 0; margin: 0">
+                    <tr>
+                        <td colspan="2" style="height: 20px; padding-top: 10px;">
+                            <div style="font-size: x-large; color: #0054E3; text-align: center;">
+                                借款信息</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="height: 15px; width: 60px;">
+                            <div style="text-align: center; padding-top: 0px; margin-top: 0px;">
+                                合计金额
+                            </div>
+                        </td>
+                        <td field="jkxx-SFMoneyTxt">
+                            <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+                <div class="easyui-layout" data-options="fit:true">
+                    <div data-options="region:'north',split:true,border:false" style="height: 200px">
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'west',split:true,border:false" style="width: 350px">
+                                <table class="easyui-datagrid" id="jkxx-" style="overflow: auto" data-options="scope:jkxx,height:200,
+                                    width:300">
+                                    <thead>
+                                        <tr>
+                                            <th field="jkxx-BankAccountName" title="银行名称" sortable="false" align="center">
+                                                银行名称
+                                            </th>
+                                            <th field="jkxx-Total_CN" title="金额" sortable="false" align="center">
+                                                金额
+                                            </th>
+                                            <th field="jkxx-PaymentNumber" title="财政支付码" sortable="false" align="center">
+                                                财政支付码
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <div data-options="region:'center',border:false" style="width: 350px;">
+                                <table border="0" style="height: 190px; width: 350px; padding: 0; margin: 0">
+                                    <tr>
+                                        <td style="width: 70px;">
+                                            <div style="float: right;">
+                                                借款人员</div>
+                                        </td>
+                                        <td field="jkxx-PersonName">
+                                            <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                                            </div>
+                                        </td>
+                                        <td style="width: 70px;">
+                                            <div style="float: right;">
+                                                核销日期</div>
+                                        </td>
+                                        <td field="jkxx-DocDate">
+                                            <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 70px;">
+                                            <div style="float: right; margin-left: 10px;">
+                                                借款部门</div>
+                                        </td>
+                                        <td colspan="3" field="jkxx-DepartmentName">
+                                            <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 70px;">
+                                            <div style="float: right; margin-left: 15px;">
+                                                借款单位</div>
+                                        </td>
+                                        <td colspan="3" field="jkxx-DWName">
+                                            <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 70px;">
+                                            <div style="float: right; margin-left: 15px;">
+                                                借款余额</div>
+                                        </td>
+                                        <td colspan="3" field="jkxx-Total_XX">
+                                            <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'west',split:true,border:false" style="width: 350px">
+                        <table border="0" style="height: 200px; width: 300; padding: 0; margin: 0">
+                            <tr>
+                                <td style="height: 30px">
+                                    <div style="font-size: x-large; color: #0054E3;">
+                                        借方单据</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="height: 170px;">
+                                    <table class="easyui-edatagrid" id="jkxx-" style="overflow: auto" data-options="scope:jkxx,height:170,
+                                    width:350">
+                                        <thead>
+                                            <tr>
+                                                <th field="jkxx-DocNum" title="单号" sortable="false" align="center">
+                                                    单号
+                                                </th>
+                                                <th field="jkxx-DocTypeName" title="单据类型" sortable="false" align="center">
+                                                    单据类型
+                                                </th>
+                                                <th field="jkxx-DocDate" title="单据日期" sortable="false" align="center">
+                                                    单据日期
+                                                </th>
+                                                <th field="jkxx-PersonName" title="人员" sortable="false" align="center">
+                                                    人员
+                                                </th>
+                                                <th field="jkxx-DepartmentName" title="部门" sortable="false" align="center">
+                                                    部门
+                                                </th>
+                                                <th field="jkxx-Total_XX" title="金额" sortable="false" align="center">
+                                                    金额
+                                                </th>
+                                                <th field="jkxx-DocMemo" title="摘要" sortable="false" align="center">
+                                                    摘要
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div data-options="region:'center',border:false" style="width: 350px">
+                        <table border="0" style="height: 200px; width: 350px; padding: 0; margin: 0">
+                            <tr>
+                                <td style="height: 30px;">
+                                    <div style="font-size: x-large; color: #0054E3;">
+                                        贷方单据</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="height: 170px">
+                                    <table class="easyui-edatagrid" id="jkxx-BX_Detail" style="overflow: auto" data-options="scope:jkxx,height:170,
+                                    width:300">
+                                        <thead>
+                                            <tr>
+                                                <th field="jkxx-DocNum" title="单号" sortable="false" align="center">
+                                                    单号
+                                                </th>
+                                                <th field="jkxx-DocTypeName" title="单据类型" sortable="false" align="center">
+                                                    单据类型
+                                                </th>
+                                                <th field="jkxx-DocDate" title="单据日期" sortable="false" align="center">
+                                                    单据日期
+                                                </th>
+                                                <th field="jkxx-PersonName" title="人员" sortable="false" align="center">
+                                                    人员
+                                                </th>
+                                                <th field="jkxx-DepartmentName" title="部门" sortable="false" align="center">
+                                                    部门
+                                                </th>
+                                                <th field="jkxx-Total_XX" title="金额" sortable="false" align="center">
+                                                    金额
+                                                </th>
+                                                <th field="jkxx-DocMemo" title="摘要" sortable="false" align="center">
+                                                    摘要
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'south',split:true" title="south" style="height: 150px;">
+                <table border="0" style="height: 150px; width: 600; padding: 0; margin: 0">
+                    <tr>
+                        <td style="height: 30px;">
+                            <table border="0" style="padding: 0px; margin: 0px;">
+                                <tr>
+                                    <td style="width: 100px; height: 30px;">
+                                        <div style="font-size: x-large; color: #0054E3;">
+                                            会计凭证</div>
+                                    </td>
+                                    <td style="width: 60px;">
+                                        <div style="float: right;">
+                                            对方帐套</div>
+                                    </td>
+                                    <td field="">
+                                        <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                                        </div>
+                                    </td>
+                                    <td style="width: 75px;">
+                                        <div style="float: right;">
+                                            对方帐套年度</div>
+                                    </td>
+                                    <td>
+                                        <div style="border: 1px solid #000000; width: 100px; margin-top: 18px;">
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table class="easyui-edatagrid" id="jkxx-" style="overflow: auto" data-options="scope:jkxx,height:200,
+                                    width:600">
+                                <thead>
+                                    <tr>
+                                        <th field="jkxx-OrderNum" title="行号" sortable="false" align="center">
+                                            行号
+                                        </th>
+                                        <th field="jkxx-PZMemo" title="摘要" sortable="false" align="center">
+                                            摘要
+                                        </th>
+                                        <th field="jkxx-AccountTitleKey" title="科目编码" sortable="false" align="center">
+                                            科目编码
+                                        </th>
+                                        <th field="jkxx-AccountTitleName" title="科目名称" sortable="false" align="center">
+                                            科目名称
+                                        </th>
+                                        <th field="jkxx-Total_PZTrue" title="借方金额" sortable="false" align="center">
+                                            借方金额
+                                        </th>
+                                        <th field="jkxx-Total_PZFalse" title="贷方金额" sortable="false" align="center">
+                                            贷方金额
+                                        </th>
+                                        <th field="jkxx-DepartmentName" title="部门" sortable="false" align="center">
+                                            部门
+                                        </th>
+                                        <th field="jkxx-ProjectName" title="项目名称" sortable="false" align="center">
+                                            项目名称
+                                        </th>
+                                        <th field="jkxx-ProjectKey" title="项目编码" sortable="false" align="center">
+                                            项目编码
+                                        </th>
+                                        <th field="jkxx-CustomerName" title="往来单位" sortable="false" align="center">
+                                            往来单位
+                                        </th>
+                                        <th field="jkxx-PersonName" title="人员" sortable="false" align="center">
+                                            人员
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <input class="easyui-validatebox" id="jkxx-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="jkxx-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="jkxx-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="jkxx-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="jkxx-BX_Main-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="jkxx-BX_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="jkxx-extendregion" style="display: none">
+    <input id="jkxx-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus"
+type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text"
+value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="jkxx-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="jkxx-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

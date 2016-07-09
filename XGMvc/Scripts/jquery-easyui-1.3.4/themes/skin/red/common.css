@@ -1,0 +1,32 @@
+﻿/* 个性化定制 */
+.theme{ position:absolute; right:10px; overflow:hidden; zoom:1; z-index:13;}
+.theme div{ background-image: url(icons/skin.png);background-repeat: no-repeat;width: 16px;height: 16px;padding-right: 5px;float: left;margin-top: 0px;  }
+.content ul { float:left;background: url("images/theme.png") no-repeat 0 0; height: 11px; overflow:hidden; zoom:1;margin-top:9px;margin-left:28px;}
+.content li{ cursor: pointer; float: left; height: 11px;margin-right: 2px; overflow: hidden;width: 12px;}
+.content li.cur { background: url("images/theme.png") no-repeat 0 -11px transparent;}
+.fonts{background-position:center;background-repeat:no-repeat;padding:45px 0 0 0;text-align:center;bottom: auto;text-decoration:none !important;}
+.iconcls00000000{background-image: url(images/会计凭证.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls11111111{background-image: url(images/核销处理.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020111{background-image: url(images/报销单列表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls070301{background-image: url(images/单据列表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls33333333{background-image: url(images/应付单填制.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020100{background-image: url(images/现金报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020103{background-image: url(images/支票领取.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls44444444{background-image: url(images/支票申领单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls55555555{background-image: url(images/凭证科目规则.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020108{background-image: url(images/其他报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020117{background-image: url(images/公务卡汇总报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls66666666{background-image: url(images/项目档案.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020116{background-image: url(images/公务卡报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls77777777{background-image: url(images/收款凭单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls88888888{background-image: url(images/收入凭单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.Square{width:0px;height:0px;-moz-border-radius: 1px;-webkit-border-radius: 1px;border: 2px solid #000;margin-top: 14px;margin-left: -10px;color:#333333}
+.Square{width:0px;height:0px;-moz-border-radius: 1px;-webkit-border-radius: 1px;border: 2px solid #000;margin-top: 14px;margin-left: -10px;color:#333333}
+
+
+
+
+
+
+
+

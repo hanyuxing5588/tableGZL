@@ -1,0 +1,261 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "银行账号";
+}
+<script src="../../Scripts/jc/jcCommon.js" type="text/javascript"></script>
+<div class="easyui-layout" id="yhzh-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yhzh-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newlyAdd'] },scope:'yhzh',status:'1',
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="yhzh-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'yhzh-SS_BankAccount-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'yhzh',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yhzh-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'yhzh-SS_BankAccount-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'yhzh',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yhzh-disable"
+                   data-options="plain:'true',iconCls:'icon-tingyong',
+                   bindmethod:{ 'click': ['setDisable'] },
+                   bindparms:{'setDisable':['yhzh-SS_BankAccount-IsStop','yhzh-tree-bankaccount']},scope:'yhzh',status:'2',
+                   forbidstatus:[1,2,3]">停用</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="yhzh-enable"
+                   data-options="plain:'true',iconCls:'icon-qiyong',
+                   bindmethod:{ 'click': ['setEnable'] },
+                   bindparms:{'setEnable':['yhzh-SS_BankAccount-IsStop','yhzh-tree-bankaccount']},scope:'yhzh',status:'2',
+                   forbidstatus:[1,2,3]">启用</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yhzh-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'yhzh',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yhzh-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   treeId:['yhzh-tree-bankaccount'],
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCqtsz/Save']},scope:'yhzh',status:'4',
+                   checkOnlyOne:true,
+                   bindparmsEx:{'idColls':['yhzh-SS_BankAccount-IsGuoKu','yhzh-SS_BankAccount-IsBasic']},
+                   forbidstatus:[4]">保存</a> 
+                 
+                   <a href="#" class="easyui-linkbutton"
+                   id="yhzh-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'yhzh'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="银行账号">
+                <ul class="easyui-tree" id="yhzh-tree-bankaccount" 
+                 data-options="associate:{
+                    'yhzh-SS_BankAccount-GUID':['GUID'],
+                    'yhzh-SS_BankAccount-BankAccountNo':['BankAccountNo'],
+                    'yhzh-SS_BankAccount-BankAccountKey':['BankAccountKey'],
+                    'yhzh-SS_BankAccount-BankAccountName':['BankAccountName'],
+                    'yhzh-SS_BankAccount-GUID_Province':['GUID_Province','ProvinceName'],
+                    'yhzh-SS_BankAccount-GUID_Bank':['GUID_Bank','BankName'],
+                    'yhzh-SS_BankAccount-ChildBankName':['ChildBankName'],
+                    'yhzh-SS_BankAccount-GUID_DW':['GUID_DW','DWName'],
+                    'yhzh-SS_BankAccount-IsGuoKu':['IsGuoKu'],
+                    'yhzh-SS_BankAccount-IsBasic':['IsBasic'],
+                    'yhzh-SS_BankAccount-IsCash':['IsCash'],
+                    'yhzh-SS_BankAccount-IsStop':['IsStop']
+                  },
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  url:'/Tree/GetBaseBankAccountTree',
+                  customBindFirst:true,
+                  findParent:false,
+                  retStatus:'4',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="省份">
+                <ul class="easyui-tree" id="yhzh-tree-province" 
+                  data-options="associate:{
+                    'yhzh-SS_BankAccount-GUID_Province':['GUID','ProvinceName']
+                  },
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  url:'/Tree/GetBaseProvinceTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="yhzh-tree-dw" 
+                  data-options="associate:{
+                    'yhzh-SS_BankAccount-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  url:'/Tree/GetJCDWTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="银行">
+                <ul class="easyui-tree" id="yhzh-tree-bank" 
+                  data-options="associate:{
+                    'yhzh-SS_BankAccount-GUID_Bank':['GUID','BankName']
+                  },
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  url:'/Tree/GetBaseBankTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height:auto; width: auto;padding: 0 0 0 150px">
+            <tr>
+                <td colspan="4" style="height: 100px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        银&nbsp;行&nbsp;账&nbsp;号</div>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td>
+                    <label for="field1" id="lbl-BankAccountNo">
+                        银行账号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yhzh-SS_BankAccount-BankAccountNo" data-options="forbidstatus:[4]"/>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-BankAccountKey">
+                        银行账号编码</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yhzh-SS_BankAccount-BankAccountKey" data-options="forbidstatus:[4]"/>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td>
+                    <label for="field1" id="lbl-BankAccountName">
+                        账号名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yhzh-SS_BankAccount-BankAccountName" data-options="forbidstatus:[4]"/>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-GUID_Province">
+                        省份名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="yhzh-SS_BankAccount-GUID_Province" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'ProvinceKey',title:'省份编码',hidden:'true'},
+                            {field:'ProvinceName',title:'省份名称',width:'200'}
+                            ]],
+                        panelWidth:220,
+                        width:155,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'ProvinceKey,ProvinceName',
+                        remoteUrl:'/Combogrid/BaseProvince',
+                        idField:'GUID',
+                        sortName:'ProvinceKey',
+                        textField:'ProvinceName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td>
+                    <label for="field1" id="lbl-GUID_Bank">
+                        银行名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="yhzh-SS_BankAccount-GUID_Bank" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'BankKey',title:'银行编码',hidden:'true'},
+                            {field:'BankName',title:'银行名称',width:'200'}
+                            ]],
+                        panelWidth:220,
+                        width:155,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'BankKey,BankName',
+                        remoteUrl:'/Combogrid/BaseBank',
+                        idField:'GUID',
+                        sortName:'BankKey',
+                        textField:'BankName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-ChildBankName">
+                        开户支行名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yhzh-SS_BankAccount-ChildBankName" data-options="forbidstatus:[4]"/>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td>
+                    <label for="field1" id="lbl-GUID_DW">单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="yhzh-SS_BankAccount-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'200'}
+                            ]],
+                        panelWidth:400,
+                        width:400,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DWView',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td colspan="2">
+                    <input type="checkbox" class="easyui-checkbox"  id="yhzh-SS_BankAccount-IsGuoKu" exName="国库" data-options="forbidstatus:[4]"/>是否国库
+                </td>
+                <td colspan="2">
+                    <input type="checkbox" class="easyui-checkbox"  id="yhzh-SS_BankAccount-IsBasic" exName="基本户" data-options="forbidstatus:[4]"/>是否基本户
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td colspan="2">
+                    <input type="checkbox" class="easyui-checkbox"  id="yhzh-SS_BankAccount-IsCash" data-options="forbidstatus:[4]"/>是否现金
+                </td>
+                <td colspan="2">
+                    <input type="checkbox" class="easyui-checkbox"  id="yhzh-SS_BankAccount-IsStop" data-options="forbidstatus:[4]"/>是否停用
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="yhzh-SS_BankAccount-GUID" type="hidden"></input>
+</div>
+<label id="yhzh-extendregion" style="display: none">
+    <input id="yhzh-status" type="text"/>
+    <input id="initscope" type="text" value='yhzh'/>
+    <input id="initstatus" type="text" value='4'/>
+    <input id="initguid" type="text" value=''/>
+</label>
+<div id="b-window" line="true"></div>

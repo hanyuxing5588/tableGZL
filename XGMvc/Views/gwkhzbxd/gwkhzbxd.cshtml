@@ -1,0 +1,686 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "公务卡汇总报销单";
+}
+<script src="../../Scripts/bx/gwkhzbxd.js?r=12" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        $('#gwkh12zbxd-close').bind('click', function () {
+            var me = this;
+            var opts = $(me).linkbutton('options');
+            var arr = [1, 2];
+            var scope = opts.scope;
+            var pageState = $.view.getStatus(scope);
+            if (arr.exist(pageState)) {
+                $.messager.confirm("提示", "正在编辑,是否退出?", function (data) {
+                    if (!data) return;
+                    parent.window.CloseTabs();
+                })
+            } else {
+                parent.window.CloseTabs();
+            }
+        })
+    })
+</script>
+<div class="easyui-layout" id="gwkhzbxd-dataregion" data-options="fit:true" z="1">
+
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'gwkhzbxd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/gwkhzbxd',['gwkhzbxd-BX_CollectMain-moneychinese','gwkhzbxd-BX_CollectMain-moneyunmber']]}">打印</a>
+
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-export" 
+                   data-options="
+                    plain:'true',iconCls:'icon-shuchu', 
+                    scope:'gwkhzbxd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="gwkhzbxd-add" 
+                    data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },
+                   scope:'gwkhzbxd',status:'1',
+                   bindparms:{'newDoc':['/gwkhzbxd/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-edit"
+                   data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'gwkhzbxd-BX_CollectMain-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },
+                   scope:'gwkhzbxd',status:'2',
+                   forbidstatus:[-1]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-remove"
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'gwkhzbxd-BX_CollectMain-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'gwkhzbxd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['gwkhzbxd-BX_CollectDetail']},scope:'gwkhzbxd',
+                   forbidstatus:[4,5,6]">删行</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',
+                   docState:'gwkhzbxd-BX_CollectMain-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['gwkhzbxd-BX_CollectMain-DocState','9']},
+                   scope:'gwkhzbxd',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',
+                   docState:'gwkhzbxd-BX_CollectMain-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['gwkhzbxd-BX_CollectMain-DocState','6']},
+                   scope:'gwkhzbxd',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-reference"
+                   data-options="plain:'true',iconCls:'icon-canzhao',
+                   bindmethod:{ 'click': ['reference'] },
+                   window:'b-yuandanwindow',
+                   bindparms:{'reference':['/gwkhzbxd/reference','/gwkhzbxd/reference','gwkhzbxd-reference','reference']},
+                   scope:'gwkhzbxd',forbidstatus:[3,4,5,6]">参照</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-yuandan"
+                   data-options="plain:'true',iconCls:'icon-yuandan',
+                   bindmethod:{ 'click': ['originalSingle'] },
+                   scope:'gwkhzbxd',forbidstatus:[3,4,5,6],targetScope:'gwkbxd',status:'4'">原单</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',
+                       bindmethod:{ 'click': ['examine'] },
+                       bindparms:{'examine':{
+                        'datagrid':['gwkhzbxd-BX_CollectDetail'],
+                        'validatebox':['gwkhzbxd-BX_CollectMain-DocMemo'],
+                        'datebox':['gwkhzbxd-BX_CollectMain-DocDate'],
+                        'combogrid':['gwkhzbxd-BX_CollectMain-GUID_Person',
+                        'gwkhzbxd-BX_CollectMain-GUID_DW',
+                        'gwkhzbxd-BX_CollectMain-GUID_Department'],
+                        'numberbox':['gwkhzbxd-BX_CollectMain-BillCount']
+                    }},
+                   scope:'gwkhzbxd',forbidstatus:[4]">校验</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-cancel" 
+                   data-options="
+                        plain:'true',iconCls:'icon-quxiao', 
+                        scope:'gwkhzbxd',forbidstatus:[4],
+                        bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                        
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/gwkhzbxd/Save','gwkhzbxd-examine']},scope:'gwkhzbxd',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',
+                   docState:'gwkhzbxd-BX_CollectMain-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/gwkhzbxd/CommitFlow']},
+                   scope:'gwkhzbxd',
+                   forbidstatus:[1,2,3]">提交</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'gwkhzbxd-BX_CollectMain-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'gwkhzbxd',
+                   forbidstatus:[1,2,3]">退回</a>
+
+                   <a href="#" class="easyui-linkbutton" id="gwkhzbxd-histroy"
+                   data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/gwkhzbxd','history-BX_CollectMain','history']},
+                   window:'b-window',
+                   scope:'gwkhzbxd'">历史</a> 
+
+                    <a href="#" class="easyui-linkbutton"
+                   id="gwkhzbxd-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/gwkhzbxd','/Process/process','gwkhzbxd-process','process']},
+                   window:'b-window',scope:'gwkhzbxd',
+                   forbidstatus:[1,2,3]">流程</a>
+                    
+                    @*<a href="#" class="easyui-linkbutton" id="gwkhzbxd-app"
+                    data-options="
+                    plain:'true',iconCls:'icon-shenpidan', 
+                    scope:'gwkhzbxd',
+                    forbidstatus:[4],
+                    bindmethod:{ 'click': ['app'] }">审批单</a> *@
+                    
+                    <a href="#" class="easyui-linkbutton" id="gwkhzbxd-help"
+                    data-options="
+                    plain:'true',iconCls:'icon-bangzhu', 
+                    scope:'gwkhzbxd',
+                    bindmethod:{ 'click': ['help'] }">帮助</a> 
+                    
+                   <a href="#" class="easyui-linkbutton" id="gwkh12zbxd-close"
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },closeWin:true,
+                   scope:'gwkhzbxd'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 1000px; padding: 0; margin: auto">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="gwkhzbxd-abandonedStatus" statuscontrolid="gwkhzbxd-BX_CollectMain-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        公务卡汇总报销单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>报销单号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>汇总日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="gwkhzbxd-BX_CollectMain-DocDate" data-options="width:177,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        摘要</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-DocMemo" data-options="forbidstatus:[-1],defalutValue:'公务卡汇总'"
+                        style="width: 176px"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="gwkhzbxd-BX_CollectMain-GUID_DW" data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},                                       
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'220'}]],
+                        width:180,
+                        panelWidth:325,
+                        method:'post',
+                        required:false,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        textField:'DWName',
+                        sortName:'DWKey',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>汇总人</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="gwkhzbxd-BX_CollectMain-GUID_Person" data-options="
+                    columns:[[
+                        {field:'GUID',hidden:'true'},
+                        {field:'GUID_DW',hidden:'true'},
+                        {field:'GUID_Department',hidden:'true'},
+                        {field:'PersonKey',title:'人员编',width:'100'},
+                        {field:'PersonName',title:'人员名称',width:'100'},
+                        {field:'DepartmentName',title:'部门名称',width:'100'},
+                        {field:'DWName',title:'单位名称',width:'150'}
+                        ]],
+                    width:180,
+                    panelWidth:500,
+                    method:'post',
+                    remoteUrl:'/Combogrid/Person',
+                    idField:'GUID',
+                    textField:'PersonName',
+                    filterField:'PersonKey,PersonName',
+                    sortName:'PersonKey',
+                    bindmethod: { 'onCloseEx': ['setAssociate'] },
+                    remoteSort:false,
+                    forbidstatus:[4,3],
+                    required:false,
+                    singleSelect:true,
+                    editable:true,
+                    pagination:true,
+                    striped: false,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true,
+                    associate:
+                        {
+                        'gwkhzbxd-BX_CollectMain-GUID_DW':['GUID_DW'],
+                        'gwkhzbxd-BX_CollectMain-GUID_Department':['GUID_Department']
+                        }">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="gwkhzbxd-BX_CollectMain-GUID_Department" data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',width:'80'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'所属单位名称',width:'155'}
+                            ]],
+                        width:180,
+                        panelWidth:365,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'gwkhzbxd-BX_CollectMain-GUID_DW':['GUID_DW']},
+                        sortName:'DepartmentKey',
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="gwkhzbxd-BX_CollectDetail" data-options="
+                    orderNum:'gwkhzbxd-BX_Detail-OrderNum',
+                    requireCol:[
+                        'gwkhzbxd-CN_PaymentNumber-IsGuoKu',
+                        'gwkhzbxd-BX_CollectMain-BillCount',
+                        'gwkhzbxd-BX_Detail-BGCodeKey',
+                        'gwkhzbxd-BX_Detail-GUID_BGCode',
+                        'gwkhzbxd-BX_Detail-Total_Plan',
+                        'gwkhzbxd-BX_Detail-GUID_Department'
+                    ],
+                    fitColumns:'false',
+                    method:'get',
+                    singleSelect:'true',
+                    checkOnSelect:'true',
+                    rownumbers:true,
+                    height:'200',
+                    width:'975',
+                    single:false,
+                    scope:'gwkhzbxd',
+                       formatters:{
+                            'gwkhzbxd-CN_PaymentNumber-IsGuoKu':'boolbox',
+                            'gwkhzbxd-BX_Detail-Total_Real':'numberbox'
+                         },
+                    forbidstatus:[4,3],
+                       fieldformula:[
+                          {name:'csum',field:'gwkhzbxd-BX_Detail-Total_Real',target:['gwkhzbxd-BX_CollectMain-moneyunmber','gwkhzbxd-BX_CollectMain-moneychinese']}
+                      ]">
+                        <thead>
+                            <tr>
+                                <th field="gwkhzbxd-BX_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-BGSourceName" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-GUID_BX_Main" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-BX_CollectDetail-GUID" hidden="true">
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-GUID_Person" title="持卡人" style="width: 100px" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                    gridassociate:{gridId:'gwkhzbxd-BX_CollectDetail',
+                                     map:{
+                                        'gwkhzbxd-BX_Detail-OfficialCard':['GUID','OfficialCard']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },          
+                                     panelWidth:220,
+                                     remoteUrl:'/Combogrid/Person',
+                                     method:'get',
+                                     idField:'GUID',
+                                     filterField:'OfficialCard,PersonName',
+                                     textField:'PersonName',
+                                     sortName:'OfficialCard',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'PersonName',title:'人员名称',width:'80'},
+                                            {field:'OfficialCard',title:'公务卡号',width:'120'}
+                                      ]]
+                                    }
+                                }">
+                                    持卡人
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-OfficialCard" width="180" title="卡号" sortable="false"
+                                    align="center" editor="text">
+                                    卡号
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-FeeDate" width="100" title="消费日期" sortable="false"
+                                    align="center" editor="type:'datebox'">
+                                    消费日期
+                                </th>
+                                <th  field="gwkhzbxd-BX_Detail-BGCodeKey" title="科目编码" hidden="true" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'gwkhzbxd-BX_CollectDetail',
+                                     map:{
+                                        'gwkhzbxd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'gwkhzbxd-BX_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                                        'gwkhzbxd-CN_PaymentNumber-PaymentNumber':['clear']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCode',
+                                     method:'get',
+                                     idField:'BGCodeKey',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeKey',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'60'},
+                                            {field:'BGCodeName',title:'科目名称',width:'150'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-GUID_BGCode" title="科目名称" width="120" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'gwkhzbxd-BX_CollectDetail',
+                                     map:{
+                                        'gwkhzbxd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'gwkhzbxd-BX_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                                        'gwkhzbxd-CN_PaymentNumber-PaymentNumber':['clear']
+                                        }
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                      panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCode',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'60'},
+                                            {field:'BGCodeName',title:'科目名称',width:'150'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-Total_Real" title="金额" sortable="false" align="center"
+                                    width="100" editor="{type:'numberbox',options:{precision:2,max:'99999999.99'}}">
+                                    金额
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-FeeMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        customValue:true,
+                                        panelWidth:320,
+                                        panelHeight:300,
+                                        remoteUrl:'/Combogrid/BGCodeMemo',
+                                        method:'get',
+                                        idField:'FeeMemo',
+                                        textField:'FeeMemo',
+                                        filterField:'FeeMemo',
+                                        associateControl:{
+                                                gridId:'gwkhzbxd-BX_Detail',map:['gwkhzbxd-BX_Detail-GUID_BGCode']
+                                            },
+                                        isLoad:false,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'GUID_BGCode',title:'GUID_BGCode',hidden:true},
+                                            {field:'FeeMemo',title:'摘要',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    摘要
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-ProjectKey" width="150" title="项目编码" sortable="false"
+                                    align="center" editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:275,
+                                        panelHeight:255,
+                                        remoteUrl:'/Combogrid/Project',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        sortName:'ProjectKey',
+                                        gridassociate:{
+                                            gridId:'gwkhzbxd-BX_CollectDetail',
+                                        map:{
+                                            'gwkhzbxd-BX_Detail-GUID_Project':['ProjectName','ProjectName'],
+                                            'gwkhzbxd-CN_PaymentNumber-IsGuoKu':['IsFinance']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'100'},
+                                            {field:'ProjectName',title:'项目名称',width:'150'}
+                                        ]]
+                                    }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="300" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:270,
+                                      panelHeight:255,
+                                      remoteUrl:'/Combogrid/Project',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      sortName:'ProjectKey',
+                                      gridassociate:{
+                                            gridId:'gwkhzbxd-BX_CollectDetail',
+                                      map:{
+                                            'gwkhzbxd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                            'gwkhzbxd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'ProjectKey',title:'项目编号',width:'100'},
+                                          {field:'ProjectName',title:'项目名称',width:'150'}
+                                        ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-IsGuoKu" title="是否国库" align="center" width="90"
+                                    editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="gwkhzbxd-BX_Detail-GUID_Department" title="部门" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:300,  width:255,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      sortName:'DepartmentKey',
+                                          columns:[[
+                                                {field:'GUID',title:'名称',hidden:true},
+                                                {field:'DepartmentKey',title:'部门编号',width:'100'},
+                                                {field:'DepartmentName',title:'部门名称',width:'150'}
+                                            ]]
+                                         }
+                                    }">
+                                    部门
+                                </th>
+                                <th field="gwkhzbxd-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false"
+                                    align="center" width="150">
+                                    财政支付令                                </th>
+                                
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="gwkhzbxd-gridColumnSum" data-options="
+                        fitColumns:'false',
+                        method:'get',
+                        singleSelect:'true',
+                        checkOnSelect:'true',
+                        rownumbers:true,
+                        height:'180',
+                        width:'975',
+                         formatters:{
+                            'Total_Real':'numberbox'
+                         },
+                        scope:'gwkhzbxd'
+                        ">
+                        <thead>
+                            <tr>
+                                <th field="PaymentNumber" width="80" title="附加信息" sortable="false" align="center">
+                                    附加信息
+                                </th>
+                                <th field="BGSourceName" width="50" title="预算来源" sortable="false" align="center">
+                                    预算来源
+                                </th>
+                                <th field="Total_Real" width="50" title="金额" sortable="false" align="center">
+                                    金额
+                                </th>
+                                <th field="DocMemo" width="100" title="用途" sortable="false" align="center">
+                                    用途                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-moneychinese" style="width: 515px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-moneyunmber"  style="width: 176px"
+                        data-options="setNotValue:true,forbidstatus:[-1]">
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Maker">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" id="gwkhzbxd-BX_CollectMain-GUID_Maker" data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]"> </input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Modifier">
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" id="gwkhzbxd-BX_CollectMain-GUID_Modifier" data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="gwkhzbxd-BX_CollectMain-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="gwkhzbxd-BX_CollectMain-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="gwkhzbxd-BX_CollectMain-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="gwkhzbxd-BX_CollectMain-OAOTS" type="hidden"></input>
+</div>
+<label id="gwkhzbxd-extendregion" style="display: none">
+    <input id="gwkhzbxd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+    <div id="b-yuandanwindow" line="true">
+    </div>
+</label>
+<div b-type="1" id="gwkhzbxd-BudgetStatistics-datafilter" data-options="region:'north'" style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="gwkhzbxd-BX_CollectMain-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

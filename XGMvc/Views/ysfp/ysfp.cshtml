@@ -1,0 +1,878 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "预算分配";
+}
+<script type="text/javascript">
+    $.extend($.view, {
+        init: function (scope, status, dataguid) {
+
+            if (scope && status) {
+                status = status + "";
+                var id = "[id^='" + scope + "-'].easyui-linkbutton";
+                switch (status) {
+                    case "1": //新建
+                        $(id).linkbutton('bind', true);
+                        $('#' + scope + '-add').click();
+
+                        //                        ysfpSearch();
+                        break;
+                    case "2": //修改
+                    case "3": //删除
+                    case "4": //浏览
+                        var data = $.view.retrieveDoc(dataguid, scope);
+                        if (data) {
+                            $.view.loadData(scope, data);
+                        }
+                        $.view.setViewEditStatus(scope, status);
+                        $.view.cancelObj = { data: data, status: status };
+                        break;
+                }
+
+                $.view.initAfter(scope, status, dataguid);
+            }
+        },
+        initAfter: function (scope, status, dataguid) {
+
+            $('#ysfp-BG_Assign-GUID_BGTYPE').combogrid({
+                onSelect: function (rowIndex, rowData) {
+                    
+                    //01:基本支出 02:项目支出
+                    if (!rowData) return;
+                    var key = rowData.BGTypeKey;
+                    var target = $('#ysfp-BG_Preparers');
+                    var curData = target.datagrid('getData');
+                    if (key == '01') {
+                        var jbData = {
+                            'rows': [{ 'ysfp-BG_Preparers-GUID': "", 'ysfp-BG_Preparers-GUID_Operator': "", 'ysfp-BG_Preparers-OperatorKey': "", 'ysfp-BG_Preparers-Variable': "预算编制"}],
+                            'total': 1
+                        };
+                        if (curData && curData.rows.length > 0) {
+                            jbData.rows[0]['ysfp-BG_Preparers-GUID'] = curData.rows[0]['ysfp-BG_Preparers-GUID'];
+                            jbData.rows[0]['ysfp-BG_Preparers-GUID_Operator'] = curData.rows[0]['ysfp-BG_Preparers-GUID_Operator'];
+                            jbData.rows[0]['ysfp-BG_Preparers-OperatorKey'] = curData.rows[0]['ysfp-BG_Preparers-OperatorKey'];
+                        }
+                        target.datagrid('loadData', jbData);
+                        $('#ysfp-BG_Assign-GUID_Project').combogrid('clear');
+                        $('#ysfp-BG_Assign-ProjectKey').combogrid('clear');
+                        $('#ysfp-BG_Assign-GUID_Project').combogrid('disabled');
+                        $('#ysfp-BG_Assign-ProjectKey').combogrid('disabled');
+                    }
+                    else if (key == '02') {
+                        var xmData = {
+                            'rows': [
+                                     { 'ysfp-BG_Preparers-GUID': "", 'ysfp-BG_Preparers-GUID_Operator': "", 'ysfp-BG_Preparers-OperatorKey': "", 'ysfp-BG_Preparers-Variable': "预算初始值" },
+                                     { 'ysfp-BG_Preparers-GUID': "", 'ysfp-BG_Preparers-GUID_Operator': "", 'ysfp-BG_Preparers-OperatorKey': "", 'ysfp-BG_Preparers-Variable': "预算编制" }],
+                            'total': 2
+                        };
+                        if (curData && curData.rows.length > 0) {
+                            xmData.rows[0]['ysfp-BG_Preparers-GUID'] = curData.rows[0]['ysfp-BG_Preparers-GUID'];
+                            xmData.rows[0]['ysfp-BG_Preparers-GUID_Operator'] = curData.rows[0]['ysfp-BG_Preparers-GUID_Operator'];
+                            xmData.rows[0]['ysfp-BG_Preparers-OperatorKey'] = curData.rows[0]['ysfp-BG_Preparers-OperatorKey'];
+                            if (curData.rows.length == 2) {
+                                xmData.rows[1]['ysfp-BG_Preparers-GUID'] = curData.rows[1]['ysfp-BG_Preparers-GUID'];
+                                xmData.rows[1]['ysfp-BG_Preparers-GUID_Operator'] = curData.rows[1]['ysfp-BG_Preparers-GUID_Operator'];
+                                xmData.rows[1]['ysfp-BG_Preparers-OperatorKey'] = curData.rows[1]['ysfp-BG_Preparers-OperatorKey'];
+                            }
+                        }
+                        target.datagrid('loadData', xmData);
+                        var status = $('#initstatus').val();
+                        if (status == "1" || status == "2") {
+                            $('#ysfp-BG_Assign-GUID_Project').combogrid('enabled');
+                            $('#ysfp-BG_Assign-ProjectKey').combogrid('enabled');
+                        }
+                    }
+                }
+            });
+        },
+        initByRow: function (scope, status, row, condition) {
+
+            var guid = row.GUID;
+            if (guid != "") {
+                var data = $.view.retrieveDoc(guid, scope);
+                if (data) {
+                    $.view.loadData(scope, data);
+                }
+                $.view.setViewEditStatus(scope, "4");
+                $.view.cancelObj = { data: data, status: "4" };
+            } else {
+                $.view.setViewEditStatus(scope, "1");
+                var guid_project = row.GUID_Project;
+                var guid_department = row.GUID_Department;
+                var guid_dw = row.GUID_Dw;
+                var projectKey = row.ProjectKey;
+
+                if (guid_project != "") {
+                    $('#ysfp-BG_Assign-GUID_Project').combogrid('setValue', guid_project);
+                    $('#ysfp-BG_Assign-ProjectKey').combogrid('setValue', projectKey);
+                    var g = $('#ysfp-BG_Assign-GUID_Project').combogrid("grid");
+                    var r = g.datagrid("getSelected");
+                    $('#ysfp-BG_Assign-GUID_FunctionClass').combogrid('setValue', r.GUID_FunctionClass);
+                }
+                $('#ysfp-BG_Assign-GUID_Department').combogrid('setValue', guid_department);
+                $('#ysfp-BG_Assign-GUID_DW').combogrid('setValue', guid_dw);
+                $('#ysfp-BG_Assign-GUID_BGSetUp').combogrid('setValue', condition.Guid_BGSetup);
+                $('#ysfp-BG_Assign-BGYear').combobox('setValue', condition.Year);
+
+                // 根据 ysfp-BG_Assign-GUID_BGSetUp 设置其他值
+                var grid = $('#ysfp-BG_Assign-GUID_BGSetUp').combogrid("grid");
+                var row = grid.datagrid("getSelected");
+                if (null != row) {
+                    $('#ysfp-BG_Assign-GUID_BGTYPE').combogrid('setValue', row.GUID_BGType);
+                    $('#ysfp-BG_Assign-GUID_BGStep').combogrid('setValue', row.GUID_BGStep);
+                    $('#ysfp-BG_Assign-GUID_PStep').combogrid('setValue', row.PBG_StepGUID);
+                }
+            }
+        }
+    })
+
+    $.extend($.fn.linkbutton.methods, {
+        setStatusAfter: function (status) {
+            var bgtypename = $('#ysfp-BG_Assign-GUID_BGTYPE').combogrid('getText');
+            if (bgtypename == '项目支出' && (status == "1" || status == "2")) {
+                $('#ysfp-BG_Assign-GUID_Project').combogrid('enabled');
+                $('#ysfp-BG_Assign-ProjectKey').combogrid('enabled');
+            }
+            else {
+                $('#ysfp-BG_Assign-GUID_Project').combogrid('disabled');
+                $('#ysfp-BG_Assign-ProjectKey').combogrid('disabled');
+            }
+        }
+    });
+
+    /*    函数区域    */
+
+    // 进入预算分配界面后 执行该函数，进入到预算分配查询界面
+
+    function ysfpSearch() {
+        var winId = '#b-window';
+        $(winId).dialog({
+            resizable: false,
+            title: '预算分配查询',
+            width: 1000,
+            height: 600,
+            modal: true,
+            minimizable: false,
+            maximizable: false,
+            collapsible: false,
+            href: '/History/ysfpSearch',
+            onLoad: function (c) {
+                $.view.setViewEditStatus("history", "1");
+            }
+        });
+    }
+
+    function GetSelectValue(name, field) {
+        var grid = $(name).combogrid("grid");
+        var row = grid.datagrid("getSelected");
+        if (null == row) {
+            return "";
+        }
+        else {
+            return row[field];
+        }
+    }
+</script>
+
+<div class="easyui-layout" id="ysfp-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="ysfp-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'ysfp',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/ysfp',['ysfp-BG_Assign-moneychinese','ysfp-BG_Assign-moneyunmber']]}">
+                   打印</a> 
+                    
+                   <a href="#" class="easyui-linkbutton"
+                   id="ysfp-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'ysfp',status:'1',
+                   bindparms:{'newDoc':['/ysfp/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysfp-edit"
+                   data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'ysfp-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'ysfp',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysfp-remove"
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'ysfp-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'ysfp',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysfp-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'ysfp-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+@*                            'datagrid':['ysfp-BG_Assign'],
+                            'validatebox':['ysfp-BG_Assign-DocMemo'],
+                            'datebox':['ysfp-BG_Assign-DocDate'],
+                            'combogrid':['ysfp-BG_Assign-GUID_Person','ysfp-BG_Assign-GUID_DW','ysfp-BG_Assign-GUID_Department']*@
+                        },
+                    'bubbleExamine':
+                        {
+                          @*'numberbox':['ysfp-BG_Assign-BillCount']*@
+                        }
+                    },
+                   scope:'ysfp',forbidstatus:[4]">校验</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysfp-cancel"
+                   data-options=" plain:'true',iconCls:'icon-quxiao', 
+                   scope:'ysfp',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="ysfp-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/ysfp/Save','ysfp-examine']},scope:'ysfp',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysfp-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'ysfp-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/ysfp/CommitFlow']},scope:'ysfp',
+                   forbidstatus:[1,2,3]">提交</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysfp-histroy"
+                   data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/ysfp','history-BG_Assign','history']},
+                   window:'b-window',scope:'ysfp'">历史</a> 
+
+                   @*<a href="#" class="easyui-linkbutton" id="ysfp-chaxun"
+                   data-options="plain:'true',iconCls:'icon-lishi',
+                   window:'b-window',scope:'ysfp',forbidstatus:[2,3]" 
+                   onclick="javascript:ysfpSearch();">分配查询</a> 
+*@
+                   <a href="#" class="easyui-linkbutton" id="ysfp-help"
+                   data-options=" plain:'true',iconCls:'icon-bangzhu', scope:'ysfp',
+                   bindmethod:{ 'click': ['help'] }">帮助</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysfp-close"
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'ysfp'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 200px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="项目" data-options="selected:true">
+                <ul class="easyui-tree" id="ysfp-tree-project" data-options="
+                   associate:{
+                        'ysfp-BG_Assign-GUID_Project':['GUID','ProjectName'],
+                        'ysfp-BG_Assign-ProjectKey':['ProjectKey','ProjectKey'],
+                        'ysfp-BG_Assign-GUID_FunctionClass':['GUID_FunctionClass']
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="ysfp-tree-dw" data-options="associate:{
+                    'ysfp-BG_Assign-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="ysfp-tree-dep" data-options="associate:{
+                    'ysfp-BG_Assign-GUID_DW':['GUID_DW','DWName'],
+                    'ysfp-BG_Assign-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="预算设置">
+                <ul class="easyui-tree" id="ysfp-tree-code" data-options="
+                      associate: {
+                        'ysfp-BG_Assign-GUID_BGSetUp':['GUID'],
+                        'ysfp-BG_Assign-GUID_BGTYPE':['GUID_BGType'],
+                        'ysfp-BG_Assign-GUID_BGStep':['GUID_BGStep'],
+                        'ysfp-BG_Assign-GUID_PStep':['PBG_StepGUID']
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBGSetUpTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true">
+        <table border="0" style="height: 300px; padding: 0; margin: 0" id="maintable">
+            <tr>
+                <td colspan="8" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        预算分配</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:80px;">
+                    <font color="red">*</font>功能分类&nbsp;
+                </td>
+                <td colspan="7">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_FunctionClass" data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'FinanceCode',hidden:'true'},
+                                    {field:'IsProject',hidden:'true'},
+                                    {field:'FunctionClassKey',title:'政府收支分类编码',width:'100'},
+                                    {field:'FunctionClassName',title:'功能分类名称',width:'215'}
+                                    ]],
+                                    panelWidth:240,
+                                    width:160,
+                                    method:'post',
+                                    idField:'GUID',
+                                    textField:'FunctionClassName',
+                                    filterField:'FunctionClassKey,FunctionClassName',
+                                    remoteUrl:'/Combogrid/FunctionClass',
+                                    forbidstatus:[4,3]
+                                ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:80px;">
+                    &nbsp;预算设置&nbsp;
+                </td>
+                <td style="width: 170px;">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_BGSetUp" data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'BGSetupKey',title:'预算设置编码',width:'100'},
+                                    {field:'BGSetupName',title:'预算设置名称',width:'215'},
+                                    {field:'GUID_BGStep',hidden:'true'},
+                                    {field:'GUID_BGType',hidden:'true'},
+                                    {field:'PBG_StepGUID',hidden:'true'},
+                                    ]],
+                                    associate:{
+                                        'ysfp-BG_Assign-GUID_BGTYPE':['GUID_BGType'],
+                                        'ysfp-BG_Assign-GUID_BGStep':['GUID_BGStep'],
+                                        'ysfp-BG_Assign-GUID_PStep':['PBG_StepGUID']
+                                    },
+                                    bindmethod: { 'onCloseEx': ['setAssociate'] },
+                                    panelWidth:240,
+                                    width:160,
+                                    method:'post',
+                                    idField:'GUID',
+                                    textField:'BGSetupName',
+                                    filterField:'BGSetupKey,BGSetupName',
+                                    remoteUrl:'/Combogrid/BGStepUpView',
+                                    forbidstatus:[4,3,2]
+                                ">
+                    </select>
+                </td>
+                <td style="width:80px;">
+                    &nbsp;预算类型&nbsp;
+                </td>
+                <td style="width: 170px;">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_BGTYPE" data-options="columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'BGTypeKey',title:'预算类型编码',width:'100'},
+                                {field:'BGTypeName',title:'预算类型名称',width:'215'}
+                                ]],
+                                width:160,
+                                panelWidth:240,
+                                method:'post',
+                                bindmethod:{ 'onCloseEx':['setAssociate'] },
+                                forbidstatus:[-1],
+                                remoteUrl:'/Combogrid/BGType',
+                                method:'post',
+                                idField:'GUID',
+                                textField:'BGTypeName',
+                                sortName:'BGTypeKey',
+                                filterField:'BGTypeKey,BGTypeName'">
+                    </select>
+                </td>
+                <td style="width:80px;">
+                    &nbsp;预算单位&nbsp;
+                </td>
+                <td style="width: 170px; text-align: left;">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_DW" data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'GUID_Department',hidden:'true'},
+                                    {field:'DWKey',title:'预算单位编码',width:'100'},
+                                    {field:'DWName',title:'预算单位名称',width:'215'}
+                                    ]],
+                                    panelWidth:240,
+                                    width:160,
+                                    method:'post',
+                                    idField:'GUID',
+                                    textField:'DWName',
+                                    filterField:'DWKey,DWName',
+                                    remoteUrl:'/Combogrid/DW',
+                                    forbidstatus:[4,3,2]
+                                ">
+                    </select>
+                </td>
+                <td style="width:80px;">
+                    &nbsp;预算部门
+                </td>
+                <td style="width: 170px;">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_Department" data-options="columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'GUID_DW',hidden:'true'},
+                                {field:'DepartmentKey',title:'预算部门编码',width:'100'},
+                                {field:'DepartmentName',title:'预算部门名称',width:'200'},
+                                {field:'DWName',title:'所属单位名称',width:'215'}
+                                ]],
+                                width:160,
+                                panelWidth:440,
+                                method:'post',
+                                bindmethod:{ 'onCloseEx':['setAssociate'] },
+                                associate:{
+                                    'ysfp-BG_Assign-GUID_DW':['GUID_DW']
+                                },
+                                forbidstatus:[3,4,2],
+                                remoteUrl:'/Combogrid/Department',
+                                method:'post',
+                                idField:'GUID',
+                                textField:'DepartmentName',
+                                sortName:'DepartmentKey',
+                                filterField:'DepartmentKey,DepartmentName'">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px;">
+                    &nbsp;预算年度&nbsp;
+                </td>
+                <td style="width: 170px;">
+                    <select id="ysfp-BG_Assign-BGYear" style="width:160px;" class="easyui-combobox"  
+                    data-options="editable:false,forbidstatus:[3,4,2]">  
+                    <option value="2011">2011</option>  
+                    <option value="2012">2012</option>
+                    <option value="2013">2013</option>
+                    <option value="2014">2014</option>  
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>    
+                    <option value="2017">2017</option>  
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>    
+                    <option value="2020">2020</option>  
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>    
+                    <option value="2023">2023</option>  
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>    
+                    <option value="2026">2026</option>  
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>    
+                    <option value="2029">2029</option>  
+                    <option value="2030">2030</option>
+                    <option value="2031">2031</option>    
+                    <option value="2032">2032</option>  
+                    <option value="2033">2033</option>
+                    <option value="2034">2034</option>    
+                    <option value="2035">2035</option>  
+                    <option value="2036">2036</option>
+                    <option value="2037">2037</option>    
+                    <option value="2038">2038</option>  
+                    <option value="2039">2039</option>
+                    <option value="2040">2040</option>    
+                    <option value="2041">2041</option>  
+                    <option value="2042">2042</option>
+                    <option value="2043">2043</option>    
+                    <option value="2044">2044</option>  
+                    <option value="2045">2045</option>
+                    <option value="2046">2046</option>    
+                    <option value="2047">2047</option>  
+                    <option value="2048">2048</option>
+                    <option value="2049">2049</option>    
+                    <option value="2050">2050</option>  
+                </select>
+                </td>
+                <td style="width: 60px;">
+                    &nbsp;预算步骤&nbsp;
+                </td>
+                <td style="width: 170px;">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_BGStep" data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'BGStepKey',title:'预算步骤编码',width:'100'},
+                                    {field:'BGStepName',title:'预算步骤名称',width:'215'}
+                                    ]],
+                                    panelWidth:240,
+                                    width:160,
+                                    method:'post',
+                                    idField:'GUID',
+                                    textField:'BGStepName',
+                                    filterField:'BGStepKey,BGStepName',
+                                    remoteUrl:'/Combogrid/BGStepView',
+                                    forbidstatus:[-1]
+                                ">
+                    </select>
+                                           
+                </td>
+                <td style="height: 60px; text-align: center;">
+                    <input class="easyui-checkbox" id="ysfp-BG_Assign-IsPStep" data-options="
+                                bindmethod:{ 'onClick':['setCCZFCode'] },
+                                forbidstatus:[3,4]" type="checkbox"></input>
+                </td>
+                <td>
+                    &nbsp;是否启用
+                </td>
+                <td style="width: 60px;">
+                    &nbsp;上级步骤
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_PStep" data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'BGStepKey',title:'预算步骤编码',width:'100'},
+                                    {field:'BGStepName',title:'预算步骤名称',width:'215'}
+                                    ]],
+                                    panelWidth:240,
+                                    width:160,
+                                    method:'post',
+                                    idField:'GUID',
+                                    textField:'BGStepName',
+                                    filterField:'BGStepKey,BGStepName',
+                                    remoteUrl:'/Combogrid/BGStepView',
+                                    forbidstatus:[-1]
+                                ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px;">
+                    &nbsp;项目名称&nbsp;
+                </td>
+                <td style="width: 170px;">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-GUID_Project" data-options="
+                                    panelWidth:365,
+                                    width:160,
+                                    remoteUrl:'/Combogrid/Project',
+                                    method:'get',
+                                    idField:'GUID',
+                                    forbidstatus:[3,4],
+                                    textField:'ProjectName',
+                                    filterField:'ProjectKey,ProjectName',
+                                    sortName:'ProjectKey',
+                                    associate:{
+                                        'ysfp-BG_Assign-ProjectKey':['GUID','ProjectKey'],
+                                        'ysfp-BG_Assign-GUID_FunctionClass':['GUID_FunctionClass']
+                                    },
+                                    bindmethod: { 'onCloseEx': ['setAssociate'] },     
+                                    columns:[[
+                                        {field:'GUID',title:'GUID',hidden:true},
+                                        {field:'IsPStep',hidden:true},
+                                        {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                        {field:'ProjectKey',title:'项目编号',width:'115'},
+                                        {field:'ProjectName',title:'项目名称',width:'215'}
+                                    ]]
+                                ">
+                    </select>
+                </td>
+                <td style="width: 60px;">
+                    &nbsp;项目编码&nbsp;
+                </td>
+                <td style="width: 170px;">
+                    <select class="easyui-combogrid" id="ysfp-BG_Assign-ProjectKey" data-options="
+                                    realValue:true,
+                                    width:160,
+                                    panelWidth:365,
+                                    remoteUrl:'/Combogrid/Project',
+                                    method:'get',
+                                    forbidstatus:[3,4],
+                                    idField:'ProjectKey',
+                                    textField:'ProjectKey',
+                                    filterField:'ProjectKey,ProjectName',
+                                    sortName:'ProjectKey',
+                                    associate:{
+                                        'ysfp-BG_Assign-GUID_Project':['GUID','ProjectName'],
+                                        'ysfp-BG_Assign-GUID_FunctionClass':['GUID_FunctionClass']
+                                    },
+                                    bindmethod: { 'onCloseEx': ['setAssociate'] },     
+                                    columns:[[
+                                        {field:'GUID',title:'GUID',hidden:true},
+                                        {field:'IsPStep',hidden:true},
+                                        {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                        {field:'ProjectKey',title:'项目编号',width:'115'},
+                                        {field:'ProjectName',title:'项目名称',width:'215'}
+                                    ]]
+                                ">
+                    </select>
+                </td>
+                <td style="width: 60px;">
+                    &nbsp;开始时间
+
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysfp-BG_Assign-BeginDate" data-options="width:160,forbidstatus:[3,4]"></input>
+                </td>
+                <td style="width: 60px;">
+                    &nbsp;完成时间
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysfp-BG_Assign-StopDate" data-options="width:160,forbidstatus:[3,4]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="width: 60px;">
+                    <font color="red">*</font>编制人&nbsp;
+                </td>
+                <td colspan="4" style="width: 60px;">
+                    <font color="red">*</font>审批人&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table class="easyui-edatagrid" id="ysfp-BG_Preparers" style="overflow: auto;" data-options="
+                                orderNum:'',
+                            requireCol:[
+                       
+                            ],
+                            fitColumns:true,
+                            pagination:false,
+                            method:'get',
+                            singleSelect:true,
+                            checkOnSelect:true,
+                            height:135,
+                            width:365,
+                            rownumbers:true,
+                            scope:'ysfp',
+                            single:false,
+                            forbidstatus:[4,3],
+                            copyField:[
+                       
+                            ]
+                            ">
+                        <thead>
+                            <tr>
+                                <th field="ysfp-BG_Preparers-GUID" hidden="true" width="60px"></th>
+                                <th field="ysfp-BG_Preparers-GUID_Operator"  align="center" title ="操作员名称" width="100px" align:'center' editor="{
+                                    type:'combogrid',
+                                    options:{
+                                            gridassociate:{gridId:'ysfp-BG_Preparers',
+                                            map:{
+                                            'ysfp-BG_Preparers-OperatorKey':['OperatorKey','OperatorKey']
+                                            }
+                                            },
+                                            bindmethod: { 'onSelect': ['setAssociate'] },     
+                                            width:520,
+                                            panelWidth:240,
+                                            remoteUrl:'/Combogrid/Operator',
+                                            method:'get',
+                                            idField:'GUID',
+                                            delay:1500,
+                                            filterField:'OperatorKey,OperatorName',
+                                            textField:'OperatorName',
+                                            sortName:'OperatorKey',
+                                            columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'OperatorName',title:'操作员名称',width:'130'},
+                                                {field:'OperatorKey',title:'操作员编码',width:'130'}
+                                            ]]
+                                    }
+                                }">
+                                操作员名称</th>
+                                <th field="ysfp-BG_Preparers-OperatorKey"  align="center" title ="操作员编码" width="100px" align:'center' editor="{
+                                    type:'combogrid',
+                                    options:{
+                                            gridassociate:{gridId:'ysfp-BG_Preparers',
+                                            map:{
+                                            'ysfp-BG_Preparers-GUID_Operator':['GUID','OperatorName']
+                                            }
+                                            },
+                                            bindmethod: { 'onSelect': ['setAssociate'] },     
+                                            width:520,
+                                            panelWidth:240,
+                                            remoteUrl:'/Combogrid/Operator',
+                                            method:'get',
+                                            idField:'OperatorKey',
+                                            delay:1500,
+                                            filterField:'OperatorKey,OperatorName',
+                                            textField:'OperatorKey',
+                                            sortName:'OperatorKey',
+                                            columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'OperatorName',title:'操作员名称',width:'130'},
+                                                {field:'OperatorKey',title:'操作员编码',width:'130'}
+                                            ]]
+                                    }
+                                }">
+                                操作员编码</th>
+                                <th field="ysfp-BG_Preparers-Variable" align="center" width="60px" title ="变量">变量</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+                <td colspan="4">
+                    <table class="easyui-edatagrid" id="ysfp-BG_Approver" style="overflow: auto" data-options="
+                                orderNum:'',
+                            requireCol:[
+                       
+                            ],
+                            fitColumns:true,
+                            pagination:false,
+                            method:'get',
+                            singleSelect:true,
+                            checkOnSelect:true,
+                            height:135,
+                            width:365,
+                            rownumbers:true,
+                            scope:'ysfp',
+                            single:false,
+                            forbidstatus:[4,3],
+                            copyField:[
+                       
+                            ]
+                            ">
+                        <thead>
+                            <tr>
+                                <th field="ysfp-BG_Approver-GUID" hidden="true" width="60px"></th>
+                                <th field="ysfp-BG_Approver-GUID_Operator"  align="center" title ="操作员名称" width="100px" align:'center' editor="{
+                                    type:'combogrid',
+                                    options:{
+                                            gridassociate:{gridId:'ysfp-BG_Approver',
+                                            map:{
+                                            'ysfp-BG_Approver-OperatorKey':['OperatorKey','OperatorKey']
+                                            }
+                                            },
+                                            bindmethod: { 'onSelect': ['setAssociate'] },     
+                                            width:520,
+                                            panelWidth:240,
+                                            remoteUrl:'/Combogrid/Operator',
+                                            method:'get',
+                                            idField:'GUID',
+                                            delay:1500,
+                                            filterField:'OperatorKey,OperatorName',
+                                            textField:'OperatorName',
+                                            sortName:'OperatorKey',
+                                            columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'OperatorName',title:'操作员名称',width:'130'},
+                                                {field:'OperatorKey',title:'操作员编码',width:'130'}
+                                            ]]
+                                    }
+                                }">
+                                操作员名称</th>
+                                <th field="ysfp-BG_Approver-OperatorKey"  align="center" title ="操作员编码" width="100px" align:'center' editor="{
+                                    type:'combogrid',
+                                    options:{
+                                            gridassociate:{gridId:'ysfp-BG_Approver',
+                                            map:{
+                                            'ysfp-BG_Approver-GUID_Operator':['GUID','OperatorName']
+                                            }
+                                            },
+                                            bindmethod: { 'onSelect': ['setAssociate'] },     
+                                            width:520,
+                                            panelWidth:240,
+                                            remoteUrl:'/Combogrid/Operator',
+                                            method:'get',
+                                            idField:'OperatorKey',
+                                            delay:1500,
+                                            filterField:'OperatorKey,OperatorName',
+                                            textField:'OperatorKey',
+                                            sortName:'OperatorKey',
+                                            columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'OperatorName',title:'操作员名称',width:'130'},
+                                                {field:'OperatorKey',title:'操作员编码',width:'130'}
+                                            ]]
+                                    }
+                                }">
+                                操作员编码</th>
+                                <th field="ysfp-BG_Approver-Variable" align="center" width="60px" title ="变量">变量</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px;">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" id="ysfp-BG_Assign-GUID_Maker" data-options="remoteUrl:'/Combo/Operator',
+                            width:'180',
+                            valueField:'GUID',
+                            textField:'OperatorName',
+                            filterField:'OperatorName',
+                            forbidstatus:[-1]"> </input>
+                </td>
+                <td style="width: 60px;">
+                    <label for="field1">
+                        提交人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" id="ysfp-BG_Assign-GUID_Maker" data-options="remoteUrl:'/Combo/Operator',
+                            width:'180',
+                            valueField:'GUID',
+                            textField:'OperatorName',
+                            filterField:'OperatorName',
+                            forbidstatus:[-1]"> </input>
+                </td>
+                <td style="width: 60px;">
+                    <label>
+                        修改人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" id="ysfp-BG_Assign-GUID_Modifier" data-options="remoteUrl:'/Combo/Operator',
+                            width:'180',
+                            valueField:'GUID',
+                            textField:'OperatorName',
+                            filterField:'OperatorName',
+                            forbidstatus:[-1]"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px;">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysfp-BG_Assign-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px;">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysfp-BG_Assign-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px;">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-datebox" id="ysfp-BG_Assign-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <input class="easyui-validatebox" id="ysfp-BG_Assign-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="ysfp-BG_Assign-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="ysfp-BG_Assign-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="ysfp-BG_Assign-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="ysfp-BG_Assign-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="ysfp-BG_Assign-OAOTS" type="hidden"></input>
+</div>
+<label id="ysfp-extendregion" style="display: none">
+    <input id="ysfp-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="ysfp-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="ysfp-BG_Assign-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

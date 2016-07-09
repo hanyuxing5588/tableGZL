@@ -1,0 +1,76 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[WL_DetailView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[WL_DetailView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：WL_Detail
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-1-27
+//功    能：往来明细视图信息
+*/
+
+CREATE  VIEW dbo.WL_DetailView
+AS
+SELECT dbo.WL_Detail.GUID, dbo.WL_Detail.GUID_WL_Main, dbo.WL_Detail.OAOTS, 
+      dbo.WL_Detail.GUID_WLType, dbo.SS_WLType.WLTypeKey, 
+      dbo.SS_WLType.WLTypeName, dbo.WL_Detail.ActionDate, 
+      dbo.WL_Detail.GUID_BGCode, dbo.SS_BGCode.BGCodeKey, 
+      dbo.SS_BGCode.BGCodeName, dbo.WL_Detail.OrderNum, 
+      dbo.WL_Detail.GUID_PaymentNumber, dbo.WL_Detail.GUID_Department, 
+      dbo.SS_Department.DepartmentKey, dbo.SS_Department.DepartmentName, 
+      dbo.WL_Detail.GUID_Person, dbo.SS_Person.PersonKey, 
+      dbo.SS_Person.PersonName, dbo.WL_Detail.GUID_ProjectKey, 
+      dbo.SS_Project.ProjectKey, dbo.SS_Project.ProjectName, 
+      dbo.SS_Project.GUID_ProjectClass,dbo.SS_ProjectClass.ProjectClassKey,dbo.SS_ProjectClass.ProjectClassName,
+      dbo.WL_Detail.GUID_Cutomer, dbo.SS_Customer.CustomerKey, 
+      dbo.SS_Customer.CustomerName, dbo.WL_Detail.GUID_SettleType, 
+      dbo.SS_SettleType.SettleTypeKey, dbo.SS_SettleType.SettleTypeName, 
+      dbo.WL_Detail.ActionMemo, dbo.WL_Detail.Total_WL, dbo.WL_Detail.MakeDate, 
+      dbo.WL_Detail.ModifyDate, dbo.CN_PaymentNumber.PaymentNumber, 
+      dbo.CN_PaymentNumber.IsGuoKu, dbo.WL_Detail.GUID_Maker, 
+      SS_Operator_1.OperatorName AS Maker, dbo.WL_Detail.GUID_Modifier, 
+      SS_Operator_2.OperatorName AS Modifiyer, dbo.WL_Detail.Total_Plan, 
+      dbo.SS_WLType.IsDC, dbo.SS_WLType.IsCustomer, dbo.SS_SettleType.IsCash, 
+      dbo.SS_SettleType.IsCheck, dbo.SS_SettleType.IsBill,dbo.WL_Detail.GUID_BGType, dbo.BG_Type.BGTypeKey, 
+      dbo.BG_Type.BGTypeName
+FROM dbo.WL_Detail LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_2 ON 
+      dbo.WL_Detail.GUID_Modifier = SS_Operator_2.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.WL_Detail.GUID_Maker = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.CN_PaymentNumber ON 
+      dbo.WL_Detail.GUID_PaymentNumber = dbo.CN_PaymentNumber.GUID AND 
+      dbo.WL_Detail.GUID_PaymentNumber = dbo.CN_PaymentNumber.GUID LEFT OUTER JOIN
+      dbo.SS_BGCode ON 
+      dbo.WL_Detail.GUID_BGCode = dbo.SS_BGCode.GUID LEFT OUTER JOIN
+      dbo.SS_Project ON 
+      dbo.WL_Detail.GUID_ProjectKey = dbo.SS_Project.GUID LEFT OUTER JOIN
+      dbo.SS_ProjectClass ON
+      dbo.SS_Project.GUID_ProjectClass=dbo.SS_ProjectClass.GUID LEFT OUTER JOIN
+      dbo.SS_SettleType ON 
+      dbo.WL_Detail.GUID_SettleType = dbo.SS_SettleType.GUID LEFT OUTER JOIN
+      dbo.SS_Customer ON 
+      dbo.WL_Detail.GUID_Cutomer = dbo.SS_Customer.GUID LEFT OUTER JOIN
+      dbo.SS_Person ON 
+      dbo.WL_Detail.GUID_Person = dbo.SS_Person.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.WL_Detail.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_WLType ON dbo.WL_Detail.GUID_WLType = dbo.SS_WLType.GUID LEFT OUTER JOIN
+      dbo.BG_Type ON 
+      dbo.WL_Detail.GUID_BGType = dbo.BG_Type.GUID 
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+

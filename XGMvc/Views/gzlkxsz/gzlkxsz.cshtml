@@ -1,0 +1,415 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "工资类款项设置";
+}
+<script src="../../Scripts/kj/gzlkxsz.js?Math.random()" type="text/javascript"></script>
+<div class="easyui-layout" id="gzlkxsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                  
+                   <a href="#" class="easyui-linkbutton" id="gzlkxsz-submit" data-options="
+                    plain:'true',iconCls:'icon-queding', scope:'gzlkxsz',
+                    bindmethod:{ 'click': ['submitData'] },
+                    bindparms:{'submitData':['gzd-SA_PlanActionDetail']},
+                    configCol:[
+                        'gzlkxsz-SA_PlanAction-ItemValue',                      
+                        'gzlkxsz-SA_PlanPersonSetModel-GUID_Person',
+                        'gzlkxsz-SA_PlanActionDetail-GUID'                       
+                   ],
+                    window:'b-setwindow'
+                  @*  forbidstatus:[1,2,3],*@
+                    ">确定</a>
+                                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="gzlkxsz-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['gzlkxsz-SA_PlanActionPaymentnumber']},
+                   scope:'gzlkxsz'
+                 @*  ,forbidstatus:[3,4,5,6]*@
+                   ">增行</a> 
+                                      
+                   <a href="#" class="easyui-linkbutton" id="gzlkxsz-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['gzlkxsz-SA_PlanActionPaymentnumber']},scope:'gzlkxsz'
+                  @* forbidstatus:[3,4,5,6]*@
+                   ">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="gzlkxsz-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/gzlkxsz/gzlkxsz_particulars','gzlkxsz-SA_PlanActionPaymentnumber','parti']},scope:'gzlkxsz'
+                  @* , forbidstatus:[4]*@
+                   ">
+                   明细</a> 
+                     
+                   <a href="#" class="easyui-linkbutton" id="gzlkxsz-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'gzlkxsz',
+                   @* forbidstatus:[4],*@
+                    bindmethod:{ 'click': ['delRow'] },
+                    bindparms:{'delRow':['gzlkxsz-SA_PlanActionPaymentnumber']}
+                    ">取消</a> 
+                   
+                    <a href="#" class="easyui-linkbutton" id="gzlkxsz-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'gzd-SA_PlanAction-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            @*'datagrid':['gzlkxsz-SA_PlanActionPaymentnumber'],
+                            'validatebox':['gzlkxsz-SA_PlanAction-Descrip'],
+                            'datebox':['gzlkxsz-SA_PlanAction-DocDate'],
+                            'combogrid':['gzlkxsz-SA_PlanAction-GUID_DW']*@
+                        }                  
+                    },
+                   scope:'gzlkxsz'
+                  @* ,forbidstatus:[4]*@
+                   ">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="gzlkxsz-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/gzlkxsz/Save','gzlkxsz-examine']},scope:'gzlkxsz',status:'4'
+                   @*forbidstatus:[4]*@
+                   ">保存</a>                     
+                                     
+                    <a href="#" class="easyui-linkbutton" id="gzlkxsz-quxiao" data-options="plain:'true',iconCls:'icon-tuichu',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    window:'b-setwindow',
+                    scope:'gzlkxsz',status:'0'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 200px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="gzlkxsz-tree-per" data-options="
+                  associate:{
+                    'gzlkxsz-SA_PlanPersonSetModel-PersonName':['PersonName','PersonName'],
+                    'gzlkxsz-SA_PlanPersonSetModel-PersonKey':['PersonKey'],
+                    'gzlkxsz-SA_PlanAction-DWName':['GUID_DW','DWName'],
+                    'gzlkxsz-SA_PlanPersonSetModel-DepartmentName':['DepartmentName','DepartmentName'],
+                    'gzlkxsz-SA_PlanPersonSetModel-GUID_Department':['GUID_Department'],
+                    'gzlkxsz-SA_PlanPersonSetModel-GUID_Person':['GUID']
+                  },
+                  gridassociate:{
+                      'gridId':'gzlkxsz-SA_PlanActionPaymentnumber',
+                      'map': {
+                        'gzlkxsz-SA_PlanPersonSetModel-DepartmentName':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+           
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="gzlkxsz-abandonedStatus" statusControlID="gzlkxsz-SA_PlanAction-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                       工资类款项设置</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        工资计划名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanAction-PlanName" data-options="width:176,forbidstatus:[-1]"  ></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        工资项名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanItem-ItemName" data-options="width:176,forbidstatus:[-1],required:false "></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-itemValue">
+                        金额</label>
+                </td>
+                <td>
+                   <input class="easyui-validatebox" id="gzlkxsz-SA_PlanAction-ItemValue" data-options="width:176,forbidstatus:[4,3],required:false"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        单位名称</label>
+                </td>
+                <td>
+                     <input class="easyui-validatebox" id="gzlkxsz-SA_PlanAction-DWName" data-options="width:176,forbidstatus:[-1],required:false"></input>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        部门名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanPersonSetModel-DepartmentName" data-options="width:176,forbidstatus:[-1],required:false"></input>
+                </td>
+                <td style="width: 60px" id="lbl-PersonName">
+                    <label>
+                        人员名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanPersonSetModel-PersonName" data-options="width:176,forbidstatus:[-1],required:false"></input>
+                </td>
+                
+            </tr>
+         
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="gzlkxsz-SA_PlanActionPaymentnumber" style="overflow:auto"  data-options="
+                    orderNum:'gzlkxsz-SA_PlanActionPaymentnumber-OrderNum',
+                    requireCol:[
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_BGCode',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-Total_Real',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-FeeMemo',
+                        'gzlkxsz-CN_PaymentNumber-IsGuoKu',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_Department',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_SettleType',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_BGType'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:260,
+                    width:900,
+                    rownumbers:true,
+                    scope:'gzlkxsz',
+                    single:false,
+                    formatters:{'gzlkxsz-CN_PaymentNumber-IsGuoKu':'boolbox','gzlkxsz-SA_PlanActionPaymentnumber-Total_PlanAction':'numberbox'},
+                    disableColMap:{
+                            'gzlkxsz-CN_PaymentNumber-IsGuoKu':['gzlkxsz-CN_PaymentNumber-GUID_FunctionClass','gzlkxsz-SA_PlanActionPaymentnumber-GUID_Project']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['gzlkxsz','gzlkxsz-SA_PlanActionPaymentnumber','gzlkxsz-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    gridassociate:{gridId:'gzlkxsz-SA_PlanActionPaymentnumber',
+                    map:{
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_Project':['GUID','ProjectName']
+                    }
+                    },
+                    copyField:[
+                        'gzlkxsz-SA_PlanActionPaymentnumber-ProjectKey',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_Project',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_SettleType',
+                        'gzlkxsz-CN_PaymentNumber-IsGuoKu',
+                        'gzlkxsz-CN_PaymentNumber-IsProject',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_Department',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_BGType',
+                        'gzlkxsz-CN_PaymentNumber-GUID_FunctionClass',
+                        'gzlkxsz-CN_PaymentNumber-GUID_BGResource',
+                        'gzlkxsz-SA_PlanActionPaymentnumber-GUID_Person'
+                    ],
+                      fieldformula:[
+                        {name:'csum',field:'gzlkxsz-SA_PlanActionPaymentnumber-Total_PlanAction',target:['gzlkxsz-SA_PlanAction-ItemValue']}                        
+                    ]
+                    ">
+                        <thead>
+                            <tr>
+                             @*扩展码 来源项目 功能分类 经济分类 支出类型 预算类型 预算类型*@
+                                <th field="gzlkxsz-CN_PaymentNumber-ExtraCode" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-FinanceCode" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-EconomyClassKey" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-BGSourceKey" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-BGType" hidden="true"></th>
+
+                                <th field="gzlkxsz-SA_PlanActionPaymentnumber-GUID" hidden="true"></th>
+                                <th field="gzlkxsz-SA_PlanActionPaymentnumber-GUID_Person" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-GUID" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-IsProject" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-FinanceProjectKey" hidden="true"></th>
+                                <th field="gzlkxsz-CN_PaymentNumber-BGSourceName" hidden="true"></th>
+                               
+                                <th field="gzlkxsz-SA_PlanActionPaymentnumber-GUID" hidden="true"></th>
+
+                                <th field="gzlkxsz-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                 <th field="gzlkxsz-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="
+                                        {
+                                        type:'searchbox',
+                                        options:{
+                                        'particulars':['/gzlkxsz/gzlkxsz_particulars','gzlkxsz-SA_PlanActionPaymentnumber','parti'],
+                                        'window':'b-windowmx'
+                                        }
+                                        }">
+                                    财政支付令</th>
+                                <th field="gzlkxsz-CN_PaymentNumber-GUID_FunctionClass" title="功能分类" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'gzlkxsz-SA_PlanActionPaymentnumber',
+                                     map:{                                        
+                                         'gzlkxsz-CN_PaymentNumber-IsProject':['IsProject'],
+                                         'gzlkxsz-CN_PaymentNumber-FinanceCode':['FinanceCode'],                               
+                                         'gzlkxsz-CN_PaymentNumber-BGType':['IsProject']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/FunctionClass',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'FunctionClassKey,FunctionClassName',
+                                     textField:'FunctionClassName',
+                                     sortName:'FunctionClassKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'FinanceCode',hidden:'true'},
+                                            {field:'IsProject',hidden:'true'},
+                                            {field:'FunctionClassKey',title:'功能分类编码',width:'110'},
+                                            {field:'FunctionClassName',title:'功能分类名称',width:'215'}
+                                      ]]
+                                    }
+                                }">
+                                    功能分类
+                                </th>
+
+                                 <th field="gzlkxsz-CN_PaymentNumber-GUID_EconomyClass" title="经济分类" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'gzlkxsz-SA_PlanActionPaymentnumber',
+                                     map:{
+                                        'gzlkxsz-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'] 
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/EconomyClass',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'EconomyClassKey,EconomyClassName',
+                                     textField:'EconomyClassName',
+                                     sortName:'EconomyClassKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                           {field:'EconomyClassKey',title:'经济分类编码',width:'110'},
+                                           {field:'EconomyClassName',title:'经济分类名称',width:'215'}
+                                      ]]
+                                    }
+                                }">
+                                    经济分类
+                                </th>
+
+                                <th field="gzlkxsz-CN_PaymentNumber-GUID_ExpendType" title="支出类型" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'gzlkxsz-SA_PlanActionPaymentnumber',
+                                     map:{
+                                         'gzlkxsz-CN_PaymentNumber-ExpendTypeKey':['ExpendTypeKey']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/ExpendType',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'ExpendTypeKey,ExpendTypeName',
+                                     textField:'ExpendTypeName',
+                                     sortName:'ExpendTypeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'ExpendTypeKey',title:'支出类型编码',width:'110'},
+                                            {field:'ExpendTypeName',title:'支出类型名称',width:'215'}
+                                      ]]
+                                    }
+                                }">
+                                    支出类型
+                                </th>
+
+                                <th field="gzlkxsz-CN_PaymentNumber-GUID_BGResource" title="预算来源" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'gzlkxsz-SA_PlanActionPaymentnumber',
+                                     @*map:{
+                                       
+                                        }*@
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/BgSource',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'BGSourceKey,BGSourceName',
+                                     textField:'BGSourceName',
+                                     sortName:'BGSourceKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'BGSourceKey',title:'预算来源编码',width:'110'},
+                                            {field:'BGSourceName',title:'预算来源名称',width:'215'}
+                                      ]]
+                                    }
+                                }">
+                                    预算来源
+                                </th>
+
+                                <th field="gzlkxsz-CN_PaymentNumber-czPRojectKey" title="财政项目编码" sortable="false" align="center"
+                                    width="120">
+                                    财政项目编码</th>
+                                
+                                <th field="gzlkxsz-SA_PlanActionPaymentnumber-Total_PlanAction" title="金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    金额
+                                </th>
+                                                              
+                               
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr> 
+            
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanActionDetail-GUID" type="hidden" keyattr="1"></input> 
+
+    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanAction-GUID_Plan" type="hidden" keyattr="1"></input>   
+    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanAction-GUID_DW" type="hidden" keyattr="1"></input>   
+    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanPersonSetModel-GUID_Department" type="hidden" keyattr="1"></input>   
+    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanPersonSetModel-GUID_Person" type="hidden" keyattr="1"></input>      
+     <input class="easyui-validatebox" id="gzlkxsz-SA_PlanPersonSetModel-PersonKey" type="hidden" keyattr="1"></input>  
+
+    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanActionPaymentnumber-GUID" type="hidden"></input>
+    <input class="easyui-validatebox" id="gzlkxsz-SA_PlanActionPaymentnumber-Total_PlanAction" type="hidden"></input>
+</div>
+<label id="gzlkxsz-extendregion" style="display: none">
+    <input id="gzlkxsz-status" type="text" value="1"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+      
+</label>
+<div b-type="1" id="gzlkxsz-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:0px">   
+    <input class="easyui-validatebox" type="hidden" id="gzlkxsz-SA_PlanAction-DWKey" />
+</div>
+  <div id="b-windowmx" line="true">
+    </div>
+<iframe id="printIframe" style="display: none"></iframe>

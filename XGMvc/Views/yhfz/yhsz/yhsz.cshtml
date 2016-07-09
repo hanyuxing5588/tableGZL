@@ -1,0 +1,165 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "用户设置";
+}
+<div class="easyui-layout" id="yhsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="yhsz-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newDoc']},scope:'yhsz',status:'1',                        
+                  bindparms:{'newDoc':['/yhsz/New']},forbidstatus:[1,2,3]">新增</a> <a href="#" class="easyui-linkbutton"
+                      id="yhsz-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                  docState:'yhsz-BX_Main-DocState',
+                  bindmethod:{'click':['setStatus']},scope:'yhsz',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> <a href="#" class="easyui-linkbutton" id="yhsz-remove"
+                      data-options="plain:'true',iconCls:'icon-shanchu',
+                  docState:'yhsz-BX_Main-DocState',
+                  bindmethod:{ 'click': ['setStatus'] },scope:'yhsz',status:'3',
+                  forbidstatus:[1,2,3]">删除</a> <a href="#" class="easyui-linkbutton" id="yhsz-cancel"
+                      data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'yhsz',forbidstatus:[4],
+                     bindmethod:{ 'click': ['cancel'] }">取消</a> <a href="#" class="easyui-linkbutton"
+                         id="yhsz-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/yhsz/Save']},
+                   scope:'yhsz',status:'4',forbidstatus:[4]">保存</a> <a href="#" class="easyui-linkbutton"
+                       id="yhsz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'yhsz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="操作员">
+                <ul class="easyui-tree" id="yhsz-tree-ren" data-options="
+                  @*gridassociate:{
+                      'gridId':'yhsz-SS_Role',              
+                      'map': {
+                            'yhsz-SS_Role-RoleKey':['yhsz-SS_Role-RoleKey','yhsz-SS_Role-RoleKey'],
+                            'yhsz-SS_Role-RoleName':['GUID','yhsz-SS_Role-RoleName']
+                        },
+                      'append':'true'
+                  },*@
+                  filterField:'OperatorKey',
+                  textField:'OperatorName',
+                  idField:'GUID',
+                  associate:{
+                    'yhsz-SS_Operator-OperatorKey':['OperatorKey'],
+                    'yhsz-SS_Operator-OperatorName':['OperatorName']
+                  },
+                  bindmethod: { 'onSelect': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetInvitePeson',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 960px; padding-left: 10px;">
+        <table border="0" style="height: 350px; width: 960px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="yhsz-abandonedStatus" statuscontrolid="yhsz-BX_Main-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="text-align: center; margin: 0px; padding: 0px; width:100%; height:100%;">
+                        <table border="0px" style="margin-top: 10%; padding-left:8px; padding: 0px;">
+                            <tr>
+                                <td style="padding-right: 50px; width:550px;">
+                                    <table style="width:550px">
+                                        <tr>
+                                            <td style="width: 90px;">
+                                                <label for="field1">
+                                                    <font color="red">*</font>编&nbsp;&nbsp;&nbsp;&nbsp;号：</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validatebox" id="yhsz-SS_Operator-OperatorKey" style="width: 176px" data-options="forbidstatus:[4,3]"></input>
+                                            </td>
+                                            <td style="width: 90px;">
+                                                <label for="field">
+                                                    角色名称：</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validatebox" id="yhsz-SS_Operator-OperatorName" style="width: 176px"
+                                                    data-options="forbidstatus:[4,3]"></input>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="text-align:left;">
+                                                <input type="checkbox" id="yhsz-SS_Operator-IsStop" data-options="forbidstatus:[-1]">是否停用</input>
+                                            </td>
+                                            <td colspan="2" style="text-align:left;">
+                                                <input type="checkbox" id="yhsz-SS_Operator-IsTimeLimited" data-options="forbidstatus:[-1]">权限有效期</input>
+                                            </td>
+                                        </tr>
+                                        <tr><td style="height:250px;"></td></tr>
+                                        <tr>
+                                            <td style="width:90px;">
+                                                <label for="field1">开始日期：</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-datebox" id="yhsz-SS_Operator-StartTime" data-options="
+                                                        width:184,
+                                                        forbidstatus:[4,3],
+                                                        required:false,
+                                                        bindmethod: { 'onCloseEx': ['setAssociate'] }">
+                                            </td>
+                                            <td style="width:90px;">
+                                                <label for="field1">结束日期：</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-datebox" id="yhsz-SS_Operator-StopTime" data-options="
+                                                        width:184,
+                                                        forbidstatus:[4,3],
+                                                        required:false,
+                                                        bindmethod: { 'onCloseEx': ['setAssociate'] }">
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding-left: 50px; width:170px;">
+                                    <table border="0px" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px; width:170px;">
+                                        <tr>
+                                            <td style="width: 150px; height: 350px; border-bottom: 1px solid #000; border-right: 1px solid #000;
+                                                border-top: 1px solid #000; border-left: 1px solid #000;">
+                                                <table class="easyui-edatagrid" id="yhfz-" data-options="
+                                        scope:'yhfz',
+                                        ">
+                                                    <thead>
+                                                        <tr>
+                                                            <th field="b-sel" data-options="width:60, checkbox:'true'">
+                                                            </th>
+                                                            </th>
+                                                            <th field="yhfz-SS_Operator-GUID" hidden="true">
+                                                            </th>
+                                                            <th field="yhfz-SS_Operator-OperatorName" align="center" editor="{
+                                                    type:'text'}">
+                                                                wwqwqwq
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <label id="yhsz-extendregion" style="display: none">
+        <input id="yhsz-status" type="text"></input>
+        <input id="initscope" type="text" value=@ViewData["scope"]></input>
+        <input id="initstatus" type="text" value=@ViewData["status"]></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+        <div id="yhsz-b-window" line="true">
+        </div>
+    </label>
+    <div b-type="1" id="yhsz-BudgetStatistics-datafilter" data-options="region:'north'"
+        style="height: 90px">
+        <input class="easyui-validatebox" type="hidden" id="yhsz-BX_Main-DWKey" />
+    </div>
+    <iframe id="printIframe" style="display: none"></iframe>

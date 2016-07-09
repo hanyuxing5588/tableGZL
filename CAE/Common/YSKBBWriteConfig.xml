@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Config> 
+<SqlConfig 
+      实存账户Sql="select sum(md-mc) from cae_u8..gl_accvouch  where ccode like '121501%'or ccode like '12150301%' or ccode like '12150302%'"
+      当年借款Sql="
+        select sum(md-mc) from cae_u8..gl_accvouch  where ccode like '121502%'or ccode like '121504%'
+      "
+      以前年度借款Sql="
+          select sum(md-mc) from cae_u8..gl_accvouch  where ccode like '12150303%'or ccode like '12150304%'
+      "
+    />
+</Config>

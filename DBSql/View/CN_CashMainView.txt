@@ -1,0 +1,57 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CN_CashMainView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[CN_CashMainView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+/*
+//名    称：CN_CashMainView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-1-22
+//功    能：出纳现金视图信息
+*/
+
+CREATE  VIEW dbo.CN_CashMainView
+AS
+SELECT dbo.CN_CashMain.GUID, dbo.CN_CashMain.DocNum, dbo.CN_CashMain.OAOTS, 
+      dbo.CN_CashMain.DocDate, dbo.CN_CashMain.DocState, 
+      dbo.CN_CashMain.DocMemo, dbo.CN_CashMain.GUID_Maker, 
+      SS_Operator_1.OperatorName AS Maker, dbo.CN_CashMain.GUID_Modifier, 
+      SS_Operator_1.OperatorName AS Modifier, dbo.CN_CashMain.MakeDate, 
+      dbo.CN_CashMain.ModifyDate, dbo.CN_CashMain.SubmitDate, 
+      dbo.CN_CashMain.GUID_YWType, dbo.SS_YWType.YWTypeKey, 
+      dbo.SS_YWType.YWTypeName, dbo.CN_CashMain.GUID_DocType, 
+      dbo.SS_DocTypeView.DocTypeKey, dbo.SS_DocTypeView.DocTypeName, 
+      dbo.CN_CashMain.GUID_DW, dbo.SS_DW.DWKey, dbo.SS_DW.DWName, 
+      dbo.CN_CashMain.GUID_UIType, dbo.SS_UIType.UITypeKey, 
+      dbo.SS_UIType.UITypeName, dbo.CN_CashMain.GUID_Department, 
+      dbo.SS_Department.DepartmentKey, dbo.SS_Department.DepartmentName, 
+      dbo.CN_CashMain.GUID_Person, dbo.SS_Person.PersonKey, 
+      dbo.SS_Person.PersonName,dbo.SS_DocTypeView.DocTypeUrl,
+	  dbo.CN_CashMain.ApproveState
+FROM dbo.CN_CashMain INNER JOIN
+      dbo.SS_Person ON 
+      dbo.CN_CashMain.GUID_Person = dbo.SS_Person.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.CN_CashMain.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.CN_CashMain.GUID_DW = dbo.SS_DW.GUID LEFT OUTER JOIN
+      dbo.SS_UIType ON 
+      dbo.CN_CashMain.GUID_UIType = dbo.SS_UIType.GUID LEFT OUTER JOIN
+      dbo.SS_DocTypeView ON 
+      dbo.CN_CashMain.GUID_DocType = dbo.SS_DocTypeView.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.CN_CashMain.GUID_Modifier = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_2 ON 
+      dbo.CN_CashMain.GUID_Maker = SS_Operator_2.GUID LEFT OUTER JOIN
+      dbo.SS_YWType ON dbo.CN_CashMain.GUID_YWType = dbo.SS_YWType.GUID
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

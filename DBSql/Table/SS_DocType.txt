@@ -1,0 +1,4 @@
+﻿Alter table SS_DocType add DocTypeUrl nvarchar(50)
+update SS_DocType set DocTypeUrl='xjbxd' where doctypeKey='02' --现金报销单
+update SS_DocType set DocTypeUrl='lwflkd' where doctypeKey='04' --劳务费报销单
+update SS_DocType set DocTypeUrl='sxfbxd' where doctypeKey='35' --手续费报销单

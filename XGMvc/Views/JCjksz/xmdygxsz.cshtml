@@ -1,0 +1,122 @@
+﻿<script src="../../Scripts/jc/jc.js?rpg=12" type="text/javascript"></script>
+<script src="../../Scripts/jc/jcjksz.js?rpg=1911119115113" type="text/javascript"></script>
+<div class="easyui-layout" id="xmdygxsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+
+                   <a href="#" class="easyui-linkbutton" id="xmdygxsz-save1"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                  
+                   forbidstatus:[4]">保存对应关系</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmdygxsz-cancel1" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'xmdygxsz',forbidstatus:[4]
+                    ">取消对应关系</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="xmdygxsz-close" data-options="plain:'true',iconCls:'icon-tuichu'"
+                   scope:'xmdygxsz'">退出</a> 
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="基础档案对照">
+                <ul class="easyui-tree" id="xmdygxsz-tree-SS_ComparisonMain" data-options="
+                  msg:'基础档案对照',
+                  m:'SS_ComparisonMain',
+                  url:'/Tree/GetComparisonMain',
+                  forbidstatus:[3],
+                  method:'post',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  associate:{
+                     'yskmzb-SS_ComparisonMain-BGSetupName':['BGSetupName']
+                  },
+                  scope:'xmdygxsz'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="CenterID" data-options="region:'center',fit:true">
+        
+        <table>
+            <tr>
+              
+              
+            <td>项目名称/编码：  <input class="easyui-validatebox" data-options="message:''" id="gwkbxd-PZ-GUID" value="暂时定位不好用" />
+             <a href="#" class="easyui-linkbutton" id="sprojectTreeGrids" data-options=" plain:'true',iconCls:'icon-search'">查询</a>
+                   </td>
+            <td>
+            <dl>
+                  <dd> 项目名称/编码：  <input class="easyui-validatebox"  value="" id="gwkbxd-YY-GUID" /> <a href="#" class="easyui-linkbutton" id="xmdygxsz-searchYY" data-options=" plain:'true',iconCls:'icon-search'">查询</a></dd> 
+                  <dd> 用友&nbsp;&nbsp;项目分类：<input class="easyui-combobox" data-options="valueField:'ID',textField:'Text'" id="xmdygxsz-ufdata-fitem" /></dd>
+            <dl>
+            </td>
+            </tr>
+            <tr>
+                <td>
+     
+                    <table id="projectTreeGrid"  class="easyui-treegrid" style="width:550px;" data-options="
+		                iconCls: 'icon-ok',
+		                rownumbers: true,
+                        isAssociate:true,
+                        check:true,
+		                animate: true,
+		                collapsible: true,
+		                fitColumns: true,
+                        threeLinkCheck:true,
+                        checkOnSelect:true,
+                        selectOnCheck:true,
+		                method: 'get',
+                        singleSelect: true,
+		                idField: 'Guid',
+		                treeField: 'ModelName',
+		                showFooter: true
+			            ">
+		                <thead>
+			                <tr>
+                                <th data-options="field:'_parentId',width:180,hidden:true">1</th>
+                                  <th data-options="field:'Guid',width:180,hidden:true">1</th>
+                                <th data-options="field:'IsColor',width:180,hidden:true">1</th>
+                                  <th data-options="field:'ClassId',width:180,hidden:true">1</th>
+                                     <th data-options="field:'ExtKey',width:180,hidden:true">1</th>
+				                <th data-options="field:'ModelName',width:800,formatter:function(a,b,c){
+                                   return $.gridCheckBoxCol1(a,b,c);
+                                }" >平台项目名称</th>
+			                </tr>
+		                </thead> 
+                    </table>
+
+
+                </td>
+                <td>
+                    <table id="projectGrid"  class="easyui-datagrid" style="width:400px" data-options="
+		                
+		                rownumbers: true,
+                        
+
+		                fitColumns: true,
+                        singleSelect: false,
+                        checkOnSelect:false,
+                        selectOnCheck:false,
+
+		                showFooter: true
+			            ">
+		                <thead>
+			                <tr>
+                                <th field="l_id" data-options="width:100,hidden:true"></th> 
+                                  <th field="citemcode" width="50" title="用友项目编码" sortable="false" align="left" halign="center">项目编码</th>
+                                <th field="citemname" width="150" title="用友项目名称" sortable="false" align="left" halign="center">项目名称</th>
+                              
+			                </tr>
+		                </thead> 
+                    </table>
+                </td>
+            </tr>
+        </table>
+        
+        <input class="easyui-validatebox" id="xmdygxsz-SS_ComparisonMain-GUID" type="hidden" keyattr="1"></input>
+    </div>
+
+</div>

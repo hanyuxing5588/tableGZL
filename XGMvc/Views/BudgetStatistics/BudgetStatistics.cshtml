@@ -1,0 +1,80 @@
+﻿<body>
+<div class="easyui-layout" id="parti-datareguin" data-options="fit:true" z="1">
+<div data-options="region:'north'" style="height:51px">
+    <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+        <a href="#" style="display:none"  class="easyui-linkbutton" id="BudgetStatistics-queren" data-options="plain:'true',iconCls:'icon-queding',
+            bindmethod:{ 'click': ['submitHistory'] },
+            bindparms:{'submitHistory':['BudgetStatistics-BG_Main','BudgetStatistics']},
+            window:'parti-b-window',
+            scope:'BudgetStatistics',status:'0'">确定</a> 
+
+        <a href="#" class="easyui-linkbutton" id="BudgetStatistics-Exit" data-options="plain:'true',iconCls:'icon-tuichu',
+            bindmethod:{ 'click': ['cancelDetail'] },
+            window:'b-window',              
+            scope:'BudgetStatistics',status:'0'">退出</a> 
+
+        <a href="#" class="easyui-linkbutton" id="BudgetStatistics-bangzhu"
+                data-options="plain:'true',iconCls:'icon-bangzhu',
+            scope:'BudgetStatistics',status:'0'">帮助</a> 
+            </div>
+</div>
+<div id="BudgetStatistics-dataregion" data-options="region:'center',fit:true">
+    <div style="font-size: x-large; text-align: center;">
+                    预算执行情况统计
+    </div>
+    <div b-type="1" id="BudgetStatistics-historydatafilter" data-options="region:'north'"style="height:30px">
+        <table border="0" style="width:800px;">
+                
+        <tr>
+            <td style="width: 30px">
+                <label>
+                    单位名称：</label>
+            </td>
+            <td style="width: 150px;">
+                <input class="easyui-validatebox" id="BudgetStatistics-BX_Main-DWName" data-options="forbidstatus:[-1],width:180"></input>
+            </td>
+            <td style="width: 30px">
+                <label>
+                    单位编码：</label>
+            </td>
+            <td style="width: 150px;">
+                <input class="easyui-validatebox" id="BudgetStatistics-BX_Main-DWKey" data-options="forbidstatus:[-1],width:180"></input>
+            </td>
+        </tr>              
+    </table>
+    </div>
+    <div b-type="1" data-options="region:'center',fit:true" >      
+           
+    <table  style="height:450px;padding:5px" class="easyui-datagrid"  id="BudgetStatistics-BG_Main" b-type="1" 
+                data-options="
+                    fitColumns:false,
+                    method:'get',
+                    singleSelect:true,
+                    formatters:{'TotalPlan':'numberbox','ThisTimeTotal':'numberbox','AddUpTotal':'numberbox','BalanceTotal':'numberbox'},
+                    checkOnSelect:true,
+                    pagination:true,
+                    striped: false,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true">
+                <thead>
+            <tr>       
+                <th field="GUID" hidden="true"></th>
+                <th field="BGCodeKey"align="left" width="80" >科目编码</th>  
+                <th field="BGCodeName"align="left" width="120" >科目名称</th>                       
+                <th field="ProjectKey"align="left" width="80" >项目编码</th>            
+                <th field="ProjectName"align="left" width="140" >项目名称</th>              
+                <th field="DepartmentName"align="left" width="80" >部门名称</th>                
+                <th field="TotalPlan"align="right" width="80" >预算金额</th>                
+                <th field="AddUpTotal"align="left" width="80" >累计发生</th>               
+                <th field="ThisTimeTotal"align="left" width="80" >本次发生</th>                  
+                <th field="BalanceTotal"align="right" width="80" >余额</th>         
+                <th field="CompletionRate"align="right" width="80" >完成比例</th>         
+                <th field="BGSourceName"align="left" width="80" >预算来源</th>
+            </tr></thead>
+        </table>
+                   
+    </div> 
+</div>
+
+</div></body>

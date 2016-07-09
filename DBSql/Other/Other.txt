@@ -1,0 +1,5 @@
+﻿--获得禁用所有外键约束语句
+select 'ALTER TABLE [' +b.name+ '] NOCHECK CONSTRAINT ' + a.name + ';' as 禁用约束 from sysobjects a ,sysobjects b where a.xtype='f' and a.parent_obj = b.id
+--获得启用所有外键约束语句
+select 'ALTER TABLE [' +b.name+ '] CHECK CONSTRAINT ' + a.name + ';' as 启用约束 from sysobjects a ,sysobjects b where a.xtype='f' and a.parent_obj = b.id
+

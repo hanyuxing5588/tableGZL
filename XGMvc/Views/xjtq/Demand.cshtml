@@ -1,0 +1,252 @@
+﻿
+
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+    <div b-type="1" data-options="region:'north',tools:'#tbar'" style="height: 51px">
+        <div id='tbar' b-type="1" style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="Demand-haffirm" b-action="haffirm"
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitDemand'] },
+                   bindparms:{'submitDemand':['Demand-CN_CashMain','@ViewData["ModelUrl"]']},
+                   window:'b-window',
+                   scope:'Demand',
+                   iconCls:'icon-queren'">确认</a> <a href="#" class="easyui-linkbutton" b-type="1" id="Demand-hselect"
+                       b-action="hselect" data-options=" 
+                   bindmethod:{ 'click': ['historySearch'] },
+                   bindparms:{'historySearch':['/xjtq/History','Demand-CN_CashMain','Demand','Demanddatafilter']},
+                   scope:'Demand',
+                   plain:'true',iconCls:'icon-chaxun'">查询</a> <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="Demand-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'Demand', 
+                    window:'b-window',         
+                    iconCls:'icon-tuichu'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 270px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="Demand-tree-Demandper" data-options="
+                  bindmethod:{'onDblClick': ['DemandSelect'] },
+                  bindparms:{'DemandSelect':['/Demand/Demand','Demand-CN_CashMain','Demand','Demanddatafilter']},
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="Demand-tree-Demanddep" data-options="
+                  bindmethod:{'onDblClick': ['DemandSelect'] },
+                  bindparms:{'DemandSelect':['/Demand/Demand','Demand-CN_CashMain','Demand','Demanddatafilter']},
+                  url:'/Tree/GetDepartmentTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="Demand-tree-Demanddw" data-options="  
+                  bindmethod:{'onDblClick': ['DemandSelect'] },
+                  bindparms:{'DemandSelect':['/Demand/Demand','Demand-CN_CashMain','Demand','Demanddatafilter']},
+                  url:'/Tree/GetDWTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="科目">
+                <ul class="easyui-tree" id="Demand-tree-Demandcode" data-options="
+                  bindmethod:{'onDblClick': ['DemandSelect'] },
+                  bindparms:{'DemandSelect':['/Demand/Demand','Demand-CN_CashMain','Demand','Demanddatafilter']},
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="Demand-tree-Demandproject" data-options="
+                  bindmethod:{ 'onDblClick': ['DemandSelect'] },
+                  bindparms:{'DemandSelect':['/Demand/Demand','Demand-CN_CashMain','Demand','Demanddatafilter']},
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div b-type="1" data-options="region:'center'">
+        <div b-type="1" id="Demand-Demanddatafilter" data-options="region:'north'">
+            <table border="0" style="width: 100%;">
+                <tr>
+                    <td style="width: 10%;">
+                        <label for="lbl-YWType">
+                            业务类型</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="Demand-Demand-YWTypeKey" class="easyui-combobox" url="/Combo/YWTypeZP" style="width: 176px;"
+                            data-options="
+               editable:false,
+                valueField:'YWTypeKey',
+                textField:'YWTypeName',
+                filterField:'YWTypeKey,YWTypeName',
+                onLoadSuccess: function (parm) {
+                   $('#Demand-Demand-YWTypeKey').combobox('select','02');}" style="width:150px;">  
+                        </select>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            单据类型</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="Demand-Demand-GUID_DocType" class="easyui-combobox" style="width: 176px;"
+                          url="/Combo/DocTypeZP"
+                            data-options="
+                                editable:false,
+                valueField:'GUID',
+                textField:'DocTypeName',
+                filterField:'DocTypeKey,DocTypeName'" style="width: 150px;">
+                                
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            起始日期</label>
+                    </td>
+                    <td style="width: 30%;">
+                    <input class="easyui-datebox" id="Demand-CN_CashMain-StartDate" 
+                            validType="TimeCheck['Demand-CN_CashMain-EndDate',true]" 
+                            invalidMessage="开始日期不能大于结束日期"
+                            data-options="
+                                width:176,
+                                required:false,
+                                value:'@ViewData["startDate"]',
+                                bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            结束日期</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <input class="easyui-datebox" id="Demand-CN_CashMain-EndDate" validType="TimeCheck['Demand-CN_CashMain-StartDocDate',false]"
+                            data-options="
+                                width:176,
+                                required:false,
+                                value:'@ViewData["currentDate"]',
+                                bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+
+                        <input id="Demand-CN_CashMain-ModelUrl" class="easyui-validatebox" type="hidden" name="ModelUrl" value="@ViewData["ModelUrl"]"/>
+                        <input id="Demand-CN_CashMain-RequestType" class="easyui-validatebox" type="hidden"
+                            name="ModelUrl" value="xq" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input id="Demand-Demand-ApproveStatus"  type="hidden" class="easyui-validatebox" value="2"/>
+                        <input id="Demand-Demand-WithdrawStatus" type="hidden" class="easyui-validatebox" value="1"/>
+                        <input id="Demand-Demand-PayStatus" type="hidden" class="easyui-validatebox" value="1"/>
+                        <input id="Demand-Demand-CancelStatus" type="hidden" class="easyui-validatebox" value="1"/>
+                        <input id="Demand-Demand-HXStatus" type="hidden" class="easyui-validatebox" value="0"/>
+                        <input id="Demand-Demand-SettleTypeKey" type="hidden" class="easyui-validatebox" value="01"/>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div b-type="1" data-options="region:'center',fit:true">
+            <table style="height: 450px; padding: 5px" class="easyui-datagrid" id="Demand-CN_CashMain"
+                b-type="1" data-options="
+        fitColumns:false,
+        method:'get',
+        singleSelect:false,
+        formatters:{'Total':'numberbox'},
+        checkOnSelect:true,
+        pagination:true,
+        striped: false,
+        pageSize:20,
+        pageList:[20,50,100],
+        rownumbers:true
+        ">
+                <thead>
+                    <tr>
+                        <th field="b-sel" data-options="width:100,checkbox:'true'">
+                        </th>
+                        <th field="GUID" hidden="true">
+                        <th field="YWTypeKey" hidden="true"></th>
+                        </th>
+                        <th field="DocNum" align="center" width="80">
+                            单据编号
+                        </th>
+                        <th field="DocDate" lign="center" width="80">
+                            报销日期
+                        </th>
+                        <th field="DepartmentName" align="center" width="80">
+                            部门名称
+                        </th>
+                        <th field="PersonName" align="center" width="80">
+                            制单人
+
+                        </th>
+                        <th field="BillCount" align="center" width="80">
+                            附件数
+
+                        </th>
+                        <th field="Total" align="center" width="80">
+                            报销金额
+                        </th>
+                        <th field="DocMemo" align="center" width="200">
+                            摘要
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ywId = "Demand-Demand-YWType", docId = "Demand-Demand-GUID_DocType";
+        $('#' + ywId).combobox({
+            onSelect: function (rec) {
+
+                var ywKey = rec.YWTypeKey, allValue = '00';
+                if (ywKey == allValue) {
+                    var opts = $('#' + docId).combobox('options');
+                    var remoteData = opts.remoteData;
+                    if (remoteData.length > 0) {
+                        $('#' + docId).combobox('loadData', remoteData);
+                        $('#' + docId).combobox('setValue', remoteData[0].GUID);
+                    }
+                    return;
+                }
+                var rowData = [];
+                var opts = $('#' + docId).combobox('options');
+                var remoteData = opts.remoteData;
+                for (var i = 0, j = remoteData.length; i < j; i++) {
+                    var row = remoteData[i];
+                    //往来要特殊处理
+                    if (ywKey == '05') {
+                        if (row.YWTypeKey.substr(0, 2) == ywKey || row.DocTypeKey == allValue) {
+                            rowData.push(row);
+                        }
+                    } else {
+                        if (ywKey == row.YWTypeKey || row.DocTypeKey == allValue) {
+                            rowData.push(row);
+                        }
+                    }
+                }
+                $('#' + docId).combobox('loadData', rowData);
+                $('#' + docId).combobox('setValue', rowData[0].GUID);
+            }
+        });
+        $('#' + docId).combobox({
+            onLoadSuccess: function (parm) {
+
+                var opts = $('#' + docId).combobox('options');
+                if ((opts.remoteData || []).length != 0) return;
+                opts.remoteData = parm;
+                if (!opts.remoteData) return;
+                if (opts.remoteData[0] && opts.remoteData[0].GUID) {
+                    $('#' + docId).combobox('select', opts.remoteData[0].GUID);
+                }
+            }
+        });
+    });
+</script>

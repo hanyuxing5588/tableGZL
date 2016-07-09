@@ -1,0 +1,316 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "支票领取";
+}
+@*<script src="../../Scripts/bx/djlb.js?r=12" type="text/javascript"></script>
+<script src="../../Scripts/cn/zp.js?r=12" type="text/javascript"></script>*@
+<script src="@Url.Content("~/Scripts/cn/zp.js?r=12")"></script>
+<script src="@Url.Content("~/Scripts/bx/djlb.js?r=12")"></script>
+<script type="text/javascript">
+    $.formatNum = function (s1) {
+        var p = /(\d+)(\d{3})/;
+        s1 = s1 ? s1 : 0.00;
+        s1 = parseFloat(s1).toFixed(2);
+        while (p.test(s1)) {
+            s1 = s1.replace(p, "$1,$2");
+        }
+        return s1;
+    }
+    $(document).ready(function () {
+        $('#zplq-close').on('click', function () {
+            parent.window.CloseTabs();
+        })
+        var guid = $('#initguid').val();
+        $.view.setViewEditStatus('zplq', 1);
+        $.ajax({
+            url: 'zplq/YWRetrieve',
+            data: { guid: guid, ywkey: "02" },
+            dataType: "json",
+            type: "POST",
+            traditional: true,
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", $.view.warning, 'error');
+            },
+            success: function (data) {
+
+                if (data) {
+                    $('#zplq-CN_Check').datagrid('loadData', data.CN_CheckList);
+                    $('#zplq-zplq-isLQChecked').val(data.IsLQChecked);
+
+                    $('#zplq-CN_CheckDrawMain').datagrid('loadData', [data.YWDocList]);
+                    $('#zplq-CN_CheckDrawDetail').datagrid('loadData', data.YWDocList.DetailList);
+
+                    $('#zplq-CN_CheckDrawMains').datagrid('reload', { bankAccountID: null, isInvalid: 1, DocTypeKey: '05' });
+                }
+            }
+        });
+
+
+        $('#zpgl-bankAccount').tree({
+            onDblClick: function (node) {
+                var id = node.id;
+                //获取树
+                $('#zplq-CN_CheckDrawMains').datagrid('reload', { bankAccountID: id, isInvalid: 1 });
+            },
+            onLoadSuccess: function (node, data) {
+                var id = node.id;
+                $('#zplq-CN_CheckDrawMains').datagrid('reload', { bankAccountID: id, isInvalid: 1 });
+            }
+
+        });
+
+        $('#zplq-CN_CheckDrawMains').datagrid({
+            onDblClickRow: function (rowIndex, rowData) {
+                var zplbGrid = '#zplq-CN_Check';
+                //var falg = $('#zplq-zplq-isLQChecked').val();                
+                //                if (falg=='1') {
+                //                    $.messager.alert("提示", "该支票已经存储，不能更改其支票号！", 'info');
+                //                    return;
+                //                }
+                //支票列表选中行为单选
+                debugger
+                var rows = $(zplbGrid).datagrid('getRows');
+                if (rows.length == 0) {
+                    $.messager.alert("提示", "请先查询出要替换支票号的数据！", 'info');
+                    return;
+                }
+                var chkRow = $(zplbGrid).datagrid('getSelected');
+                if (chkRow == null) {
+                    $.messager.alert("提示", "请先选中要改变支票号的所在行！", 'info');
+                    return;
+                }
+                if (chkRow.IsLQChecked == 1) {
+                    $.messager.alert("提示", "该支票已经存储，不能更改其支票号！", 'info');
+                    return;
+                }
+                var PaymentNumber = chkRow.PaymentNumber;
+                var CheckNumber = chkRow.CheckNumber;
+                var IsGuoku = rowData.IsGuoKu + "";
+                var checkTypeSource = rowData.checkTypeSource + "";
+                var rowIndex = $(zplbGrid).datagrid('getRowIndex', chkRow);
+                if (PaymentNumber == null && IsGuoku.toLowerCase()  == 'true') {
+                    $.messager.alert("提示", "不能使用国库支票！", 'info');
+                    return;
+                }
+                if (PaymentNumber != null && IsGuoku.toLowerCase() == 'false') {
+                    $.messager.alert("提示", "不能使用非国库支票！", 'info');
+                    return;
+                }
+                if (checkTypeSource=="0" || checkTypeSource == "现金支票") {
+                    $.messager.alert("提示", "不能使用现金支票！", 'info');
+                    return;
+                }
+                if (CheckNumber == rowData.CheckNumber) {
+                    $.messager.alert("提示", "该支票已被使用，请重新选择支票！", 'info');
+                    return;
+                } else {
+                    chkRow.CheckNumber = rowData.CheckNumber;
+                    chkRow.GUID_Check = rowData.GUID;
+                    $(zplbGrid).datagrid('updateRow', { index: rowIndex, row: chkRow });
+                    $(zplbGrid).datagrid('selectRow', rowIndex);
+                    return;
+
+                }
+            }
+        });
+    });
+</script>
+<div class="easyui-layout" id="zplq-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="zplq-lingqu"
+                   data-options="plain:'true',iconCls:'icon-lingkuan',
+                   bindmethod:{ 'click': ['makeUsed'] },
+                   bindparms:{'makeUsed':['/zplq/Save','zplq-zplq-YWTypeKey','zplq-CN_Check','zplq-CN_CheckDrawMain','zplq-CN_CheckDrawDetail']},scope:'zplq',status:'4',
+                   forbidstatus:[4]">领取</a> 
+
+                    <a href="#" class="easyui-linkbutton" id="zplq-huanpiao" data-options="
+                    plain:'true',iconCls:'icon-huanpiao', scope:'zplq',forbidstatus:[4],
+                    bindmethod:{ 'click': ['changeCheck'] },
+                    bindparms:{'changeCheck':['']}">换票</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="zplq-xuandan" data-options="plain:'true',iconCls:'icon-xuandan',
+                   bindmethod:{ 'click': ['selectDoc'] },
+                   bindparms:{'selectDoc':['/zplq/SelectDoc','zplq-CN_CheckDrawMain','dj']},
+                    window:'b-window',scope:'zplq',forbidstatus:[4]">选单</a> 
+
+                    <a href="#" class="easyui-linkbutton" style="display:none" id="zplq-chaifen" data-options="
+                    plain:'true',iconCls:'icon-chaifen', scope:'zplq',forbidstatus:[4],
+                    bindmethod:{ 'click': [''] }">拆分</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="zplq-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   scope:'zplq'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 330px;">
+        <div class="easyui-tabs" data-options="fit:false" style="width: auto; height:120px;">
+            <div title="银行账号" style="height: 125px; width: 198px;">
+                <ul class="easyui-tree" id="zpgl-bankAccount" data-options="
+                      height:160,
+                      url:'/Tree/GetBankAccountTree',
+                      method:'post'">
+                </ul>
+            </div>
+        </div>
+        <div>
+            <table class="easyui-datagrid" id="zplq-CN_CheckDrawMains" style="width:100%;"
+                data-options="
+                    height:document.body.offsetHeight-180,
+                    width:325,
+                    scope:'zplq',
+                    fitColumns:false,
+                    pagination:true,
+                    pageSize:100,
+                    pageList:[10,20,30,40,50,100],
+                    rownumbers:true,
+                    url:'/Grid/GetCheckListNotUseed1',
+                    method:'post',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    sortName:'CheckNumber',
+                    single:false
+                    ">
+                <thead>
+                    <tr>
+                        <th field="b-sel" data-options="width:100,checkbox:'true',selectOnCheck:'true',checkOnSelect:'ture'"></th>
+                        <th field="GUID" hidden="true"></th>
+                        <th field="IsGuoKu" hidden="true"></th>
+                        <th field="GUID_BankAccount" hidden="true"></th>
+                        <th field="BankAccountNo" hidden="true"></th>
+                        <th field="BankAccountName" hidden="true"></th>
+                        <th field="CN_Check-GUID" hidden="true"></th>
+                        <th field="CheckNumber" title="支票号" width="100px" align="center">支票号</th>
+                        <th field="CheckType" title="支票类型" width="105px" align="center">支票类型</th>
+                        <th field="IsInvalid" title="是否失效" width="70px" align="center">是否失效</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    
+    <div data-options="region:'center'"  data-options="fit:true">
+        <table id="table" border="0" style="height: 350px; width: 100%; padding: 0; ">
+            <tr>
+                <td>
+                <div style="font-size: x-large;">支票列表</div>
+                    <table class="easyui-datagrid" id="zplq-CN_Check"  data-options="
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    height:165,                   
+                    rownumbers:true,
+                    scope:'zplq',
+                    single:false,
+                    singleSelect:true,
+                    forbidstatus:[4]
+                   ">
+                        <thead>
+                            <tr>
+                               <th field="b-sel" data-options="width:100,checkbox:'true',selectOnCheck:'true',checkOnSelect:'ture'"></th>
+                                <th field="GUID" hidden="true"></th>
+                                <th field="GUID_Customer" hidden="true"></th>
+                                <th field="GUID_Check" hidden="true"></th>
+                                <th field="IsLQChecked" hidden="true"></th>
+                                <th field="BankAccountName" title="银行账户" width="120" sortable="false" align="center">银行账户</th>
+                                <th field="CheckNumber" width="120" title="支票号" sortable="false" align="center">支票号</th>
+                                <th field="PaymentNumber" width="120" title="财政支付令" sortable="false" align="center">财政支付令</th>
+                                <th field="CheckPlan" title="限额" sortable="false" align="right"width="90"  editor="{type:'numberbox',options:{precision:2,max:99999999.99,groupSeparator:','}}">限额</th>
+                                <th field="CheckMoney" title="报销金额" data-options=" formatter:function(a,b,c){  return $.formatNum(a,b,c);}" sortable="false" align="right"width="90" editor="{type:'numberbox',options:{precision:2,max:99999999.99,groupSeparator:','}}">报销金额</th>
+                                <th field="CheckUsed" title="支票用途" sortable="false" align="center"width="110" >支票用途</th>
+                                <th field="CustomerName" title="付款单位" sortable="false" align="center"width="180">付款单位</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                <div style="font-size: x-large;">业务单据</div>
+                    <table class="easyui-datagrid" id="zplq-CN_CheckDrawMain"  data-options="
+                            fitColumns:false,
+                            pagination:false,
+                            method:'get',
+                            height:165,                           
+                            rownumbers:true,
+                            scope:'zplq',
+                            single:false,
+                            forbidstatus:[4]
+                        ">
+                        <thead>
+                            <tr>
+                                <th field="GUID" hidden="true"></th>
+                                <th field="DocNum" width="120" title="单据编号" sortable="false" align="center">单据编号</th>
+                                <th field="DocDate" width="110" title="单据日期" sortable="false"align="center">单据日期</th>
+                                <th field="PersonName" width="120" title="领款人" sortable="false" align="center" >领款人</th>
+                                <th field="PlanTotal" width="80" title="限额" sortable="false" align="right" editor="{type:'numberbox',options:{precision:2,max:99999999.99,groupSeparator:','}}">限额</th>
+                                <th field="BX_Total" width="80" data-options="formatter:function(a,b,c){  return $.formatNum(a,b,c);}"  title="报销金额" sortable="false" align="right" editor="{type:'numberbox',options:{precision:2,max:99999999.99,groupSeparator:','}}">报销金额</th>
+                                <th field="DocMemo" width="150" title="摘要" sortable="false" align="center">摘要</th>
+                                <th field="DepartmentName" width="130" title="领款部门" sortable="false" align="center">领款部门</th>
+                                <th field="DWName" width="130" title="领款单位" sortable="false" align="center">领款单位</th>
+                                <th field="BillCount" width="130" title="附单数据" sortable="false" align="center">附单数据</th>
+                                <th field="DocTypeName" width="130" title="单据类型" sortable="false" align="center">单据类型</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                <div style="font-size: x-large;">业务单据明细</div>
+                    <table class="easyui-datagrid" id="zplq-CN_CheckDrawDetail"  data-options="
+                            fitColumns:false,
+                            pagination:false,
+                            method:'get',
+                            height:165,                           
+                            rownumbers:true,
+                            scope:'zplq',
+                            single:false,
+                            forbidstatus:[4]
+                            ">
+                        <thead>
+                            <tr>
+                                <th field="GUID" hidden="true"></th>
+                                <th field="GUID_Department" hidden="true"></th>
+                                <th field="BGCodeName" width="100" title="科目名称" sortable="false" align="center">科目名称</th>
+                                <th field="PlanTotal" width="80" title="限额" sortable="false" align="right" editor="{type:'numberbox',options:{precision:2,max:99999999.99,groupSeparator:','}}">限额</th>
+                                <th field="BX_Total" width="80" title="金额" sortable="false" align="right" editor="{type:'numberbox',options:{precision:2,max:99999999.99,groupSeparator:','}}">金额</th>
+                                <th field="DocMemo" width="150" title="摘要" sortable="false" align="center">摘要</th>
+                                <th field="ProjectKey" width="100" title="项目编码" sortable="false" align="center">项目编码</th>
+                                <th field="ProjectName" width="230" title="项目名称" sortable="false" align="center">项目名称</th>
+                                <th field="IsGuoKu" width="60" title="是否国库" sortable="false" align="center">是否国库</th>
+                                <th field="CustomerName" width="130" title="付款单位" sortable="false" align="center">付款单位</th>
+                                <th field="DepartmentName" width="130" title="部门名称" sortable="false" align="center">支出类型</th>
+                                <th field="PaymentNumber" width="90" title="财政支付令" sortable="false" align="center" >财政支付令</th>
+                                <th field="BGCodeKey" width="90"  title="科目编码" sortable="false" align="center" >科目编码</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="zplq-zplq-YWTypeKey" value="02" type="hidden"></input>
+    <input class="easyui-validatebox" id="zplq-zplq-GUID_Check" type="hidden"></input>
+     <input class="easyui-validatebox" id="zplq-zplq-isLQChecked" type="hidden"></input>
+</div>
+<label id="zplq-extendregion" style="display: none">
+    <input id="zplq-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="zplq-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="zplq-CN_CashMain-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+    (function () {
+        var datagridId = "zplq-CN_Check,zplq-CN_CheckDrawMain,zplq-CN_CheckDrawDetail";
+        $.setControl("divWest", datagridId);
+    })();
+</script>

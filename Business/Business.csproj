@@ -1,0 +1,256 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1FC06D84-1F8B-425C-A1E3-E9590E42F451}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Business</RootNamespace>
+    <AssemblyName>Business</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Aspose.Cells">
+      <HintPath>..\CAE\Cbin\Aspose.Cells.dll</HintPath>
+    </Reference>
+    <Reference Include="Aspose.Excel">
+      <HintPath>..\CAE\Cbin\Aspose.Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Extensions.Design" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Accountant\会计自定义实体.cs" />
+    <Compile Include="Accountant\单位人员领款单.cs" />
+    <Compile Include="Accountant\劳务费个税月度汇总.cs" />
+    <Compile Include="Accountant\工资发放.cs" />
+    <Compile Include="Accountant\工资类款项设置.cs" />
+    <Compile Include="Accountant\应付单填制.cs" />
+    <Compile Include="Accountant\应收单填制.cs" />
+    <Compile Include="Accountant\类款项汇总.cs" />
+    <Compile Include="Approval\待办任务.cs" />
+    <Compile Include="Budget\预算分配.cs" />
+    <Compile Include="Budget\预算初始值设置.cs" />
+    <Compile Include="Budget\预算控制.cs" />
+    <Compile Include="Budget\预算编制.cs" />
+    <Compile Include="Casher\CHXSave.cs" />
+    <Compile Include="Casher\CHXSelectFun.cs" />
+    <Compile Include="Casher\CDocTrans.cs" />
+    <Compile Include="Accountant\会计凭证.cs" />
+    <Compile Include="Casher\支票领取.cs" />
+    <Compile Include="Casher\支票登记薄.cs" />
+    <Compile Include="Casher\支票管理.cs" />
+    <Compile Include="Casher\支票采购.cs" />
+    <Compile Include="CommonModule\Search\BaseCondition.cs" />
+    <Compile Include="CommonModule\ComBaseReport.cs" />
+    <Compile Include="CommonModule\Search\BaseSearch.cs" />
+    <Compile Include="CommonModule\CommonTree.cs" />
+    <Compile Include="CommonModule\Search\DocCondition.cs" />
+    <Compile Include="CommonModule\Search\DocSearch.cs" />
+    <Compile Include="CommonModule\U8Certificate.cs" />
+    <Compile Include="CommonModule\业务公用的查询.cs" />
+    <Compile Include="CommonModule\公式函数解析\AnalyticalFormulaFuntion.cs" />
+    <Compile Include="CommonModule\预算统计.cs" />
+    <Compile Include="Common\CommonFun.cs" />
+    <Compile Include="Common\DBFactory.cs" />
+    <Compile Include="Common\ExportExcel.cs" />
+    <Compile Include="Common\OperatorLog.cs" />
+    <Compile Include="Common\ParseFormula.cs" />
+    <Compile Include="Casher\出纳付款单.cs" />
+    <Compile Include="Casher\出纳收款单.cs" />
+    <Compile Include="Casher\核销处理.cs" />
+    <Compile Include="Casher\现金存储.cs" />
+    <Compile Include="Casher\现金提取.cs" />
+    <Compile Include="CommonModule\借款记录.cs" />
+    <Compile Include="CommonModule\历史记录.cs" />
+    <Compile Include="Common\Constant.cs" />
+    <Compile Include="Common\CreateDocNumber.cs" />
+    <Compile Include="Common\EnumType.cs" />
+    <Compile Include="Common\JsonModel.cs" />
+    <Compile Include="Common\ConvertFunction.cs" />
+    <Compile Include="DocTrans\BGAssignToBGDefault.cs" />
+    <Compile Include="DocTrans\BGAssignToBGMain.cs" />
+    <Compile Include="DocTrans\BGDefaultToBGMain.cs" />
+    <Compile Include="EmailDrive.cs" />
+    <Compile Include="Foundation\其他设置\公式设置.cs" />
+    <Compile Include="Foundation\其他设置\交通工具.cs" />
+    <Compile Include="Foundation\其他设置\人员类别设置.cs" />
+    <Compile Include="Foundation\其他设置\帐套子表设置.cs" />
+    <Compile Include="Foundation\其他设置\证件类型设置.cs" />
+    <Compile Include="Foundation\其他设置\银行档案.cs" />
+    <Compile Include="Foundation\其他设置\收入类型设置.cs" />
+    <Compile Include="Foundation\其他设置\收款类型设置.cs" />
+    <Compile Include="Foundation\其他设置\结算方式设置.cs" />
+    <Compile Include="Foundation\其他设置\菜单维护.cs" />
+    <Compile Include="Foundation\其他设置\应收应付类型.cs" />
+    <Compile Include="Foundation\其他设置\帐套设置.cs" />
+    <Compile Include="Foundation\其他设置\银行账号.cs" />
+    <Compile Include="Foundation\其他设置\往来单位档案.cs" />
+    <Compile Include="Foundation\其他设置\出差补助标准.cs" />
+    <Compile Include="Foundation\其他设置\功能分类.cs" />
+    <Compile Include="Foundation\其他设置\支出类型.cs" />
+    <Compile Include="Foundation\其他设置\单据编号.cs" />
+    <Compile Include="Foundation\其他设置\外聘人员档案.cs" />
+    <Compile Include="Foundation\往来单位档案.cs" />
+    <Compile Include="Foundation\接口设置\接口设置.cs" />
+    <Compile Include="Foundation\权限设置\权限设置.cs" />
+    <Compile Include="Foundation\桌面设置\文件类型.cs" />
+    <Compile Include="Foundation\桌面设置\政策法规.cs" />
+    <Compile Include="Foundation\桌面设置\通知公告.cs" />
+    <Compile Include="Foundation\科目设置\科目摘要设置.cs" />
+    <Compile Include="Foundation\科目设置\预算科目设置.cs" />
+    <Compile Include="Foundation\科目设置\预算科目总表.cs" />
+    <Compile Include="Foundation\组织机构\人员档案.cs" />
+    <Compile Include="Foundation\组织机构\单位档案.cs" />
+    <Compile Include="Foundation\组织机构\部门档案.cs" />
+    <Compile Include="Foundation\薪酬设置\人员工资默认值设置.cs" />
+    <Compile Include="Foundation\薪酬设置\工资计划人员设置.cs" />
+    <Compile Include="Foundation\薪酬设置\工资计划设置.cs" />
+    <Compile Include="Foundation\薪酬设置\工资项数据加载方式设置.cs" />
+    <Compile Include="Foundation\薪酬设置\工资项目设置.cs" />
+    <Compile Include="Foundation\角色用户\用户分组.cs" />
+    <Compile Include="Foundation\角色用户\用户设置.cs" />
+    <Compile Include="Foundation\角色用户\角色设置.cs" />
+    <Compile Include="Foundation\项目设置\会计科目设置.cs" />
+    <Compile Include="Foundation\项目设置\项目档案.cs" />
+    <Compile Include="Foundation\项目设置\项目分类.cs" />
+    <Compile Include="IBusiness\IAgencyTask.cs" />
+    <Compile Include="IBusiness\IAuthSet.cs" />
+    <Compile Include="IBusiness\IFormula.cs" />
+    <Compile Include="IBusiness\IHistory.cs" />
+    <Compile Include="Income\收入凭单.cs" />
+    <Compile Include="Income\财政收入.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Common\BaseDocument.cs" />
+    <Compile Include="Reimbursement\CommonMethod.cs" />
+    <Compile Include="Common\ModelExtension.cs" />
+    <Compile Include="Reimbursement\临时工工资单.cs" />
+    <Compile Include="Reimbursement\借款单填制.cs" />
+    <Compile Include="Reimbursement\公务卡报销单.cs" />
+    <Compile Include="Reimbursement\公务卡汇总报销单.cs" />
+    <Compile Include="Reimbursement\其他报销单.cs" />
+    <Compile Include="Reimbursement\专用基金列支单.cs" />
+    <Compile Include="Reimbursement\内部调帐单.cs" />
+    <Compile Include="Reimbursement\单据列表.cs" />
+    <Compile Include="Reimbursement\应付单.cs" />
+    <Compile Include="Reimbursement\报销单列表.cs" />
+    <Compile Include="Reimbursement\差旅报销单.cs" />
+    <Compile Include="CommonModule\查询条件.cs" />
+    <Compile Include="Reimbursement\劳务费领款单.cs" />
+    <Compile Include="Reimbursement\手续费报销单.cs" />
+    <Compile Include="Reimbursement\支票申领单.cs" />
+    <Compile Include="Reimbursement\收款凭单.cs" />
+    <Compile Include="Reimbursement\期初报销单.cs" />
+    <Compile Include="Reimbursement\汇款审批单.cs" />
+    <Compile Include="Reimbursement\现金报销单.cs" />
+    <Compile Include="Test.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BusinessModel\BusinessModel.csproj">
+      <Project>{514F09EE-6920-44EE-9D6B-D2DE00E03C96}</Project>
+      <Name>BusinessModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FlowTaskImplement\FlowTaskImplement.csproj">
+      <Project>{721427D5-6B41-4EB7-8FF8-1EC4FE6A64C7}</Project>
+      <Name>FlowTaskImplement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{8E836E15-4266-45D9-A92C-2172E7C2648B}</Project>
+      <Name>Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Paltform.Flow.Run\Platform.Flow.Run.csproj">
+      <Project>{A836C92E-70FB-4367-B8B0-F3AF8494FD5D}</Project>
+      <Name>Platform.Flow.Run</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

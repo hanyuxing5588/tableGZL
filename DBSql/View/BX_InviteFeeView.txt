@@ -1,0 +1,58 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[BX_InviteFeeView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[BX_InviteFeeView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：BX_InviteFeeView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-1-21
+//功    能：劳务费视图信息
+*/
+
+create   view BX_InviteFeeView
+as
+SELECT dbo.BX_InviteFee.GUID, dbo.BX_InviteFee.GUID_BX_Main, 
+      dbo.BX_InviteFee.IsTotalTax, dbo.BX_InviteFee.GUID_InvitePerson, 
+      dbo.SS_InvitePerson.InvitePersonName, dbo.SS_InvitePerson.InvitePersonIDCard, 
+      dbo.BX_InviteFee.Total_BX, dbo.BX_InviteFee.Total_Tax, 
+      dbo.BX_InviteFee.Total_Real, dbo.SS_InvitePerson.CredentialTypekey, 
+      dbo.SS_CredentialType.CredentialTypeName AS InvitePersonIDCardType, 
+      dbo.BX_InviteFee.OrderNum,dbo.BX_InviteFee.FeeMemo,SS_CredentialType.CredentialTypeName
+FROM dbo.SS_CredentialType INNER JOIN
+      dbo.SS_InvitePerson ON 
+      dbo.SS_CredentialType.CredentialTypekey = dbo.SS_InvitePerson.CredentialTypekey RIGHT
+       OUTER JOIN
+      dbo.BX_InviteFee ON 
+      dbo.SS_InvitePerson.GUID = dbo.BX_InviteFee.GUID_InvitePerson
+
+union
+
+SELECT dbo.BX_InviteFee.GUID, dbo.BX_InviteFee.GUID_BX_Main, 
+      dbo.BX_InviteFee.IsTotalTax, dbo.BX_InviteFee.GUID_InvitePerson, 
+      dbo.SS_Person.PersonName as InvitePersonName, dbo.SS_Person.IDCard as InvitePersonIDCard, 
+      dbo.BX_InviteFee.Total_BX, dbo.BX_InviteFee.Total_Tax, 
+      dbo.BX_InviteFee.Total_Real, dbo.SS_Person.IDCardType as CredentialTypekey, 
+      dbo.SS_CredentialType.CredentialTypeName AS InvitePersonIDCardType, 
+      dbo.BX_InviteFee.OrderNum,dbo.BX_InviteFee.FeeMemo,SS_CredentialType.CredentialTypeName
+FROM dbo.SS_CredentialType INNER JOIN
+      dbo.SS_Person ON 
+      dbo.SS_CredentialType.CredentialTypekey = dbo.SS_Person.IDCardType RIGHT
+       OUTER JOIN
+      dbo.BX_InviteFee ON 
+      dbo.SS_Person.GUID = dbo.BX_InviteFee.GUID_InvitePerson
+      where dbo.SS_Person.PersonName is not null
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

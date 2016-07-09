@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>管理费用执行进度表</title>
+    <style type="text/css">
+        body
+        {
+            font-size: 12px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .Layout
+        {
+            margin: 0px auto;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+        .xj
+        {
+            height: 30px;
+            text-align: center;
+            margin: 0px;
+            width: 760px;
+        }
+        .xj .xj_pos
+        {
+            text-align: center;
+            width: 100%;
+            font-family: 宋体;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 43px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .banner
+        {
+            width: 760px;
+            font-family: 宋体;
+            font-size: 10px;
+            float: left;
+            padding-top: 15px;
+            border: 0px;
+        }
+        .content
+        {
+            width: 760px;
+            line-height: 100%;
+            height: 100%;
+        }
+        
+        table
+        {
+            border-collapse: collapse; /*边框合并属性*/
+            margin-top: 2px;
+            font-family: 宋体;
+            font-size: 12px;
+            width: 760px;
+            float: left;
+            table-layout: fixed;
+        }
+        th
+        {
+            border: 1px solid #000000;
+            height: 26px; /*background: #C0C0C0;*/
+            text-align: center;
+            line-height: 25px;
+        }
+        td
+        {
+            border: 1px solid #000000;
+            height: 30px;
+            text-align: center;
+            word-wrap: break-word;
+            line-height: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div id="print" style="position: relative; height: 100%; line-height: 100%;" options="{'extendcontent':{'glfyzxcx':{'gist':'rowcount','model':'page','target':'content'}}}">
+        <div id="content" class="Layout">
+            <div class="xj">
+                <div class="xj_pos">
+                    管&nbsp;理&nbsp;费&nbsp;用&nbsp;执&nbsp;行&nbsp;进&nbsp;度&nbsp;表
+                </div>
+            </div>
+            <div class="banner">
+                <table id="" border="0" cellpadding="0" cellspacing="0" style="width: 100%; height: 30px;
+                    font-family: 宋体; font-size: 10px;">
+                    <tr>
+                        <td field="" style="padding-left: 2%; margin-left: 0px; text-align: left; vertical-align: bottom;
+                            border: 0px;">
+                            部门名称：&nbsp;<span id="glfyzxcx_department">计划财务处</span>
+                        </td>
+                        <td field="" style="padding-left: 30%; margin-left: 0px; text-align: left; vertical-align: bottom;
+                            border: 0px;">
+                            查询日期：&nbsp;<span id="glfyzxcx_Date">2014-03-27</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="contents">
+                <table id="glfyzxcx_table">
+                    <thead>
+                        <tr>
+                            <th field="colindex" style="width: 55px;">
+                                序号
+                            </th>
+                            <th field="glfyzxcx-bgcodekey" style="width: 100px;">
+                                科目编号
+                            </th>
+                            <th field="glfyzxcx-bgcodename" style="width: 110px;">
+                                科目名称
+                            </th>
+                            <th field="glfyzxcx-totalbg" isdemical="true" style="width: 90px;">
+                                预算数
+                            </th>
+                            <th field="glfyzxcx-totalbx" style="width: 90px;">
+                                执行数
+                            </th>
+                            <th field="glfyzxcx-jy" style="width: 90px;">
+                                结余
+                            </th>
+                            <th field="glfyzxcx-jybl" style="width: 110px;">
+                                结余比例
+                            </th>
+                            <th field="glfyzxcx-wcl" style="width: 90px;">
+                                完成率
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

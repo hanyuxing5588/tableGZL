@@ -1,0 +1,103 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "决算执行";
+}
+<link href="../../Scripts/jquery-easyui-1.3.4/themes/metro/easyui.css?r=11" rel="stylesheet" />
+<script>
+    //新增tab标签 for 穿透到单据列表
+    window.openTabs2 = parent.window.openTabs2;
+    //标记是否从新刷新
+    var reload = "T";
+    window.mainKey = "";
+    $(function () {
+        $(".iframe1").height($('body').height()-35);
+        //            var mainheight = $(this).contents().find("body").height() -62;
+        //            $(this).height(mainheight);
+        //        }); 
+        $('#tab-user-right').tabs({
+            onSelect: function () {
+                openTab();
+
+            }
+        });
+        $('#closeTab').on('click', function () {
+            parent.window.CloseTabs();
+        });
+    });
+//    function closeTab() {
+//        parent.window.CloseTabs();
+    //    };
+    window.openPageTabs = function (t1,t2,t3,t4,t5) {
+        window.parent.openPageTabs(t1, t2, t3, t4, t5);
+    }
+    window.CloseTabs = function () {
+        parent.window.CloseTabs();
+    }
+    function openTab() {
+        var tab = $('#tab-user-right').tabs('getSelected');
+        var tbId = tab.attr("id");
+        var tabSrc = tab.attr("src");
+
+//        if (!window.mainKey && tabSrc != "/AReport/Index") {
+//            $.messager.alert('提示', '请先录入封面')
+//            $('#tab-user-right').tabs("select", 0);
+//            return;
+//        }
+        //获取tab的iframe对象
+        var tbIframe = $("#" + tbId + " iframe:first-child");
+        if (reload == "T") {
+            tbIframe.attr("src", tabSrc);
+        } else {
+            if (tbIframe.attr("src") == "") {
+                tbIframe.attr("src", tabSrc);
+            }
+        }
+    }
+</script>
+<div class="easyui-layout" id="xjbxd-dataregion" data-options="fit:true" z="1">
+    <div id="tab-user-right" > 
+        <div title="部门执行排名" id="user-right-all1145" src="/Report/BMYSZXPM">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+          <div title="项目执行排名" id="user-right-all11145" src="/ReportXMZXPM">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+          <div title="执行进度一览（管理费分摊）" id="user-right-all114" src="/Report/zxjd">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+          <div title="部门收入汇总" id="user-right-role" src="/Report/BMGZXMHZ">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+	    <div title="部门收入明细" id="user-right-all" src="/Report/BMGZMX">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+         <div title="个人收入查询" id="user-role" src="/Report/grsrcx">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" width="100%" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+          <div title="项目支出执行查询" id="user-right-act" src="/Report/XMZXZCCX">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" width="100%" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+        <div title="管理费用执行查询" id="user-right-act2123123" src="/Report/glfyzxcx">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" width="100%" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+	    <div title="项目管理费用执行情况表（按项目）" id="user-right-act212312e3" src="/Report/XMGLFYFORXM">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" width="100%" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+          <div title="项目管理费用执行情况表（按科目）" id="user-right-act2123f123" src="/Report/XMGLFYFORKM">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" width="100%" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+	      @{
+              var ckey = ViewData["CKey"]+"";
+              var arrPersonKey = new List<string> { "mmm", "人员key2", "人员key3" ,"..."};//添加能看的人员key值  全是小写字母
+              if(arrPersonKey.Contains(ckey.ToLower())){
+	     <div title="预算执行情况表" id="user-right-act21231231111111" src="/Report/CZYSZXQK">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" width="100%" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>}
+           }
+          
+    </div>
+    <div style="display:none">
+       <button id="closeTab" type="button"></button>
+    </div>
+ 
+</div>

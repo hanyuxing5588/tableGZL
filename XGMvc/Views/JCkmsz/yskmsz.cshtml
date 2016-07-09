@@ -1,0 +1,157 @@
+﻿
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<script src="../../Scripts/jc/yskmsz.js" type="text/javascript"></script>
+<div class="easyui-layout" id="yskmsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            @*<a href="#" class="easyui-linkbutton" id="yskmsz-print" 
+                   data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'yskmsz',forbidstatus:[1,2,3],
+                   window:'yskmsz-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/yskmsz']}">打印</a> *@ 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yskmsz-save" 
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   JCDA:true,
+                   treeId:['yskmsz-tree-setup'],
+                   gridId:['yskmsz-SS_BGCode'],
+                   NewIdStatus:'1',
+                   saveStatus:'1',
+                   dataLoadUrl:'/JCkmsz/Retrievekm',
+                   scope:'yskmsz',status:'4',forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yskmsz-cancel" 
+                   data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'yskmsz',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   @*<a href="#" class="easyui-linkbutton" id="yskmsz-chaxun" 
+                   data-options="plain:'true',iconCls:'icon-chaxun', 
+                   scope:'yskmsz',forbidstatus:[4],
+                   bindmethod:{ 'click': [''] }">定位</a> *@ 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yskmsz-close"
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'yskmsz'">退出</a>
+
+                    
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="预算设置">
+                <ul class="easyui-tree" id="yskmsz-tree-setup" data-options="
+                  msg:'预算设置',
+                  m:'BG_Setup',
+                  url:'/Tree/GetJCBGSetUpTree',
+                  forbidstatus:[3],
+                  method:'post',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  associate:{
+                     'yskmzb-BG_Setup-BGSetupName':['BGSetupName']
+                  },
+                  scope:'yskmsz'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-optaions="fit:true" >
+        <table id="table" border="0" style="padding: 0; width:100%; margin: 0">
+            <tr>
+                <td colspan="4" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        预&nbsp;算&nbsp;科&nbsp;目&nbsp;设&nbsp;置</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BGCodeName">
+                        &nbsp;预算设置名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="yskmzb-BG_Setup-BGSetupName" 
+                        data-options="forbidstatus:[-1]" />
+                </td>
+                 <td class="tdTextTr2">
+                    
+                </td>
+                <td class="tdValueTr2">
+                   
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    @*<table id="yskmsz-SS_BGCode" class="easyui-treegrid">
+                    </table>*@
+                    <table class="easyui-treegrid" id="yskmsz-SS_BGCode" data-options="
+                         checkbox: true,
+                         iconCls: 'icon-ok',
+                         idField: 'GUID',
+                         treeField: 'BGCodeName',
+                         animate: true,                        
+                         height: 490,
+                         scope:'yskmsz',
+                         rownumbers: true,
+                         isAssociate:true,
+                         singleSelect:true,
+				         fitColumns: true,
+                         threeLinkCheck:true,
+                         checkOnSelect:false,
+                         selectOnCheck:false,
+                         onClickCell:onClickCell,
+                         onAfterEdit:onAfterEdit,
+                         forbidstatus:[1,3,4],
+				         method: 'get'
+                        ">
+                        <thead>
+                            <tr>
+                                <th data-options="field:'_parentId',width:180,hidden:true">
+                                </th>
+                                <th field="GUID" data-options="width:100,checkbox:'true',formatter:function(a,b,c){
+                                    return $.gridCheckBoxCol(a,b,c,'GUID');
+                                }">
+                                </th>
+                                <th field="PGUID" title="PGUID" hidden="true">
+                                </th>
+                                <th field="GUID_BGCode" title="GUID_BGCode" hidden="true">
+                                </th>
+                                <th field="BGCodeName" title="科目名称" align="left">
+                                    科目名称
+                                </th>
+                                <th field="RateNum" title="分摊比率" align="center" editor="{type:'numberbox'}" data-options="formatter:function(a,b,c){
+                                    return numberbox(a,b,c)}">
+                                    分摊比率
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="yskmsz-SS_BGCode-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="yskmsz-SS_BGCode-PGUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="yskmsz-SS_BGCode-GUID_BGCode" type="hidden"
+        keyattr="1"></input>
+</div>
+<label id="yskmsz-extendregion" style="display: none">
+    <input id="yskmsz-status" type="text"></input>
+    <input id="initscope" type="text" value="yskmsz"></input>
+    <input id="initController" type="text" value="JCkmsz"></input>
+    <input id="initstatus" type="text" value="2"></input>
+    <input id="initguid" type="text" value="yskmsz-SS_BGCode"></input>
+    <div id="yskmsz-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+    (function () {
+        var datagridId = "yskmsz-SS_BGCode";
+        var rowColCount = 4; //一行的列数
+        $.setControl("divWest", datagridId, rowColCount);
+    })();
+</script>

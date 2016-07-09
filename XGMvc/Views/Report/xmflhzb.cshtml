@@ -1,0 +1,339 @@
+﻿<script>
+    $(document).ready(function () {
+
+        $('#xmflhzb-history-Year').combo('setValue', new Date().getFullYear());
+        $('#xmflhzb-history-Year').combo('setText', new Date().getFullYear());
+        var formatNum = function (s1) {
+            var p = /(\d+)(\d{3})/;
+            while (p.test(s1)) {
+                s1 = s1.replace(p, "$1,$2");
+            }
+            return s1;
+        }
+        var colConfig = $('#xmflhzb_grid').datagrid('getColumnOption', 'T4');
+        var GetData = function () {
+            $("#xmflhzb_RMBUnit").html($('#xmflhzb-history-RMBUnit').combo('getText'))
+            $("#xmflhzb_Year").html($('#xmflhzb-history-Year').combo('getText'))
+
+            var data = $.view.retrieveData("xmflhzb", "historydatafilter");
+            var url;
+            var tcondition;
+            var result = {};
+            if (data && data.m) {
+                for (var i = 0, j = data.m.length; i < j; i++) {
+                    var temp = data.m[i];
+                    if (!temp && !temp.v) continue;
+                    result[temp.n] = temp.v;
+                }
+            }
+
+            var treeCondition = [];
+            //树节点
+
+            var r = $("#xmflhzb-tree-project").tree('getSelected');
+            if (r) {
+                tcondition = { treeModel: r.attributes.m, treeValue: r.id };
+                treeCondition.push(tcondition);
+                $("#xmflhzb_ProjectName").html(r.text)
+            }
+
+            //预算步骤
+
+            r = $("#xmflhzb-tree-step").tree('getSelected');
+            if (r) {
+                tcondition = { treeModel: r.attributes.m, treeValue: r.attributes.BGStepKey };
+                treeCondition.push(tcondition);
+
+            }
+
+            result = $.extend(result, { TreeNodeList: treeCondition });
+            $.ajax({
+                url: '/Report/GetLoadXMFLHZBData/',
+                data: { condition: JSON.stringify(result) },
+                dataType: "json",
+                type: "POST",
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                    $.messager.alert("错误", '网络超时,请重新登录', 'error');
+                },
+                success: function (data) {
+                    if (!data || data == null) {
+                        return;
+                    }
+                    $('#xmflhzb_grid').datagrid('loadData', data);
+                }
+            });
+
+
+        }
+        var ExportExcel = function () {
+            var l = $('#xmflhzb_grid').datagrid('getRows');
+            if (l <= 1) {
+                $.messager.alert('系统提示', '没有要输出的数据！');
+                return;
+            }
+            var tcondition = {};
+            //部门树
+            var r = $("#xmflhzb-tree-project").tree('getSelected');
+            if (r) {
+                tcondition["ProjectName"] = r.text;
+            }
+            tcondition["Year"] = $('#xmflhzb-history-Year').combo('getValue');
+            tcondition["RMBUnit"] = $('#xmflhzb-history-RMBUnit').combobox('getText');
+            var result = $.extend(tcondition, {})
+
+            var url = $.format("/Report/ExportXMFLHZBReport?ReportHead={0}", JSON.stringify(result))
+            window.open(url);
+        }
+
+        $('#xmflhzb-select').bind('click', function () {
+            GetData();
+        })
+        $('#xmflhzb-shuchu').bind('click', function () {
+            ExportExcel();
+        })
+        $('#xmflhzb-tuichu').bind('click', function () {
+            parent.window.CloseTabs();
+        })
+        //项目
+        $("#xmflhzb-tree-project").tree({
+            url: '/Tree/GetProjectTree',
+            method: 'post',
+            onLoadSuccess: function (node, data) {
+                if (data && data.length > 0) {
+                    var flag = false;
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].isCheck == true) {
+                            flag = true;
+                            $("#xmflhzb-tree-project li:eq(" + i + ")").find("div").first().addClass("tree-node-selected");
+                        }
+                    }
+                    if (flag == false) {
+                        $("#xmflhzb-tree-project li:eq(0)").find("div").first().addClass("tree-node-selected");
+                    }
+                }
+            }
+        });
+        //预算步骤
+        $("#xmflhzb-tree-step").tree({
+            url: '/Tree/GetBGStepTree',
+            method: 'post',
+            onLoadSuccess: function (node, data) {
+                if (data && data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].isCheck == true) {
+                            $("#xmflhzb-tree-step li:eq(" + i + ")").find("div").addClass("tree-node-selected");
+                        }
+                    }
+
+                }
+            }
+        });
+        //设置Grid的行背景颜色
+        //        $("#xmflhzb_grid").datagrid({
+        //            rowStyler: function (index, row) {
+        //                if (row.bgcodekey && row.bgcodekey.length == 2) {
+        //                    return "background-color:#CCFFCC";
+        //                }
+        //            }
+        //        });
+        $('#xmflhzb-tuichu').bind('click', function () {
+
+            parent.window.CloseTabs();
+        })
+
+        $('#xmflhzb_grid').datagrid({
+            fitColumns: true,
+            width: $('body').width() - 205,
+            height: $('body').height() - 161
+        });
+    })
+
+
+</script>
+<body>
+    <div class="easyui-layout" id="xmflhzb-dataregion" data-options="fit:true" z="1">
+       <div data-options="region:'west',split:'true'" style="width: 200px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="项目">
+                <ul  id="xmflhzb-tree-project" data-options="">
+                </ul>
+            </div>
+            <div title="预算步骤">
+                <ul  id="xmflhzb-tree-step" data-options="">
+                </ul>
+            </div>
+        </div>
+    </div>
+       <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+             <a href="#" class="easyui-linkbutton" id="xmflhzb-print"
+                      data-options="plain:'true',iconCls:'icon-dayin',
+                  scope:'xmflhzb'">打印</a>
+             <a href="#" b-type="1"  class="easyui-linkbutton" id="xmflhzb-shuchu"
+                data-options="plain:'true',iconCls:'icon-shuchu',                 
+                forbidstatus:[-1]">输出</a>
+            <a href="#" class="easyui-linkbutton" id="xmflhzb-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  scope:'xmflhzb',
+                  forbidstatus:[-1]">查询</a>           
+       @*     <a href="#" class="easyui-linkbutton" id="xmflhzb-help" data-options="
+            plain:'true',iconCls:'icon-bangzhu', scope:'xmflhzb',
+            bindmethod:{ 'click': ['help'] }">帮助</a>   *@
+            <a href="#" class="easyui-linkbutton" id="xmflhzb-tuichu"
+                data-options="plain:'true',iconCls:'icon-tuichu',
+            scope:'xmflhzb'">退出</a>
+            </div>
+        </div>
+       <div data-options="region:'center'">
+            <div b-type="1" id="xmflhzb-historydatafilter" style="width: 100%; margin: 0px; padding: 0px;">
+              
+                <table border="0" style="height: 40px; padding: 0px; margin: 0">
+                    <tr>
+                        <td>
+                            <label for="field1" style="width:80px;">预算年度</label>
+                        </td>
+                        <td>
+                            <select id="xmflhzb-history-Year" class="easyui-combobox"  data-options="editable:false"; style="width:80px;">  
+                                <option value="2011">2011</option>  
+                                <option value="2012">2012</option>
+                                <option value="2013">2013</option>
+                                <option value="2014">2014</option>  
+                                <option value="2015">2015</option>
+                                <option value="2016">2016</option>    
+                                <option value="2017">2017</option>  
+                                <option value="2018">2018</option>
+                                <option value="2019">2019</option>    
+                                <option value="2020">2020</option>  
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>    
+                                <option value="2023">2023</option>  
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>    
+                                <option value="2026">2026</option>  
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>    
+                                <option value="2029">2029</option>  
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>    
+                                <option value="2032">2032</option>  
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>    
+                                <option value="2035">2035</option>  
+                                <option value="2036">2036</option>
+                                <option value="2037">2037</option>    
+                                <option value="2038">2038</option>  
+                                <option value="2039">2039</option>
+                                <option value="2040">2040</option>    
+                                <option value="2041">2041</option>  
+                                <option value="2042">2042</option>
+                                <option value="2043">2043</option>    
+                                <option value="2044">2044</option>  
+                                <option value="2045">2045</option>
+                                <option value="2046">2046</option>    
+                                <option value="2047">2047</option>  
+                                <option value="2048">2048</option>
+                                <option value="2049">2049</option>    
+                                <option value="2050">2050</option>  
+                            </select> 
+                        </td>
+                        
+                        <td style="width: 60px">
+                             金额单位
+                        </td>
+                        <td>
+                           <select id="xmflhzb-history-RMBUnit" class="easyui-combobox" 
+                               data-options="editable:false,value:10000"
+                               style="width: 80px;">
+                                    <option value="1">元</option>
+                                    <option value="100">百元</option>
+                                    <option value="1000">千元</option>
+                                    <option value="10000" selected=selected>万元</option>
+                                    <option value="100000">十万元</option>
+                                    <option value="1000000">百万元</option>
+                            </select>
+                        </td>
+                       
+                    </tr>                  
+                </table>
+               
+                <table border="0" style="height: 40px; width: 100%; padding: 0px; margin: 0">
+                    <tr>
+                        <td colspan="18" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                           项目预算查询
+                        </td>
+                    </tr>
+                     <tr>
+                        <td field="" style="text-align: center; width: 100px; height: 18px; float: left;
+                            text-align:right;">
+                           <label>&nbsp&nbsp&nbsp 项目名称:</label>
+                        </td>
+                        <td field="" style="text-align: center; width: 250px; height: 18px; float: left;
+                            text-align: left;">
+                            <div id="xmflhzb_ProjectName"></div>
+                        </td>
+                         <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                            text-align: right;">
+                            <label> 预算年度：</label> 
+                        </td>
+                        <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                            text-align: left;">
+                             <div id="xmflhzb_Year"></div>
+                        </td>
+                        <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                            text-align: right;">
+                            <label> 单位：</label> 
+                        </td>
+                        <td field="" style="text-align: center; width: 100px; height: 18px; float: left;
+                            text-align: left;">
+                             <div id="xmflhzb_RMBUnit"></div>
+                        </td>
+                        <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                            text-align: right;">
+                            <label> 总经费：</label> 
+                        </td>
+                        <td field="" style="text-align: center; width: 100px; height: 18px; float: left;
+                            text-align: left;">
+                             <div id="xmflhzb_RMBTotal"></div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+                <table style="padding:5px" class="easyui-datagrid" id="xmflhzb_grid" data-options="
+                        rownumbers:true,
+                        fitcolumns:true,
+                        singleSelect:true,                        
+                        scope:'xmflhzb'
+                        ">
+                    <thead>
+                        <tr>
+                            
+                            <th field="bgcodekey" width="100px;" align="left" halign="center" >
+                                科目编号
+                            </th>
+                            <th field="bgcodename" width="200px;" align="left" halign="center">
+                                科目名称
+                            </th>
+                            <th field="totalbg1" width="150px;" align="right" halign="center">
+                                分摊实际数
+                            </th>
+                            <th field="totalbg2" width="100px;" align="right" halign="center">
+                                项目直接成本
+                            </th>
+                            <th field="totalbgall" width="150px;" align="right" halign="center">
+                                项目成本合计
+                            </th>
+                            
+                        </tr>
+                    </thead>
+                   
+                </table>
+        </div>
+        <label id="xmflhzb-extendregion" style="display: none">
+        <input id="xmflhzb-status" type="text"></input>
+        <input id="initscope" type="text" value="xmflhzb"></input>
+        <input id="initstatus" type="text" value=@ViewData["status"]></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+        <div id="b-window" line="true">
+        </div>
+</label>
+</div>
+</body>

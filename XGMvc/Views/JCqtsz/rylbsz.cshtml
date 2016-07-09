@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "人员类别设置";
+}
+<script src="../../Scripts/jc/jcCommon.js" type="text/javascript"></script>
+<div class="easyui-layout" id="rylbsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   <a href="#" class="easyui-linkbutton" 
+                   id="rylbsz-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newlyAdd'] },scope:'rylbsz',status:'1',
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="rylbsz-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'rylbsz-SS_PersonType-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'rylbsz',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="rylbsz-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'rylbsz-SS_PersonType-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'rylbsz',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" id="rylbsz-disable"
+                   data-options="plain:'true',iconCls:'icon-tingyong',
+                   bindmethod:{ 'click': ['setDisable'] },
+                   bindparms:{'setDisable':['rylbsz-SS_PersonType-IsStop','rylbsz-tree-Bank']},scope:'rylbsz',status:'2',
+                   forbidstatus:[1,2,3]">停用</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="rylbsz-enable"
+                   data-options="plain:'true',iconCls:'icon-qiyong',
+                   bindmethod:{ 'click': ['setEnable'] },
+                   bindparms:{'setEnable':['rylbsz-SS_PersonType-IsStop','rylbsz-tree-Bank']},scope:'rylbsz',status:'2',
+                   forbidstatus:[1,2,3]">启用</a>
+
+                   <a href="#" class="easyui-linkbutton" id="rylbsz-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'rylbsz',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="rylbsz-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   treeId:['rylbsz-tree-Bank'],
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCqtsz/Save']},scope:'rylbsz',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                 
+                   <a href="#" class="easyui-linkbutton"
+                   id="rylbsz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'rylbsz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员类别">
+                <ul class="easyui-tree" id="rylbsz-tree-Bank" 
+                 data-options="associate:{
+                    'rylbsz-SS_PersonType-GUID':['GUID'],
+                    'rylbsz-SS_PersonType-PersonTypeKey':['PersonTypeKey'],
+                    'rylbsz-SS_PersonType-PersonTypeName':['PersonTypeName'],
+                    'rylbsz-SS_PersonType-IsStop':['IsStop']
+                  },
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  url:'/Tree/GetPersonType',
+                  customBindFirst:true,
+                  findParent:false,
+                  retStatus:'4',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height:auto; width: auto;padding: 0 0 0 150px">
+            <tr>
+                <td colspan="4" style="height: 100px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        人&nbsp;员&nbsp;类&nbsp;别&nbsp;设&nbsp;置</div>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td>
+                    <label for="field1" id="lbl-PersonTypeKey">
+                        人员类别编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="rylbsz-SS_PersonType-PersonTypeKey" data-options="forbidstatus:[4]"/>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-PersonTypeName">
+                        人员类别名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="rylbsz-SS_PersonType-PersonTypeName" data-options="forbidstatus:[4]"/>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td colspan="2">
+                    <input type="checkbox" class="easyui-checkbox"  id="rylbsz-SS_PersonType-IsStop" data-options="forbidstatus:[4]"/>是否停用
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="rylbsz-SS_PersonType-GUID" type="hidden"></input>
+</div>
+<label id="rylbsz-extendregion" style="display: none">
+    <input id="rylbsz-status" type="text"/>
+    <input id="initscope" type="text" value='rylbsz'/>
+    <input id="initstatus" type="text" value='4'/>
+    <input id="initguid" type="text" value=''/>
+</label>
+<div id="b-window" line="true"></div>

@@ -1,0 +1,1816 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "预算控制";
+}
+<script type="text/javascript">
+    var gBGItemInfo = null;
+    var gMap = {};
+    var gMultiple = "NO";
+    var gLoad = false;
+    var gCMYear = '#yskz-BG_ControlMain-CMYear';
+    var gGUID_DW = '#yskz-BG_ControlMain-GUID_DW';
+    var gGUID_Department = '#yskz-BG_ControlMain-GUID_Department';
+    var gGUID_Project = '#yskz-BG_ControlMain-GUID_Project';
+    var gControlWayKey = '#yskz-BG_ControlMain-ControlWayKey'; 
+    var gMoneyUnit = '#yskz-BG_ControlMain-GUID_MoneyUnit';
+    var gControlDetail = '#yskz-BG_ControlDetail';
+    var gColIsControl = "IsControl";
+    var gColBGItemName = "BGItemName";
+    var gColBGCodeName = "BGCodeName";
+    var gColBGED = "BGED";
+    var gColIsScaleOrNot = "IsScaleOrNot";
+    var gColControlEDScale = "ControlEDScale";
+    var gColControlEDLimit = "ControlEDLimit";
+    var gColGroupID = "GroupID";
+    var gColGUID_HandleMethod = "GUID_HandleMethod";
+    var gCellState = "1";
+    var gTimeStart = 0;
+    var gTimeStartLimit = 0;
+    var gTimeStartScale = 0;
+    var gTimeEnd = 0;
+    var gOldValue = "";
+
+    ///
+    $.extend($.fn.datagrid.methods, {
+        // 提示功能
+        doCellTip: function (jq, params) {
+            function showTip(data, td, e, rowIndex) {
+                var field = $(td).attr('field');
+                if ($(td).text() == "" || $(td).text() != "0.00")
+                    return;
+                var text = getTipText(rowIndex, field);
+                data.tooltip.text(text).css({
+                    top: (e.pageY + 10) + 'px',
+                    left: (e.pageX + 20) + 'px',
+                    'z-index': $.fn.window.defaults.zIndex,
+                    display: 'block'
+                });
+            };
+            return jq.each(function () {
+                var grid = $(this);
+                var options = $(this).data('datagrid');
+                if (true) {
+                    var panel = grid.datagrid('getPanel').panel('panel');
+                    var defaultCls = {
+                        'border': '1px solid #333',
+                        'padding': '1px',
+                        'color': '#333',
+                        'background': '#f7f5d1',
+                        'position': 'absolute',
+                        'max-width': '200px',
+                        'border-radius': '4px',
+                        '-moz-border-radius': '4px',
+                        '-webkit-border-radius': '4px',
+                        'display': 'none'
+                    }
+                    var tooltip = $("<div id='celltip'></div>").appendTo('body');
+                    tooltip.css($.extend({}, defaultCls, params.cls));
+                    options.tooltip = tooltip;
+                    panel.find('.datagrid-body').each(function () {
+                        var delegateEle = $(this).find('> div.datagrid-body-inner').length
+                            ? $(this).find('> div.datagrid-body-inner')[0]
+                            : this;
+                        $(delegateEle).undelegate('td', 'mouseover').undelegate(
+                            'td', 'mouseout').undelegate('td', 'mousemove')
+                            .delegate('td', {
+                                'mouseover': function (e) {
+                                    var tr = $(e.target).closest("tr.datagrid-row");
+                                    var num = _511(tr);
+                                    if (params.delay) {
+                                        if (options.tipDelayTime)
+                                            clearTimeout(options.tipDelayTime);
+                                        var that = this;
+                                        options.tipDelayTime = setTimeout(
+                                                function () {
+                                                    showTip(options, that, e, num);
+                                                }, params.delay);
+                                    } else {
+                                        showTip(options, this, e, num);
+                                    }
+
+                                },
+                                'mouseout': function (e) {
+                                    var tr = $(e.target).closest("tr.datagrid-row");
+                                    var num = _511(tr);
+                                    if (options.tipDelayTime)
+                                        clearTimeout(options.tipDelayTime);
+                                    options.tooltip.css({
+                                        'display': 'none'
+                                    });
+                                },
+                                'mousemove': function (e) {
+                                    var tr = $(e.target).closest("tr.datagrid-row");
+                                    var num = _511(tr);
+                                    var that = this;
+                                    if (options.tipDelayTime) {
+                                        clearTimeout(options.tipDelayTime);
+                                        options.tipDelayTime = setTimeout(
+                                                function () {
+                                                    showTip(options, that, e, num);
+                                                }, params.delay);
+                                    } else {
+                                        showTip(options, that, e, num);
+                                    }
+                                }
+                            });
+                    });
+
+                }
+
+            });
+        }
+
+    });
+    ///
+    $.extend($.fn.combogrid.methods, {
+        //验证combogrid
+        verifyData: function () {
+            var txt = $(this).combo('textbox');
+            txt.required = true;
+            var msg = "";
+            var TempVal = $(this).combogrid('getValue');
+            var grid = $(this).combogrid("grid");
+            var row = grid.datagrid("getSelected");
+            if (null == row) {
+                var id = $(this).attr('id');
+                var labid = "#lbl-" + id.split('-')[2];
+                var labelVal = $(labid).text().replace('*', '');
+                msg = $.trim(labelVal) + "不能为空！";
+            }
+            return msg;
+        }
+    });
+
+    $.extend($.fn.datagrid.defaults.editors, {
+        combogrid: {
+            init: function (container, options) {
+                var input = $("<input type=\"text\" class=\"datagrid-editable-combogrid\" />").appendTo(container);
+                var guidProject = GetGUID(gGUID_Project);
+                var BG_SetupKey = "08";
+                if (guidProject == "") {
+                    BG_SetupKey = "07";
+                }
+                if (options.remoteUrl.indexOf("BGItemForYSKZ") != -1) {
+                    options.remoteUrl = "/Combogrid/BGItemForYSKZ?BG_SetupKey=" + BG_SetupKey;
+                }
+
+                if (options.textField == "BGItemName") {
+                    options.onSelect = function () {
+                        var grid = $(input).combogrid("grid");
+                        var selRow = grid.datagrid("getSelected");
+                        var cellRow = $(gControlDetail).datagrid("getSelected");
+                        var guid = selRow["GUID_Item"];
+                        cellRow["GUID_BGItem"] = guid;
+                        var rowIndex = $(gControlDetail).datagrid("getRowIndex", cellRow);
+                        if (gBGItemInfo != null) {
+                            var info = gBGItemInfo.info;
+                            var length = info.length;
+                            if (rowIndex < length) {
+                                var valueSet = info[rowIndex];
+                                var value = valueSet[guid];
+                                if (value != undefined) {
+                                    gMap[rowIndex][gColBGED] = value;
+                                    var multiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+                                    var valueShow = transferEx(value, multiple);
+                                    SetCellValue(gControlDetail, gColBGED, valueShow);
+                                    var valueIsScale = cellRow[gColIsScaleOrNot];
+                                    if ("" == valueIsScale) {
+                                        gMap[rowIndex][gColControlEDLimit] = value;
+                                        SetCellValue(gControlDetail, gColControlEDLimit, valueShow);
+                                    }
+                                    else {
+
+                                        var Scale = cellRow[gColControlEDScale];
+                                        Scale = parseFloat(Scale);
+                                        if (value == "") {
+                                            value = 0;
+                                        }
+                                        else {
+                                            value = parseFloat(value);
+                                        }
+                                        value = value * Scale;
+                                        gMap[rowIndex][gColControlEDLimit] = value.toFixed(2);
+                                        valueShow = transferEx(value, multiple);
+                                        SetCellValue(gControlDetail, gColControlEDLimit, valueShow);
+                                    }
+                                    var add = cellRow.Add;
+                                    if (add != "NO") {
+                                        var allRows = $(gControlDetail).datagrid('getRows');
+                                        mySum(gControlDetail, add, allRows, gColControlEDLimit);
+                                        mySum(gControlDetail, add, allRows, gColBGED);
+                                    }                                    
+                                }
+                            }
+                        }
+                    }
+                }
+
+                input.combogrid(options);
+                //绑定事件
+                if (options.textField != "BGItemName") {
+                    $.view.bind.call($(input), 'combogrid');
+                }
+
+                //加载远程数据
+                $(input).combogrid('loadRemoteDataToLocal');
+
+                return input;
+            },
+            destroy: function (target) {
+                $(target).combogrid('destroy');
+            },
+            getValue: function (target) { //回到grid
+
+                var opts = $(target).combogrid('options');
+                var val = $(target).combogrid('getValue'), text = $(target).combogrid('getText');
+                var rowIndex = $(target).combogrid("grid").datagrid("getRowIndex", val);
+                if (!opts.customValue && rowIndex < 0) {
+                    text = "";
+                    val = "";
+                }
+                if (!text) {
+                    $.fn.combogrid.methods["setAssociate"].call(target);
+                    val = "";
+                }
+                if (opts.customValue && rowIndex < 0) {
+                    val = "";
+                }
+                target.parents().find("div.datagrid-editable").attr("oaovalue", val);
+                return text;
+            },
+            setValue: function (target, value) {//从grid的来
+                var ivalue = target.parents().find("div.datagrid-editable").attr("oaovalue");
+                $(target).combogrid('setValue', ivalue)
+                return $(target).combogrid('setText', value);
+            },
+            resize: function (target, width) {
+                $(target).combogrid("resize", width);
+            }
+        },
+        text: {
+            init: function (_176, _177) {
+                var _178 = $("<input type=\"text\" class=\"datagrid-editable-input\">").appendTo(_176);
+                return _178;
+            },
+            getValue: function (_179) {
+                //过滤掉所有html标签
+
+                var temp = $(_179).val().stripHTML();
+                return temp;
+            },
+            setValue: function (_17a, _17b) {
+
+                $(_17a).val(_17b);
+            },
+            resize: function (_17c, _17d) {
+                $(_17c)._outerWidth(_17d)._outerHeight(22);
+            }
+        },
+        numberbox: {
+            init: function (container, options) {
+                var input = $("<input type=\"text\" max=\"99999999.99\" class=\"datagrid-editable-numberbox\" />").appendTo(container);
+                options = $.extend(options, { min: 0, groupSeparator: ',', precision: 2 });
+                input.numberbox(options);
+                //绑定事件
+                $.view.bind.call($(input), 'numberbox');
+                //加载数据
+                return input;
+            },
+            destroy: function (target) {
+                $(target).numberbox('destroy');
+            },
+            getValue: function (target) {
+                var result = $(target).numberbox('getValue');
+                if (parseFloat(result) == 0 || result == "") {
+                    result = "0.00";
+                }
+                return result;
+            },
+            setValue: function (target, value) {
+                if ($.isNumeric(value) && parseFloat(value) == 0) {
+                    value = '';
+                }
+                return $(target).numberbox('setValue', value);
+            },
+            resize: function (_5f1, _5f2) {
+                $(_5f1)._outerWidth(_5f2)._outerHeight(22);
+            }
+        }
+    });
+    $(document).ready(function () {
+
+        var defaultCls = {
+            'border': '1px solid #333',
+            'padding': '1px',
+            'color': '#333',
+            'background': '#f7f5d1',
+            'position': 'absolute',
+            'max-width': '200px',
+            'border-radius': '4px',
+            '-moz-border-radius': '4px',
+            '-webkit-border-radius': '4px',
+            'display': 'none'
+        }
+        var optionsCur = $("#ystz-BG_Main-Total_BG_CurYear").data('numberbox');
+        var optionsPre = $("#ystz-BG_Main-Total_BG_PreYear").data('numberbox');
+        var optionsAll = $("#ystz-BG_Main-Total_BG").data('numberbox');
+        var tooltip = $("<div id='tip'></div>").appendTo('body');
+        tooltip.css($.extend({}, defaultCls));
+
+        $(gControlDetail).edatagrid({
+            editBefore: function (param) {
+                var allRows = $(gControlDetail).datagrid('getRows');
+                var currRow = allRows[param.index];
+                gOldValue = currRow[param.field];
+                return IsAbleToEditCell(param);
+            },
+            editEditEvent: function (parms) {
+                var opts = $(this).edatagrid('options');
+                opts.CurFieldColName = parms.field;
+            },
+            editEditAfterEvent: function (rowIndex, rowData, changes) {
+                var valueAdd = rowData.Add;
+                var opts = $(this).edatagrid('options');
+                var allRows = $(gControlDetail).edatagrid("getRows");
+                gCurrRowIndex = rowIndex;
+                var date = new Date();
+                if (opts.CurFieldColName != gColBGCodeName && opts.CurFieldColName != gColBGED) {
+                    gTimeStart = date.getTime();
+                }
+                
+                if (opts.CurFieldColName == gColControlEDLimit) {
+                    gTimeStartLimit = date.getTime();
+                }
+                if (opts.CurFieldColName == gColControlEDScale) {
+                    gTimeStartScale = date.getTime();
+                }
+                if (opts.CurFieldColName == gColControlEDScale && rowData.Sum == "NO") {
+                    var value = rowData[gColControlEDScale];
+                    // 如果编辑结束后控制比例为0或空，那么强制设置为100%
+                    if (IsZero(value)) {
+                        SelectScale(rowData);
+                        var limit = rowData[gColControlEDLimit];
+                        var limitValue = "0";
+                        if (!IsZero(limit)) {
+                            var multiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+                            limitValue = transfer(limit, multiple);
+                        }
+                        gMap[rowIndex][gColControlEDLimit] = limitValue;
+
+                    }
+                    else {
+                        value = parseFloat(value);
+                        ChangeScale(value, rowIndex, rowData);
+                        var limit = rowData[gColControlEDLimit];
+                        var limitValue = "0";
+                        if (!IsZero(limit)) {
+                            var multiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+                            limitValue = transfer(limit, multiple);
+                        }
+                        gMap[rowIndex][gColControlEDLimit] = limitValue;
+                    }
+                    $(gControlDetail).datagrid('refreshRow', rowIndex);
+                    Sum(gControlDetail, valueAdd, allRows, gColControlEDLimit);
+                }
+                if (opts.CurFieldColName == gColControlEDLimit) {
+                    var valueCurr = rowData[gColControlEDLimit];
+                    // 原来的数值不是0，或者现在的数值不是0，才可以更新，如果原来的数值是0，现在仍是0，那么就不要更新，可能原来是有值的，但是
+                    // 由于货币单位导致未显示，这时更改后还是没有值，那么就不要更新了
+                    if (!IsZero(gOldValue) || !IsZero(valueCurr)) {
+                        // 前后值不相同方能进行存储，否则原来的值就被新值给冲掉了
+                        if (gOldValue != valueCurr) {
+                            var tmpOld = parseFloat(gOldValue);
+                            if (tmpOld < 0.01 && IsZero(valueCurr)) {
+                                // 进入到这个条件分支，只有一种情况，那就是界面展示为0.00，但其实这个detail有值，只是由于货币单位导致无法显示，编辑结束后，新值为0.00，那么
+                                // 这种情况下保持原值不变
+                                rowData[gColControlEDLimit] = gOldValue;
+                                $(gControlDetail).datagrid('refreshRow', rowIndex);
+                                return;
+                            }
+                            else {
+                                gMultiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+                                gMap[rowIndex][gColControlEDLimit] = transfer(valueCurr, gMultiple);
+                            }
+                        }
+
+                    }
+
+                    if (IsZero(valueCurr)) {
+                        rowData[gColControlEDLimit] = "";
+                        $(gControlDetail).datagrid('refreshRow', rowIndex);
+                    }
+                    Sum(gControlDetail, valueAdd, allRows, gColControlEDLimit);
+                }
+
+                if (opts.CurFieldColName == gColBGItemName) {
+                    var cellValue = rowData[gColBGItemName];
+                    if ("" == cellValue) {
+                        rowData["GUID_BGItem"] = "";
+                        rowData[gColBGED] = "";
+                        gMap[rowIndex][gColBGED] = "0";
+                        $(gControlDetail).datagrid('refreshRow', rowIndex);
+                        Sum(gControlDetail, valueAdd, allRows, gColBGED);
+                    }
+                }
+            },
+            onClickCell: function (rowIndex, field, value) {
+
+            },
+            // 控制父级科目的颜色
+            rowStyler: function (index, row) {
+                var ControlWayKey = $(gControlWayKey).combobox('getValue');
+                if (row.Sum != "NO" && ControlWayKey != "01") {
+                    return "background-color:#CCFFCC;disabled:'true';readonly:'readonly'";
+                }
+            }
+        });
+        // 预算年
+        $(gCMYear).combo({
+            onChange: function (newValue, oldValue) {
+                // 初始化时会触发该事件，但会触发两次，第一个次，oldValue选择第一个值作为默认值，但newValue为空
+                // 第二次newValue才会是真实设定的值
+                if ("" == newValue || gLoad == true) {
+                    return;
+                }
+                LoadDetail();
+            }
+        });
+
+        // 单位
+        $(gGUID_DW).combogrid({
+            onClickRow: function (rowIndex, rowData) {
+                LoadDetail();
+            }
+        });
+        // 部门
+        $(gGUID_Department).combogrid({
+            onClickRow: function (rowIndex, rowData) {
+                LoadDetail();
+            }
+        });
+
+        // 项目名称
+        $(gGUID_Project).combogrid({
+            onCloseEx: function (rowIndex, rowData, changes) {
+                LoadDetail();
+            }
+        });
+
+        // 控制方式
+        $(gControlWayKey).combogrid({
+            onChange: function (newValue, oldValue) {
+                // 初始化时会触发该事件，但会触发两次，第一个次，oldValue选择第一个值作为默认值，但newValue为空
+                // 第二次newValue才会是真实设定的值
+                if ("" == newValue || gLoad == true) {
+                    return;
+                }
+                LoadDetail();
+            }
+        });
+
+        //
+        $(gMoneyUnit).combogrid({
+            onChange: function (newValue, oldValue) {
+                var tmpMultiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+                changeMoney(tmpMultiple);
+            }
+        });
+        //
+    });
+
+    // 函数区域
+    function ChangeScale(Scale, index,currRow) {
+        var totalBG = gMap[index][gColBGED];
+        totalBG = parseFloat(totalBG);
+        var limit = totalBG * Scale;
+        limit = limit.toFixed(2);
+        gMap[index][gColControlEDLimit] = limit;
+        var multiple = GetSelectValue(gMoneyUnit,"UnitMultiple");
+        var valueShow = transferEx(limit, multiple);
+        currRow[gColControlEDLimit] = valueShow;
+    }
+    function IsAbleToEditCell(param) {
+        var StateInput = document.getElementById("yskz-status");
+        var state = StateInput.getAttribute("value");
+        if ("3" == state) {
+            return false;
+        }
+        var ControlWayKey = $(gControlWayKey).combobox('getValue');
+        var allRows = $(gControlDetail).datagrid('getRows');
+        var currRow = allRows[param.index];
+        var IsControl = currRow[gColIsControl] == "√" ? true : false;
+        var IsScaleOrNot = currRow[gColIsScaleOrNot] == "√" ? true : false;
+        // 如果已经存在另一种控制方式，那么cell是不能编辑的
+        if (gCellState == "2") {
+            return false;
+        }
+        // 按总额控制，是否控制列不能编辑
+        if ("01" == ControlWayKey) {
+            if (gColIsControl == param.field || param.field == gColBGItemName) {
+                return false;
+            }
+        }
+        if (gColIsControl == param.field || gColIsScaleOrNot == param.field) {
+
+            // 上级科目，明细或分组控制时，是否比例不能编辑
+            if (currRow.Sum != "NO" && param.field == gColIsScaleOrNot && "01" != ControlWayKey) {
+                return false;
+            }
+            var value = currRow[param.field];
+            if ("" == value) {
+                if (param.field == gColIsControl || (param.field == gColIsScaleOrNot && currRow[gColIsControl] == "√")) {
+                    if (param.field == gColIsScaleOrNot) {
+                        var date = new Date();
+                        gTimeEnd = date.getTime();
+                        // 刚刚编辑完控制额度，此时100毫秒内点击是否控制，应返回false
+                        if (gTimeEnd - gTimeStartLimit < 100) {
+                            return false;
+                        }
+                    }
+
+                    currRow[param.field] = "√";
+                    if (param.field == gColIsScaleOrNot) {
+                        SelectScale(currRow)
+                        var add = currRow.Add;
+                        if (add != "NO") {
+                            Sum(gControlDetail, add, allRows, gColControlEDLimit);
+                        }
+                    }
+                    
+                }               
+                if (gColIsControl == param.field) {
+                    TourUp(allRows, param.index, true);
+                    TourDown(allRows, param.index, true);
+                }
+            }
+            else {
+                if (param.field == gColIsControl || (param.field == gColIsScaleOrNot && currRow[gColIsControl] == "√")) {
+                    if (param.field == gColIsScaleOrNot) {
+                        var date = new Date();
+                        gTimeEnd = date.getTime();
+                        // 刚刚编辑完控制比例，顺势点击其他单元格以完成编辑动作，而此时恰好点击了是否比例，那么这时，不能取消
+                        if (gTimeEnd - gTimeStartScale < 100) {
+                            return false;
+                        }
+                    }
+                    if (param.field == gColIsControl) {
+                        var date = new Date();
+                        gTimeEnd = date.getTime();
+                        if (gTimeEnd - gTimeStart < 100) {
+                            return false;
+                        }
+                    }
+                    currRow[param.field] = "";
+                    // 取消了控制比例，那么控制比例单元格的数据被清空，同时控制额度赋值为预算值
+                    if (param.field == gColIsScaleOrNot) {
+                        CancelScale(currRow)
+                    }
+                }
+                if (gColIsControl == param.field) {
+                    TourUp(allRows, param.index, false);
+                    TourDown(allRows, param.index, false);
+                }
+            }
+            $(gControlDetail).datagrid('refreshRow', param.index);
+            return false;
+        }
+        // 任何情况下，预算值都是不能编辑的
+        if (param.field == gColBGED) {
+            return false;
+        }
+
+        if ("01" == ControlWayKey && param.field == gColIsControl) {
+            return false;   // 任何情况下，按总额控制，第一列是否控制都是不能编辑的
+        }
+        if (!IsControl && param.field != gColIsControl) {   // 任何情况下，如果一行是不控制的，那么这一行是不可编辑的,除了第一列
+            return false;
+        }
+
+        if (currRow.Sum != "NO" && param.field != gColIsControl) {
+            return false;   // 如果一行的科目不是末级科目，那么这一行除了第一列都是不可编辑的
+        }
+
+        // 控制方式不是按分组控制，那么分组编码这一列是不能编辑的
+        if ("03" != ControlWayKey && param.field == gColGroupID) {
+            return false;
+        }
+
+        if (IsScaleOrNot) {
+            if (param.field == gColControlEDLimit) {
+                return false;
+            }
+        }
+        else {
+            if (param.field == gColControlEDScale) {
+                return false;
+            }
+        }
+        return true;
+    }
+    function SelectScale(currRow) {
+        var index = $(gControlDetail).datagrid("getRowIndex", currRow);
+        gMap[index][gColControlEDLimit] = gMap[index][gColBGED];
+        var multiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+        var valueShow = transferEx(gMap[index][gColControlEDLimit], multiple);
+        currRow[gColControlEDLimit] = valueShow;
+        currRow[gColControlEDScale] = "1.00";
+    }
+    function CancelScale(currRow) {
+        // 不需要刷新
+        var index = $(gControlDetail).datagrid("getRowIndex", currRow);
+        gMap[index][gColControlEDLimit] = gMap[index][gColBGED];
+        var multiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+        var valueShow = transferEx(gMap[index][gColControlEDLimit], multiple);
+        currRow[gColControlEDLimit] = valueShow;
+        // 取消后，控制比例清空
+        currRow[gColControlEDScale] = "";
+    }
+    function IsAbleToLoadDetail() {
+        // 预算年度必须加载完成
+        var CMYear = $(gCMYear).combobox('getValue');
+        if (CMYear == "") {
+            return false;
+        }
+
+        // 控制方式必须加载完成
+        var ControlWayKey = $(gControlWayKey).combobox('getValue');
+        if (ControlWayKey == "") {
+            return false;
+        }
+
+        // 单位必须加载完成
+        var opts = $(gGUID_DW).combogrid('options');
+        var remoteData = opts.remoteData;
+        if (remoteData.length == 0) {
+            return false;
+        }
+        // 单位加载完成必须被选中
+        var GUID_DW = GetGUID(gGUID_DW);
+        if (GUID_DW == "") {
+            return false;
+        }
+
+        // 部门必须加载完成,且被选中
+        opts = $(gGUID_Department).combogrid('options');
+        remoteData = opts.remoteData;
+        if (remoteData.length == 0) {
+            return false;
+        }
+
+        var GUID_Department = GetGUID(gGUID_Department);
+        if (GUID_Department=="") {
+            return false;
+        }
+
+        // 项目必须加载完成
+        opts = $(gGUID_Project).combogrid('options');
+        remoteData = opts.remoteData;
+        if (remoteData.length == 0) {
+            return false;
+        }
+
+        // 货币单位必须加载完成，但不必已经选中
+        opts = $(gMoneyUnit).combogrid('options');
+        remoteData = opts.remoteData;
+        if (remoteData.length == 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    function GetGUID(name) {
+        var grid = $(name).combogrid("grid");
+        var row = grid.datagrid("getSelected");
+        if (null == row) {
+            return "";
+        }
+        else {
+            return row.GUID;
+        }
+    }
+    function GetSelectValue(name, field) {
+        var grid = $(name).combogrid("grid");
+        var row = grid.datagrid("getSelected");
+        if (null == row) {
+            return "";
+        }
+        else {
+            return row[field];
+        }
+    }
+    function LoadDetailEx(valuePair) {
+        var guid_Control = $('#yskz-BG_ControlMain-GUID').validatebox('getText');
+        $.ajax({
+            url: '/yskz/LoadDetail',
+            data: { CMYear: valuePair["CMYear"], ControlWayKey: valuePair["ControlWayKey"], GUID_DW: valuePair["GUID_DW"],
+                GUID_Department: valuePair["GUID_Department"], GUID_Project: valuePair["GUID_Project"], GUID_Control_Main: guid_Control
+            },
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", '网络超时,请重新登录', 'error');
+            },
+            success: function (data) {
+                
+                if (data.success) {
+                    $(gControlDetail).datagrid('loadData', { total: 0, rows: [] });
+                    LoadData(data);
+                    if (data.iState == "1") {
+                        SetAble();
+                    }
+                    else {
+                        SetDisable();
+                    }
+                }
+                else {
+                    $(gControlDetail).datagrid('loadData', { total: 0, rows: [] });
+                    var $test = $('#yskz-abandonedStatus');
+                    $test.text(data.errMsg);
+                    $test.show();
+                    $.messager.alert("错误", data.errMsg, 'error');
+                }
+            }
+        });
+    }
+
+    function SetDisable() {
+        $('#yskz-remove').linkbutton('disabled');
+        $('#yskz-examine').linkbutton('disabled');
+        $('#yskz-cancel').linkbutton('disabled');
+        $('#yskz-save').linkbutton('disabled');
+    }
+    function SetAble() {
+        $('#yskz-remove').linkbutton('enabled');
+        $('#yskz-examine').linkbutton('enabled');
+        $('#yskz-cancel').linkbutton('enabled');
+        $('#yskz-save').linkbutton('enabled'); 
+    }
+    function LoadDetail() {
+        // 先获取加载Detail所需的条件
+        var CMYear = $(gCMYear).combobox('getValue');
+        var ControlWayKey = $(gControlWayKey).combobox('getValue');
+        var GUID_DW = GetGUID(gGUID_DW);
+        var GUID_Department = GetGUID(gGUID_Department);
+        var GUID_Project = GetGUID(gGUID_Project);
+        //GUID_Project = GetGUID(gGUID_Project);
+        if (GUID_DW == "" || GUID_Department == "" || ControlWayKey == "" || CMYear == "") {
+            return;
+        }
+        var valuePair = {};
+        valuePair["CMYear"] = CMYear;
+        valuePair["ControlWayKey"] = ControlWayKey;
+        valuePair["GUID_DW"] = GUID_DW;
+        valuePair["GUID_Department"] = GUID_Department;
+        valuePair["GUID_Project"] = GUID_Project;
+        LoadDetailEx(valuePair);
+    }
+
+    function LoadData(data) {
+        gMap = {};
+        if (data.BGItemInfo) {
+            gBGItemInfo = JSON.parse(data.BGItemInfo);
+        }
+        else {
+            gBGItemInfo = null;
+        }
+        var ControlWayKey = $(gControlWayKey).combobox('getValue');
+        var dataJson = JSON.parse(data.data);
+        // 清空预算编制表数据
+        $(gControlDetail).datagrid('loadData', { total: 0, rows: [] });
+
+        // 先设置好numberbox的显示方式
+        var colOption = $(gControlDetail).datagrid('getColumnOption', gColControlEDLimit);
+        colOption.formatter = $.view.formatters['numberboxNoZero'];
+        colOption = $(gControlDetail).datagrid('getColumnOption', gColBGED);
+        colOption.formatter = $.view.formatters['numberboxNoZero'];
+        $(gControlDetail).datagrid('loadData', dataJson);
+        var opts = $(gControlDetail).edatagrid('options');
+        gCellState = data.iState;
+        //$("#yskz-abandonedStatus").text("可以");
+        var $test = $('#yskz-abandonedStatus');
+        $test.text(data.Tip);
+        $test.show();
+        var allRows = $(gControlDetail).edatagrid('getRows');
+        var length = allRows.length;
+        for (var i = 0; i < length; i++) {
+            gMap[i] = {};
+            var currRow = allRows[i];
+            gMap[i][gColBGED] = transfer(currRow[gColBGED], "1");
+            gMap[i][gColControlEDLimit] = transfer(currRow[gColControlEDLimit], "1");
+            opts.finder.getTr($(gControlDetail)[0], i).find("td[field='" + gColBGItemName + "']").find("div").attr("oaovalue", currRow["GUID_BGItem"]);
+            opts.finder.getTr($(gControlDetail)[0], i).find("td[field='" + gColGUID_HandleMethod + "']").find("div").attr("oaovalue", currRow["HandleMethod"]);
+        }
+
+        for (var m = 0; m < length; m++) {
+            var currRow = allRows[m];
+            if (currRow[gColIsControl] != "" && currRow.Sum != "NO") {
+                IsControl(allRows, currRow);
+            }
+        }
+        // 转换货币单位
+        if (gMultiple=="NO") {
+            gMultiple = data.Multiple;          
+        }
+        else {
+            gMultiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+        }
+        changeMoney(gMultiple);
+        // 父级科目的金额要通过子级科目汇总
+        if (ControlWayKey != "01") {
+            for (var j = 0; j < length; j++) {  
+                var currRow = allRows[j];
+                if (currRow.Add == "NO") {
+                    SumEx(gControlDetail, j, allRows, gColBGED);
+                    SumEx(gControlDetail, j, allRows, gColControlEDLimit);
+                }
+            }
+        }
+
+        $("#yskz-BG_ControlDetail").edatagrid('doCellTip', { 'max-width': '700px', 'delay': '500' });
+    }
+    function getTipTextEx(value, multiple) {
+
+        var index = value.indexOf(".");
+        var len1 = value.length;
+        var len2 = multiple.length;
+        if (len2 <= 1) {
+            return value;
+        }
+        var moveStep = parseInt(len2) - 1;
+        var leftLen = index < 0 ? len1 : index;
+        if (index >= 0) {
+            var tmp1 = value.substr(0, index);
+            var tmp2 = value.substr(index + 1);
+            value = tmp1 + tmp2;
+        }
+        if (moveStep < leftLen) {
+            var tmp1 = value.substr(0, leftLen - moveStep);
+            var tmp2 = value.substr(leftLen - moveStep, value.length - leftLen + moveStep);
+            value = tmp1 + "." + tmp2;
+        }
+        else {
+            value = "0000000000" + value;
+            var tmp = value.substr(10 - moveStep + leftLen);
+            value = "0." + tmp;
+        }
+        // 去除末尾多余的0
+        var iLen = value.length;
+        var count = 0;
+        for (var i = iLen - 1; i >= 0; i--) {
+            var char = value.charAt(i);
+            if (char == "0") {
+                count++;
+            }
+            else {
+                break;
+            }
+        }
+        if (0 != count) {
+            value = value.substr(0, iLen - count);
+        }
+        return value;
+    }
+
+    function _511(tr) {
+        if (tr.attr("datagrid-row-index")) {
+            return parseInt(tr.attr("datagrid-row-index"));
+        } else {
+            return tr.attr("node-id");
+        }
+    }
+    function getTipText(rowIndex, field) {
+        var dataColumns = $('#yskz-BG_ControlDetail').edatagrid('getColumnFields');
+        var colOption = $('#yskz-BG_ControlDetail').datagrid('getColumnOption', field);
+        if (colOption.editor && colOption.editor.type == 'numberbox') {
+            var value = gMap[rowIndex][field];
+            value = parseFloat(value)
+            value = value.toFixed(2);
+            value = getTipTextEx(value, gMultiple);
+            return value;
+        }
+        return "";
+    }
+    function ShowTip(options, id) {
+        $(id).bind('mouseover', function (e) {
+            if (options.tipDelayTime)
+                clearTimeout(options.tipDelayTime);
+            options.tipDelayTime = setTimeout(
+            function () {
+                MyShowTip(options, e, id);
+            }, '500');
+
+        });
+        $(id).bind('mouseout', function (e) {
+            if (options.tipDelayTime)
+                clearTimeout(options.tipDelayTime);
+            options.tooltip.css({
+                'display': 'none'
+            });
+        });
+        $(id).bind('mousemove', function (e) {
+            if (options.tipDelayTime) {
+                clearTimeout(options.tipDelayTime);
+                options.tipDelayTime = setTimeout(
+            function () {
+                MyShowTip(options, e, id);
+            }, '500');
+            } else {
+                MyShowTip(options, e, id);
+            }
+        });
+    }
+
+    function IsControl(allRows, currRow) {
+        if (currRow.Sum == "NO") {
+            if (currRow[gColIsControl] == "") {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else if(currRow[gColIsControl]!=""){
+            var addArray = currRow.Sum.split(',');
+            var bControl = false;
+            for (var i = 0; i < addArray.length; i++) {
+                var tmpSumLine = addArray[i];
+                tmpSumLine = parseInt(tmpSumLine);
+                var tmpRow = allRows[tmpSumLine];
+                if(IsControl(allRows,tmpRow)){
+                    bControl = true;
+                    break;
+                }
+            }
+
+            if (!bControl) {
+                var rowIndex = $(gControlDetail).datagrid("getRowIndex", currRow);
+                currRow[gColIsControl] = "";
+                $(gControlDetail).edatagrid('refreshRow', rowIndex);
+            }
+            return bControl;
+        }
+        return false;
+    }
+    function SumEx(tableName, sumLine, allRows, field) {
+        var currRow = allRows[sumLine];
+        var addArray = currRow.Sum.split(',');
+        var sum = 0;
+        // 先计算下级   从gMap中获取数据确保上级科目的金额由下级计算得来
+        for (var i = 0; i < addArray.length; i++) {
+            var tmpSumLine = addArray[i];
+            tmpSumLine = parseInt(tmpSumLine);
+            var tmpRow = allRows[tmpSumLine];
+            if (tmpRow.Sum != "NO") {
+                SumEx(tableName, tmpSumLine, allRows, field);
+            }
+            var value = gMap[tmpSumLine][field];
+            if (!isNaN(value) && !IsZero(value)) {
+                var floatValue = parseFloat(value);
+                sum += floatValue;
+            }
+
+        }
+
+        gMap[sumLine][field] = sum.toString();
+        sum = sum.toFixed(2);
+        sum = parseFloat(sum) / parseFloat(gMultiple);
+        currRow[field] = sum.toString();
+
+        $(tableName).edatagrid('refreshRow', parseInt(sumLine));
+    }
+    // 将其他单位的数值转换成元
+    function transfer(value, multiple) {
+        if ("NO" == multiple) {
+            var tmp = 0;
+            return tmp.toString();
+        }
+        if (IsZero(value)) {
+            var tmp = 0;
+            return tmp.toString();
+        }
+        multiple = parseInt(multiple);
+        value = parseFloat(value);
+        value = value * multiple;
+        return value.toString();
+    }
+    // 将元单位的数值转成其他单位
+    function transferEx(value, multiple) {
+        if (IsZero(value)) {
+            var tmp = 0;
+            return tmp.toString();
+        }
+        var valueFloat = parseFloat(value);
+        value = valueFloat / parseFloat(multiple);
+        // 不要取小数点后两位，Numberbox在显示时会自动截取
+        value = value.toString();
+        return value;
+    }
+
+    function changeMoney(gMultiple) {        
+        this.gMultiple = gMultiple;
+        var multiple = parseFloat(gMultiple);
+        var allRows = $(gControlDetail).datagrid('getRows');
+        rowCount = allRows.length;
+        if(0==rowCount){
+            return;
+        }
+        var dataColumns = new Array(gColBGED, gColControlEDLimit);
+        
+        var columnsCount = dataColumns.length;
+        // 更新预算编制表里的金额
+        for (var i = 0; i < rowCount; i++) {
+            var currRow = allRows[i];
+            for (var j = 0; j < columnsCount; j++) {
+                var field = dataColumns[j];
+                if (field == gColBGED || field == gColControlEDLimit) {
+                    // 汇总时，从gMap中获取数据
+                    var value = gMap[i][field];
+                    if (IsZero(value)) {
+                        value = 0;
+                        currRow[field] = "";
+                    }
+                    else {
+                        value = parseFloat(value);
+                        value = value.toFixed(2);
+                        value = parseFloat(value) / multiple;
+                        currRow[field] = value.toString();
+                    }
+                }
+            }
+            $(gControlDetail).edatagrid('refreshRow', i);
+        }
+    }
+    function mySum(tableName, valueAdd, allRows, field) {
+        var currRow = allRows[valueAdd];
+        var addLine = currRow.Add;
+        var sumLine = currRow.Sum;
+        if (sumLine != "NO") {
+            var addArray = sumLine.split(',');
+            var sum = 0;
+            for (var i = 0; i < addArray.length; i++) {
+                var line = addArray[i];
+                line = parseInt(line);
+                // 进行行汇总时，从gMap获取数据
+                var value = gMap[line][field];
+                if (!IsZero(value)) {
+                    var floatValue = parseFloat(value);
+                    sum += floatValue;
+                }
+            }
+
+            var s = 0;
+            valueAdd = parseInt(valueAdd);
+            gMap[valueAdd][field] = transfer(sum, "1");
+            // 如果综总和为0
+            if (sum == 0) {
+                currRow[field] = "";
+            }
+            else {
+                // 设置小数位，这个应该由后台决定
+                sum = sum.toFixed(2);
+                sum = sum / gMultiple;
+
+                currRow[field] = sum.toString();
+
+            }
+            $(tableName).edatagrid('refreshRow', valueAdd);
+        }
+
+        if (addLine != "NO") {
+            mySum(tableName, addLine, allRows, field)
+        }
+    }
+    function Sum(tableName, valueAdd, allRows, field) {
+        var currRow = allRows[valueAdd];
+        var addLine = currRow.Add;
+        var sumLine = currRow.Sum;
+        if (sumLine != "NO") {
+            var addArray = sumLine.split(',');
+            var sum = 0;
+            for (var i = 0; i < addArray.length; i++) {
+                var line = addArray[i];
+                line = parseInt(line);
+                // 进行行汇总时，从gMap获取数据
+                var value = gMap[line][field];
+                if (!IsZero(value)) {
+                    var floatValue = parseFloat(value);
+                    sum += floatValue;
+                }
+            }
+
+            var s = 0;
+            valueAdd = parseInt(valueAdd);
+            gMap[valueAdd][field] = transfer(sum, "1");
+            // 如果综总和为0
+            if (sum == 0) {
+                currRow[field] = "";
+            }
+            else {
+                // 设置小数位，这个应该由后台决定
+                sum = sum.toFixed(2);
+                sum = sum / gMultiple;
+
+                currRow[field] = sum.toString();
+
+            }
+            $(tableName).edatagrid('refreshRow', valueAdd);
+        }
+
+        if (addLine != "NO") {
+            Sum(tableName, addLine, allRows, field)
+        }
+    }
+    function IsZero(value) {
+        value = value.toString();
+        if (value == "") {
+            return true;
+        }
+        var reg = new RegExp("0", "g");
+        var tmp = value.replace(reg, "");
+        if (tmp == ".") {
+            return true;
+        }
+        return false;
+    }
+    function GetValuePair(data) {
+        var valuePair = {};
+        var length = data.length;
+        for (var i = 0; i < length; i++) {
+            var item = data[i];
+            if (item.n == "CMYear") {
+                valuePair["CMYear"] = item.v;
+            }
+            if (item.n == "ControlWayKey") {
+                valuePair["ControlWayKey"] = item.v;
+            }
+            if (item.n == "GUID_DW") {
+                valuePair["GUID_DW"] = item.v;
+            }
+            if (item.n == "GUID_Department") {
+                valuePair["GUID_Department"] = item.v;
+            }
+            if (item.n == "GUID_Project") {
+                valuePair["GUID_Project"] = item.v;
+            }
+        }
+
+        return valuePair;
+    }
+    function myNewDoc() {
+        var opts = $("#yskz-add").linkbutton('options');
+        var url = '/yskz/New';
+        if (!url) return;
+        $.post(url, null, function (data, status) {
+            $.view.setStatus(opts.scope, opts.status);
+            if (!data) return;
+            if (data.result == "success") { //成功
+                //$.view.clearView(opts.scope, "dataregion");
+                //加载页面数据
+                //设置页面编辑状态
+                $.view.curPageState = 1;
+                // 清空预算编制表数据
+                $(gControlDetail).datagrid('loadData', { total: 0, rows: [] });
+                gLoad = true;
+                $.view.loadData(opts.scope, data);
+                $.view.setViewEditStatus(opts.scope, opts.status);
+                $.view.cancelObj = { data: data, status: opts.status };
+                gLoad = false;
+                var pairs = GetValuePair(data.m);
+                LoadDetailEx(pairs);
+            }
+            else { //失败
+                $.messager.alert(data.s.t, data.s.m, data.s.i);
+            }
+        });
+    }
+    function SetCellValue(cellName, field, value) {
+        var gdata = $.data($(cellName)[0], "datagrid");
+        var dc = gdata.dc;
+        var view2 = dc.view2;
+        var selectElement = $(view2).find("tr.datagrid-row-selected");
+        if (!selectElement) return;
+        var selRow = $(cellName).datagrid("getSelected");
+        var $td = $($(selectElement).find("td[field='" + field + "']"));
+        var $div = $($td.find("div"));
+        if ($div) {
+            if (value == "0") {
+                value = "";
+            }  
+            selRow[field] = value;
+            $div.html(value);
+        }
+    }
+    function clearRow(currRow, index) {
+        gMap[index][gColBGED] = "0";
+        gMap[index][gColControlEDLimit] = "0";
+        currRow["GUID_ControlDetail"] = "";
+        currRow["GUID_BGItem"] = "";
+        currRow[gColBGItemName] = "";
+        currRow[gColBGED] = "";
+        currRow[gColIsScaleOrNot] = "";
+        currRow[gColControlEDScale] = "";
+        currRow[gColControlEDLimit] = "";
+        currRow[gColGroupID] = "";
+        currRow[gColGUID_HandleMethod] = "";
+        $(gControlDetail).datagrid('refreshRow', index);
+    }
+    // currIndex 是刚刚设置好的那一行 select 是设置的结果
+    function TourUp(allRows, currIndex, select) {
+        var currRow = allRows[currIndex];
+        if (!select) {
+            clearRow(currRow, currIndex);
+            var add = currRow.Add;
+            if (add != "NO") {
+                mySum(gControlDetail, add, allRows, gColControlEDLimit);
+                mySum(gControlDetail, add, allRows, gColBGED);
+            }
+        }
+        var Add = currRow.Add;
+        // 不能继续向上遍历，说明已经到了最高级
+        if (Add == "NO") {
+            return;
+        }
+        // 如果是选中，那么上级必然变为选中，但这时，上级的选中，并不影响兄弟级别的科目
+        if (select) {
+            var parent = parseInt(Add);
+            var parentRow = allRows[parent];
+            // 如果上级科目没有被选中则进行处理，如果已经选中，那么就不需要进行处理了
+            if (parentRow[gColIsControl] == "") {
+                parentRow[gColIsControl] = "√";
+                $(gControlDetail).datagrid('refreshRow', parent);
+                TourUp(allRows, parent, select);
+            }
+        }
+        else {
+            // 如果当前是不选中状态，那么就说明之前是选中状态，那么上级科目之前也必然是选中状态，取消选中状态时，要考虑兄弟级别科目是否都已经是
+            // 取消选中状态
+            var parent = parseInt(Add);
+            var parentRow = allRows[parent];
+            var Sum = parentRow.Sum;
+            if (Sum != "NO") {   // 上级科目一定有下级，所以这个条件永远成立
+                var array = Sum.split(',');
+                for (var i = 0; i < array.length; i++) {
+                    var index = parseInt(array[i]);
+                    var row = allRows[index];
+                    if (row[gColIsControl] != "") {
+                        return;
+                    }
+                }
+                parentRow[gColIsControl] = "";
+                $(gControlDetail).datagrid('refreshRow', parent);
+                TourUp(allRows, parent, select);
+            }
+        }
+    }
+    function TourDown(allRows, currIndex, select) {
+        var currRow = allRows[currIndex];
+        if (!select) {
+            clearRow(currRow, currIndex);
+            var add = currRow.Add;
+            if (add!="NO") {
+                mySum(gControlDetail, add, allRows, gColControlEDLimit);
+                mySum(gControlDetail, add, allRows, gColBGED);
+            }
+
+        }
+        var Sum = currRow.Sum;
+        // 如果没有下级科目，直接退出
+        if (Sum == "NO") {
+            return;
+        }
+        var array = Sum.split(',');
+        for (var i = 0; i < array.length; i++) {
+            var index = parseInt(array[i]);
+            var row = allRows[index];
+            if (select) {
+                if (row[gColIsControl] != "√") {
+                    row[gColIsControl] = "√";
+                    $(gControlDetail).datagrid('refreshRow', index);
+                    TourDown(allRows, index, select);
+                }
+            }
+            else {
+                if (row[gColIsControl] = "√") {
+                    row[gColIsControl] = "";
+                    $(gControlDetail).datagrid('refreshRow', index);
+                    TourDown(allRows, index, select);
+                }
+            }
+        }
+    }
+    function EDFormatter(value, row, index) {
+        if (value >= 1) {
+            row[gColControlEDScale] = "1";
+            return "100%";
+        }
+        else if (value <= 0) {
+            row[gColControlEDScale] = "";
+            return "";
+        }
+        else if (value > 0.09) {
+            var strValue = value.toString();
+            strValue = strValue + "0";
+            strValue = strValue.substr(2, 2);
+            strValue = strValue + "%";
+            return strValue;
+        }
+        else {
+            var strValue = value.toString();
+            strValue = strValue.substr(3, 1);
+            strValue = strValue + "%";
+            return strValue;               
+        }
+    }
+
+    function BuleStyler(value, row, index) {
+        return 'color:blue';
+    }
+    function checkSave() {
+        return true;
+    }
+    function SaveControlMain() {
+        if (!checkSave) {
+            return false;
+        }
+        isSussess = $.fn.linkbutton.methods["examine"].call($('#yskz-examine'), true);
+        if (!isSussess) {
+            return;
+        }
+        var strCMYear = $(gCMYear).combobox('getValue'); 
+        var strDw = GetGUID(gGUID_DW);
+        var strDepartment = GetGUID(gGUID_Department);
+        var strControlWaykey = $(gControlWayKey).combobox('getValue');
+        var strProject = GetGUID(gGUID_Project);
+        var strMaker = $('#yskz-BG_ControlMain-GUID_Maker').combobox('getValue');
+        var strMakeDate = $('#yskz-BG_ControlMain-MakeDate').datebox('getValue');
+        var StateInput = document.getElementById("yskz-status");
+        var state = StateInput.getAttribute("value");
+        var allRows = $(gControlDetail).datagrid('getRows');
+        var length = allRows.length;
+        for (var i = 0; i < length;i++ ) {
+            var currRow = allRows[i];
+            currRow[gColControlEDLimit] = gMap[i][gColControlEDLimit];
+        }
+
+        var data = $(gControlDetail).datagrid('getData');
+        var strMoneyUnit = GetGUID(gMoneyUnit);
+        var jsonData = JSON.stringify(data);
+
+        $.ajax({
+            url: '/yskz/SaveControlMain',
+            data: { Detail: jsonData, CMYear: strCMYear, Dw: strDw, Department: strDepartment,
+                ControlWaykey: strControlWaykey, Project: strProject, Maker: strMaker, MakeDate: strMakeDate, iState: state, MoneyUnit: strMoneyUnit
+            },
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", '网络超时,请重新登录', 'error');
+            },
+            success: function (data) {
+                if (data && data.result == "success") {
+                    gMultiple = "NO";
+                    gBGItemInfo = null;
+                    gCellState = "1";
+                    $(gControlDetail).datagrid('loadData', { total: 0, rows: [] });
+                    gLoad = true;
+                    $.view.setStatus('yskz', "2");
+                    $.view.loadData('yskz', data);
+                    $.view.setViewEditStatus('yskz', "2");
+                    $.view.cancelObj = { data: data, status: 2 };
+                    gLoad = false;
+                    var pairs = GetValuePair(data.m);
+                    LoadDetailEx(pairs);
+                    $.messager.alert(data.s.t, data.s.m, data.s.i);
+                }
+                else {
+                    //弹出提示
+                    if (!data.s) return;
+                    $.messager.alert(data.s.t, data.s.m, data.s.i);
+                    gMultiple = GetSelectValue(gMoneyUnit, "UnitMultiple");
+                    changeMoney(gMultiple);
+                }
+            }
+        });
+    }
+
+    function CancelEdit() {
+        var cancel = $.view.cancelObj;
+        if (!cancel.data) cancel.data = [];
+        $.messager.confirm("提示", "正在编辑,是否取消?", function (data) {
+            if (!data) {
+                return;
+            } else {
+                gMultiple = "NO";
+                gBGItemInfo = null;
+                gCellState = "1";
+                $(gControlDetail).datagrid('loadData', { total: 0, rows: [] });
+                gLoad = true;
+                $.view.setStatus('yskz', "2");
+                $.view.clearView("yskz");
+                $.view.loadData("yskz", cancel.data);
+                $.view.setViewEditStatus("yskz", cancel.status);
+                gLoad = false;
+                var pairs = GetValuePair(cancel.data.m);
+                LoadDetailEx(pairs);
+            }
+        })
+    }
+    $.extend($.view,{
+        init: function (scope, status, dataguid) {
+        if (scope && status) {
+            status = status + "";
+            var id = "[id^='" + scope + "-'].easyui-linkbutton";
+            switch (status) {
+                case "1": //新建
+                    $(id).linkbutton('bind', true);
+                    $('#' + scope + '-add').click();
+                    break;
+                case "2": //修改
+                case "3": //删除
+                case "4": //浏览
+                    // 清空预算编制表数据
+                    $(gControlDetail).datagrid('loadData', { total: 0, rows: [] });
+                    gLoad = true;
+                    var data = $.view.retrieveDoc(dataguid, scope);
+                    if (data) {
+                        $.view.loadData(scope, data);
+                    }
+                    $.view.setViewEditStatus(scope, "2");
+                    $.view.cancelObj = { data: data, status: "2" };
+                    $.view.curPageState = 1;
+                    gLoad = false;
+                    var pairs = GetValuePair(data.m);
+                    LoadDetailEx(pairs);
+                    break;
+                }
+            }
+        }
+    })
+</script>
+<div class="easyui-layout" id="yskz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+             <a href="#" class="easyui-linkbutton" 
+                   id="yskz-add" 
+                   style="display:none"
+                   data-options="plain:'true',iconCls:'icon-xinzeng',hidden:true,
+                   bindmethod:{ 'click':['newDoc'] },scope:'yskz',status:'1',
+                   forbidstatus:[1,2,3]" onclick="javascript:myNewDoc()">新增</a> 
+            <a href="#" class="easyui-linkbutton" id="yskz-remove" data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'yskz-BG_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'yskz',status:'3',
+                   forbidstatus:[5]">删除</a> <a href="#" class="easyui-linkbutton" id="yskz-examine"
+                       data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'yskz-BG_Main-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'combogrid':['yskz-BG_ControlMain-GUID_DW','yskz-BG_ControlMain-GUID_Department']
+                        }
+                    },
+                   scope:'yskz',forbidstatus:[4]">校验</a> <a href="#" class="easyui-linkbutton" id="yskz-cancel"
+                       data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'yskz',forbidstatus:[4],
+                    " onclick="javascript:CancelEdit()" >取消</a> <a href="#" class="easyui-linkbutton"
+                        id="yskz-save" data-options="plain:'true',iconCls:'icon-baocun',scope:'yskz',status:'4',
+                   forbidstatus:[4]"  onclick="javascript:SaveControlMain()">保存</a> <a href="#" class="easyui-linkbutton" id="yskz-histroy"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/yskz','history-BGControl_Detail','history']},
+                    window:'b-window',scope:'yskz'">历史</a> <a href="#" class="easyui-linkbutton" id="yskz-help"
+                        data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'yskz',
+                    bindmethod:{ 'click': ['help'] }">帮助</a> <a href="#" class="easyui-linkbutton" id="yskz-close"
+                        data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'yskz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+         <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="yskz-abandonedStatus" statuscontrolid="yskz-BG_Main-DocState" style="font-size: x-large;
+                                color: Red "></div>
+                            <div style="font-size: x-large; text-align: center;">
+                                预算控制</div>
+                </td>
+            </tr>
+            <tr>
+                                <td style="width: 60px;padding-right: 1%;">
+                                            <label for="field1" id="lbl-BG_ControlMain-CMYear">
+                                                <font color="red">*</font>预&nbsp;算&nbsp;年</label>
+                                </td>
+                                <td style="width: 180px;">
+                                    <select id="yskz-BG_ControlMain-CMYear" class="easyui-combobox" data-options="editable:false,forbidstatus:[4,3]"
+                                        style="width: 160px;">
+                                        <option value="2011">2011</option>
+                                        <option value="2012">2012</option>
+                                        <option value="2013">2013</option>
+                                        <option value="2014">2014</option>
+                                        <option value="2015">2015</option>
+                                        <option value="2016">2016</option>
+                                        <option value="2017">2017</option>
+                                        <option value="2018">2018</option>
+                                        <option value="2019">2019</option>
+                                        <option value="2020">2020</option>
+                                        <option value="2021">2021</option>
+                                        <option value="2022">2022</option>
+                                        <option value="2023">2023</option>
+                                        <option value="2024">2024</option>
+                                        <option value="2025">2025</option>
+                                        <option value="2026">2026</option>
+                                        <option value="2027">2027</option>
+                                        <option value="2028">2028</option>
+                                        <option value="2029">2029</option>
+                                        <option value="2030">2030</option>
+                                        <option value="2031">2031</option>
+                                        <option value="2032">2032</option>
+                                        <option value="2033">2033</option>
+                                        <option value="2034">2034</option>
+                                        <option value="2035">2035</option>
+                                        <option value="2036">2036</option>
+                                        <option value="2037">2037</option>
+                                        <option value="2038">2038</option>
+                                        <option value="2039">2039</option>
+                                        <option value="2040">2040</option>
+                                        <option value="2041">2041</option>
+                                        <option value="2042">2042</option>
+                                        <option value="2043">2043</option>
+                                        <option value="2044">2044</option>
+                                        <option value="2045">2045</option>
+                                        <option value="2046">2046</option>
+                                        <option value="2047">2047</option>
+                                        <option value="2048">2048</option>
+                                        <option value="2049">2049</option>
+                                        <option value="2050">2050</option>
+                                    </select>
+                                </td>
+                                <td style="width: 60px;padding-right: 1%;">
+                                            <label for="field1" id="lbl-GUID_DW">
+                                                <font color="red">*</font>单位名称&nbsp;</label>
+                                </td>
+                                <td style="width: 180px;">
+                                    <select class="easyui-combogrid" id="yskz-BG_ControlMain-GUID_DW" data-options="
+                                                        columns:[[
+                                                            {field:'GUID',hidden:'true'},
+                                                            {field:'GUID_Department',hidden:'true'},
+                                                            {field:'DWKey',title:'单位编码',width:'100'},
+                                                            {field:'DWName',title:'单位名称',width:'215'}
+                                                            ]],
+                                                            panelWidth:240,
+                                                            width:160,
+                                                            method:'post',
+                                                            idField:'GUID',
+                                                            textField:'DWName',
+                                                            filterField:'DWKey,DWName',
+                                                            remoteUrl:'/Combogrid/DW',
+                                                            forbidstatus:[4,3]
+                                                        ">
+                                    </select>
+                                </td>
+                                <td style="width: 60px;padding-right: 1%;">
+                                            <label for="field1" id="lbl-GUID_Department">
+                                                <font color="red">*</font>部门名称&nbsp;</label>
+                                </td>
+                                <td style="width: 180px;">
+                                    <select class="easyui-combogrid" id="yskz-BG_ControlMain-GUID_Department" data-options="columns:[[
+                                                        {field:'GUID',hidden:'true'},
+                                                        {field:'GUID_DW',hidden:'true'},
+                                                        {field:'DepartmentKey',title:'部门编码',width:'100'},
+                                                        {field:'DepartmentName',title:'部门名称',width:'200'},
+                                                        {field:'DWName',title:'所属单位名称',width:'215'}
+                                                        ]],
+                                                        width:160,
+                                                        panelWidth:440,
+                                                        method:'post',
+                                                        bindmethod:{ 'onCloseEx':['setAssociate'] },
+                                                        associate:{
+                                                            'yskz-BG_ControlMain-GUID_DW':['GUID_DW']
+                                                        },
+                                                        forbidstatus:[3],
+                                                        remoteUrl:'/Combogrid/Department',
+                                                        method:'post',
+                                                        idField:'GUID',
+                                                        textField:'DepartmentName',
+                                                        sortName:'DepartmentKey',
+                                                        filterField:'DepartmentKey,DepartmentName'">
+                                    </select>
+                                </td>
+                            </tr>
+             <tr>
+                                <td style="width: 60px;padding-right: 1%;">
+                                            <label for="field1" id="lbl-BG_ControlMain-GUID_MoneyUnit">
+                                                <font color="red">*</font>金额单位&nbsp;</label>
+                                </td>
+
+                                <td style="width: 180px;">
+                                    <select class="easyui-combogrid" id="yskz-BG_ControlMain-GUID_MoneyUnit" data-options="
+                                                        columns:[[
+                                                            {field:'GUID',hidden:'true'},
+                                                            {field:'MoneyUnitKey',title:'金额单位编码',width:'100'},
+                                                            {field:'MoneyUnitName',title:'金额单位名称',width:'215'},
+                                                            {field:'UnitMultiple',hidden:'true'}
+                                                            ]],
+                                                            panelWidth:240,
+                                                            width:160,
+                                                            editable:false,
+                                                            method:'post',
+                                                            idField:'GUID',
+                                                            textField:'MoneyUnitName',
+                                                            filterField:'MoneyUnitKey,MoneyUnitName',
+                                                            @*url:'/Combogrid/MoneyUnit'*@
+                                                            remoteUrl:'/Combogrid/MoneyUnit',
+                                                            forbidstatus:[4,3]
+                                                        ">
+                                    </select>
+                                </td>
+                                <td style="width: 60px;padding-right: 1%;">
+                                            <label for="field1" id="lbl-BG_ControlMain-GUID_Project">
+                                                <font color="red">*</font>项目名称&nbsp;</label>
+                                </td>
+                                <td style="width: 180px;">
+                                    <select class="easyui-combogrid" id="yskz-BG_ControlMain-GUID_Project" data-options="
+                                                          panelWidth:365,
+                                                          width:160,
+                                                          remoteUrl:'/Combogrid/Project',
+                                                          method:'get',
+                                                          idField:'GUID',
+                                                          textField:'ProjectName',
+                                                          filterField:'ProjectKey,ProjectName',
+                                                          sortName:'ProjectKey', 
+                                                          forbidstatus:[3],
+                                                          columns:[[
+                                                              {field:'GUID',title:'GUID',hidden:true},
+                                                              {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                                              {field:'ProjectKey',title:'项目编号',width:'115'},
+                                                              {field:'ProjectName',title:'项目名称',width:'215'}
+                                                           ]]
+                                                       ">
+                                    </select>
+                                </td>
+                                <td style="width: 60px;padding-right: 1%;">
+                                            <label for="field1" id="lbl-BG_ControlMain-ControlWayKey">
+                                                <font color="red">*</font>控制方式&nbsp;</label>
+                                </td>
+                                <td style="width: 180px;">
+                                    <select id="yskz-BG_ControlMain-ControlWayKey" class="easyui-combobox" data-options="editable:false,forbidstatus:[3]"
+                                        style="width: 160px;">
+                                        <option value="01">按总额控制</option>
+                                        <option value="02">按明细控制</option>
+                                        <option value="03">按分组控制</option>
+                                    </select>
+                                </td>
+                            </tr>
+            <tr>
+                <td style="height: 100%;">
+                                    <table class="easyui-edatagrid" id="yskz-BG_ControlDetail" style="overflow: auto" data-options="
+                                             orderNum:'yskz-BG_Detail-OrderNum',
+                                            requireCol:[
+                       
+                                            ],
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:true,
+                                            checkOnSelect:true,
+                                            height:410,
+                                            width:925,
+                                            rownumbers:true,
+                                            scope:'yskz',
+                                            single:false,
+                                            forbidstatus:[4,3]
+                                            ">
+                                        <thead>
+                                            <tr>
+                                                <th field="HandleMethod" hidden="true" width="60px"></th>
+                                                <th field="GUID_ControlDetail" hidden="true" width="60px"></th>
+                                                <th field="GUID_BGCode" hidden="true" width="60px"></th>
+                                                <th field="GUID_BGItem" hidden="true" width="60px"></th>
+                                                <th field="Sum" hidden="true" width="60px"></th>
+                                                <th field="Add" hidden="true" width="60px"></th>
+                                                <th field="IsControl" title="是否控制" sortable="false" width="60px" align="center" editor="{type:'text'}" >
+                                                    是否控制
+                                                </th>
+                                                <th field="BGCodeName" title="预算科目" sortable="false" width="100px" halign="center" align="left">
+                                                    预算科目
+                                                </th>
+                                                <th field="BGItemName" title="预算项" sortable="false" width="160px" halign="center" align="left" 
+                                                editor="{
+                                                          type:'combogrid',
+                                                          options:{
+                                                              panelWidth:420,  width:520,remoteUrl:'/Combogrid/BGItemForYSKZ',method:'get',idField:'GUID_Item',textField:'BGItemName',
+                                                              filterField:'BGItemName',
+                                                              columns:[[
+                                                                {field:'GUID_Item',title:'名称',width:'60',hidden:true},
+                                                                {field:'BGItemName',title:'预算项名称',width:'200'}     
+                                                            ]]
+                                                          }
+                                                }">
+                                                    预算项
+                                                </th>
+                                                <th field="BGED" title="预算值" sortable="false" width="80px" halign="center" align="right" 
+                                                editor="{type:'numberbox'}" data-options="styler:BuleStyler">
+                                                    预算值
+                                                </th>
+                                                <th field="IsScaleOrNot" title="是否比例" sortable="false" width="60px"  align="center" editor="{type:'text'}">
+                                                    是否比例
+                                                </th>
+                                                <th field="ControlEDScale" title="控制比例" sortable="false" width="80px" halign="center"  align="right" 
+                                                editor="{type:'numberbox'}" data-options="formatter:EDFormatter,styler:BuleStyler">
+                                                    控制比例
+                                                </th>
+                                                <th field="ControlEDLimit" title="控制额度" sortable="false" width="80px" halign="center"" align="right" 
+                                                editor="{type:'numberbox'}" data-options="styler:BuleStyler">
+                                                    控制额度
+                                                </th>
+                                                <th field="GroupID" title="分组编码" sortable="false" width="60px" halign="center" align="left" editor="text">
+                                                    分组编码
+                                                </th>
+                                                <th field="GUID_HandleMethod" title="处理方式" sortable="false" width="190px" halign="center" align="left" 
+                                                editor="{
+                                                          type:'combogrid',
+                                                          options:{
+                                                              gridassociate:{gridId:'yskz-BG_ControlDetail',
+                                                            map:{
+                                                            'HandleMethod':['GUID']
+                                                            }
+                                                            },
+                                                            bindmethod: { 'onSelect': ['setAssociate'] }, 
+                                                              panelWidth:420,  width:520,remoteUrl:'/Combogrid/HandleMethod',method:'get',idField:'GUID',textField:'HandleName',
+                                                              filterField:'HandleKey,HandleName',
+                                                              columns:[[
+                                                                {field:'GUID',title:'名称',width:'60',hidden:true},
+                                                                {field:'HandleKey',title:'处理方式编码',width:'60'},
+                                                                {field:'HandleName',title:'处理方式描述',width:'200'}     
+                                                            ]]
+                                                          }
+                                                }">
+                                                    处理方式
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        
+                                    </table>
+                                </td>
+            </tr>
+             <tr>
+                        <td style="width: 60px; padding-left: 10%;">
+                            <label for="field1">
+                                制单人</label>
+                        </td>
+                        <td style="width:180px;">
+                            <input class="easyui-combobox" id="yskz-BG_ControlMain-GUID_Maker" data-options="remoteUrl:'/Combo/Operator',
+                                    width:'180',
+                                    valueField:'GUID',
+                                    textField:'OperatorName',
+                                    filterField:'OperatorName',
+                                    forbidstatus:[-1]"> </input>
+                        </td>
+                        <td style="width: 60px; padding-left: 3%;">
+                            <label>
+                                修改人</label>
+                        </td>
+                        <td style="width:180px;">
+                            <input class="easyui-combobox" id="yskz-BG_ControlMain-GUID_Modifier" data-options="remoteUrl:'/Combo/Operator',
+                                    width:'180',
+                                    valueField:'GUID',
+                                    textField:'OperatorName',
+                                    filterField:'OperatorName',
+                                    forbidstatus:[-1]"> </input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 60px; padding-left: 10%;">
+                            <label for="field1">
+                                制单日期</label>
+                        </td>
+                        <td style="width:180px;">
+                            <input class="easyui-datebox" id="yskz-BG_ControlMain-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                        </td>
+                        <td style="width: 60px; padding-left: 3%;">
+                            <label>
+                                修改日期</label>
+                        </td>
+                        <td style="width:180px;">
+                            <input class="easyui-datebox" id="yskz-BG_ControlMain-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                        </td>
+                    </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="yskz-BG_ControlMain-GUID" type="hidden" keyattr="1"></input>
+</div>
+<label id="yskz-extendregion" style="display: none">
+    <input id="yskz-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="yskz-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="yskz-BG_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

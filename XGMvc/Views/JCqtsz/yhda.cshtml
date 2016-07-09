@@ -1,0 +1,116 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "银行设置";
+}
+<script src="../../Scripts/jc/jcCommon.js" type="text/javascript"></script>
+<div class="easyui-layout" id="yhda-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yhda-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newlyAdd'] },scope:'yhda',status:'1',
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="yhda-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'yhda-SS_Bank-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'yhda',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yhda-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'yhda-SS_Bank-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'yhda',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yhda-disable"
+                   data-options="plain:'true',iconCls:'icon-tingyong',
+                   bindmethod:{ 'click': ['setDisable'] },
+                   bindparms:{'setDisable':['yhda-SS_Bank-IsStop','yhda-tree-Bank']},scope:'yhda',status:'2',
+                   forbidstatus:[1,2,3]">停用</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="yhda-enable"
+                   data-options="plain:'true',iconCls:'icon-qiyong',
+                   bindmethod:{ 'click': ['setEnable'] },
+                   bindparms:{'setEnable':['yhda-SS_Bank-IsStop','yhda-tree-Bank']},scope:'yhda',status:'2',
+                   forbidstatus:[1,2,3]">启用</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yhda-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'yhda',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yhda-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   treeId:['yhda-tree-Bank'],
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCqtsz/Save']},scope:'yhda',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                 
+                   <a href="#" class="easyui-linkbutton"
+                   id="yhda-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'yhda'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="银行档案">
+                <ul class="easyui-tree" id="yhda-tree-Bank" 
+                 data-options="associate:{
+                    'yhda-SS_Bank-GUID':['GUID'],
+                    'yhda-SS_Bank-BankKey':['BankKey'],
+                    'yhda-SS_Bank-BankName':['BankName'],
+                    'yhda-SS_Bank-IsStop':['IsStop']
+                  },
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  url:'/Tree/GetBankInfo',
+                  customBindFirst:true,
+                  findParent:false,
+                  retStatus:'4',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height:auto; width: auto;padding: 0 0 0 150px">
+            <tr>
+                <td colspan="4" style="height: 100px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        银&nbsp;行&nbsp;档&nbsp;案</div>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td>
+                    <label for="field1" id="lbl-BankKey">
+                        银行编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yhda-SS_Bank-BankKey" data-options="forbidstatus:[4]"/>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-BankName">
+                        银行名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yhda-SS_Bank-BankName" data-options="forbidstatus:[4]"/>
+                </td>
+            </tr>
+            <tr style="height:50px;">
+                <td colspan="2">
+                    <input type="checkbox" class="easyui-checkbox"  id="yhda-SS_Bank-IsStop" data-options="forbidstatus:[4]"/>是否停用
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="yhda-SS_Bank-GUID" type="hidden"></input>
+</div>
+<label id="yhda-extendregion" style="display: none">
+    <input id="yhda-status" type="text"/>
+    <input id="initscope" type="text" value='yhda'/>
+    <input id="initstatus" type="text" value='4'/>
+    <input id="initguid" type="text" value=''/>
+</label>
+<div id="b-window" line="true"></div>

@@ -1,0 +1,4 @@
+﻿--修改密码sql
+update ss_operator set [password] = '7F49AE8FE5A716E40CD0B8A8CF9716B5' --密码：mmm
+
+

@@ -1,0 +1,123 @@
+﻿
+<script type="text/javascript">
+    $.UpdatePwd = function (jq) {debugger
+        var guid = $('#yhsz-SS_Operator-GUID').val();
+        var oldPwd = $('#pwd-SS_Operator-yuanPassword').val();
+        var newPwd = $('#pwd-SS_Operator-Password').val();
+        var newOkPwd = $('#pwd-SS_Operator-OkPassword').val();
+        if (oldPwd == "") {
+            $.messager.alert("提示...", '原密码不能为空！', 'info');
+            $('#pwd-SS_Operator-yuanPassword').focus();
+            return;
+        }
+        if (newPwd == "") {
+            $.messager.alert("提示...", '新密码不能为空！', 'info');
+            $('#pwd-SS_Operator-Password').focus();
+            return;
+        }
+        if (newOkPwd != newPwd) {
+            $.messager.alert("提示...", '确认密码与新密码不相等！', 'info');
+            $('#pwd-SS_Operator-OkPassword').focus();
+            return;
+        }
+        $.ajax({
+            url: '/JCjsyh/UpdatePwd',
+            data: { guid: guid, oldPwd: oldPwd, newPwd: newPwd },
+            dataType: "json",
+            type: "POST",
+            success: function (data) {
+                if (data) {
+                    //$('#b-window').dialog('close');
+                    var msg = data.msg;
+                    if (data.type == "success") {//成功
+                        //这个也可以，提示框与密码框同时关闭
+                        //$.messager.confirm('提示...', msg, function (r) {
+                        //if (r) {
+                        //$('#b-window').dialog('close');
+                        //}
+                        //});
+                        $('#b-window').dialog('close');
+                        $.messager.alert('提示...', msg, 'info');
+                    }
+                    else {
+                        $.messager.alert('提示...', msg, 'info');
+                        return false;
+                    }
+                }
+            }
+        });
+    }
+
+    $.Exist = function (jq) {
+        debugger
+        if (parent.window.layer) {
+            parent.window.layer.closeAll();
+        }
+        var opts = $(jq).linkbutton('options');
+        var winId = '#' + opts.window;
+        $(winId).dialog('close');
+    }
+
+   
+//    $.closeTab: function () {debugger
+//        var me = this;
+//        var opts = $(me).linkbutton('options');
+//        var arr = [1, 2];
+//        var scope = opts.scope;
+//        var pageState = $.view.getStatus(scope);
+//        if (arr.exist(pageState)) {
+//            $.messager.confirm("提示", "正在编辑,是否退出?", function (data) {
+//                if (!data) return;
+//                parent.window.CloseTabs();
+//            })
+//        } else {
+//            parent.window.CloseTabs();
+//        }
+//    } 
+</script>
+<div class="easyui-layout" id="pwd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                  <a href="#" class="easyui-linkbutton" id="pwd-save" onclick="$.UpdatePwd(this)"
+                  data-options="plain:'true',iconCls:'icon-queding',
+                  scope:'pwd',status:'2',forbidstatus:[2]">确定</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="pwd-close" onclick="$.Exist(this)"
+                  data-options="plain:'true',iconCls:'icon-tuichu',
+                  scope:'pwd',window:'b-window'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 960px; padding-left: 10px;">
+        <table border="0" style="padding: 5px; margin-left: 50px">
+            <tr style="height: 50px;">
+                <td style="width: 90px;">
+                    <label for="field1" id="lbl-yuanPassword">
+                        原&nbsp;密&nbsp;码</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="pwd-SS_Operator-yuanPassword" style="width: 176px"></input>
+                </td>
+            </tr>
+            <tr style="height: 50px;">
+                <td style="width: 90px;">
+                    <label for="field1" id="lbl-Password">
+                        新&nbsp;密&nbsp;码</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="pwd-SS_Operator-Password" style="width: 176px"
+                        data-options="validType:length[4,32],type:'password'"></input>
+                </td>
+            </tr>
+            <tr style="height: 50px;">
+                <td style="width: 90px;">
+                    <label for="field1" id="lbl-OkPassword">
+                        确认密码</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="pwd-SS_Operator-OkPassword" style="width: 176px"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="pwd-SS_Operator-GUID" type="hidden" keyattr="1"></input>
+</div>

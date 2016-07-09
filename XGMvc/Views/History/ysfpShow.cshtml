@@ -1,0 +1,952 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "预算分配";
+}
+<script type="text/javascript">
+    var gRowIndex = 0;
+    $(document).ready(function () {
+        $('#history-hexit').bind('click', function () {
+            $($(parent.document).find("#closeTab")).click();
+        })
+    });
+    $.extend($.fn.linkbutton.methods, {
+        saveDoc: function () {
+            var me = this;
+            var opts = $(me).linkbutton('options');
+            var status = $.view.getStatus(opts.scope);
+            var bResult = $.fn.linkbutton.methods["beforeSave"].call(this, status);
+            if (bResult == false) return;
+            var saveAjax = function (status, indata, opts) {
+                if ($.view.curPageState == 6 || $.view.curPageState == 5) {
+                    status = '2';
+                }
+                $.ajax({
+                    url: url,
+                    data: { "status": status, "m": JSON.stringify(indata.m), "d": JSON.stringify(indata.d) },
+                    dataType: "json",
+                    type: "POST",
+                    traditional: true,
+                    error: function (xmlhttprequest, textStatus, errorThrown) {
+                        $.messager.alert("错误", $.view.warning, 'error');
+                    },
+                    success: function (data) {
+
+                        switch (status) {
+                            case "1": //新建
+                                if (data && data.result == "success") {
+                                    //还原页面初始状态
+
+
+                                    var date = new Date()
+                                    $.view.clearView(opts.scope, "dataregion");
+                                    //加载页面数据
+                                    //设置页面编辑状态
+
+
+                                    //alert("清空数据时间" + new Date() - date)
+                                    var date = new Date()
+                                    $.view.loadData(opts.scope, data);
+                                    // alert("设置状态时间" + new Date() - date)
+                                    var date = new Date()
+                                    $.view.setViewEditStatus(opts.scope, opts.status);
+                                    //alert("设置状态时间" + new Date() - date)
+                                    // 新增之后，要修改之前展示预算分配情况的页面
+                                    
+                                    var iCount = data.m.length;
+                                    for (var i = 0; i < iCount; i++) {
+                                        if (data.m[i].n == "GUID") {
+                                            $.view.reSetRow(gRowIndex, data.m[i].v);
+                                        }
+                                    }
+                                } else {
+                                    $.view.setStatus(opts.scope, status);
+                                }
+                                //弹出提示
+                                if (!data.s) return;
+                                $.messager.alert(data.s.t, data.s.m, data.s.i);
+                                break;
+                            case "2": //修改
+                                if (data && data.result == "success") {
+                                    //还原页面初始状态
+
+
+
+                                    $.view.clearView(opts.scope, "dataregion");
+                                    //加载页面数据
+
+                                    $.view.loadData(opts.scope, data);
+                                    var sTemp = opts.status;
+                                    if ($.view.curPageState == 6 || $.view.curPageState == 5) {
+                                        //sTemp = 3;
+                                    }
+                                    $.view.setViewEditStatus(opts.scope, sTemp);                                    
+                                }
+                                else {
+                                    $.view.setStatus(opts.scope, status);
+                                }
+                                if (!data.s) return;
+                                $.messager.alert(data.s.t, data.s.m, data.s.i);
+                                break;
+                            case "3": //删除
+
+                                if (data && data.result == "success") {
+                                    //还原页面初始状态
+
+
+                                    $.view.clearView(opts.scope, "dataregion");
+                                    //设置页面编辑状态
+
+                                    $.view.loadData(opts.scope, data);
+                                    $.view.setViewEditStatus(opts.scope, 1); //                                  
+                                    $.view.reSetRow(gRowIndex, "");
+                                }
+                                else {
+                                    var msg = data.s.m;
+                                    if (msg) {
+                                        $.messager.alert('提示', msg);
+                                    }
+                                    $.view.setStatus(opts.scope, status);
+                                }
+                                
+                                // 刷新之前的那个界面
+
+                                break;
+                        }
+
+                        //对单据操作完成以后判断单据是否保存成功
+
+
+                        //                    $(me).linkbutton('afterSave', status);
+
+                        $.fn.linkbutton.methods["afterSave"].call($(me), status);
+
+                        $.view.cancelObj = { data: data, status: 4 };
+                    }
+                });
+            }
+            var saveAjaxBefore = function (opts, saveAjax) {
+                var status = $.view.getStatus(opts.scope);
+                var indata = $.view.retrieveData(opts.scope, "dataregion");
+                //设置保存按钮的状态属性
+
+                $.view.setStatus(opts.scope, opts.status);
+                if (!indata) return;
+                //删除提示
+                if (status == "3" && $.view.curPageState != 5 && $.view.curPageState != 6) {
+                    $.messager.confirm("提示", "确定要删除吗?", function (data) {
+                        if (!data) {
+                            $.view.setStatus(opts.scope, status);
+                            return;
+                        } else {
+                            saveAjax(status, indata, opts);
+                        }
+                    });
+                } else {
+                    saveAjax(status, indata, opts);
+                }
+            }
+            $(this).linkbutton('wholeGridEndEdit');
+            var opts = $(this).linkbutton('options');
+            var parms = $(this).linkbutton('getParms', 'saveDoc');
+            if (!parms) return;
+            var url = parms[0];
+            if (!url) return;
+            var isSussess = true;
+
+            //基础档案校验 
+            if (opts.JCDA) {
+                isSussess = $.fn.linkbutton.methods["examine"]($(this));    //跳转路径：Scripts/jc/jc.js
+                if (!isSussess) {
+                    return;
+                }
+            } else {
+                //常规校验
+                if (parms[1]) {
+                    isSussess = $.fn.linkbutton.methods["examine"].call($('#' + parms[1]), true);
+                    if (!isSussess) {
+                        return;
+                    }
+                }
+            }
+
+            if (isSussess == true) {
+                var isExmine = $.fn.linkbutton.methods["examineAfter"]($(this), status, function () { saveAjaxBefore(opts, saveAjax); });
+
+            } else {
+                $.messager.confirm("提示", isSussess, function (data) {
+                    if (data) {
+                        var isExmine = $.fn.linkbutton.methods["examineAfter"]($(this), status, function () { saveAjaxBefore(opts, saveAjax); });
+                    }
+                })
+            }
+        },
+        //判断单据是否保存成功
+        //可扩展方法---如果想在保存成功之后做任何处理的，都可以重新封装这个方法
+        //参数：jq:传过来的控件    status:传过来的页面状态
+
+        beforeSave: function (jq, status) {
+
+        },
+        examineAfter: function (jq, status, callback) { callback(); },
+        afterSave: function (jq, status, callback) {
+
+        }
+    });
+    $.extend($.view, {
+        init: function (scope, status, dataguid) {
+
+            if (scope && status) {
+                status = status + "";
+                var id = "[id^='" + scope + "-'].easyui-linkbutton";
+                switch (status) {
+                    case "1": //新建
+                        $(id).linkbutton('bind', true);
+                        $('#' + scope + '-add').click();
+                        // 进入到预算分配查询界面
+                        alert("3243245");
+                        historySearch();
+                        break;
+                    case "2": //修改
+                    case "3": //删除
+                    case "4": //浏览
+                        var data = $.view.retrieveDoc(dataguid, scope);
+                        if (data) {
+                            $.view.loadData(scope, data);
+                        }
+                        $.view.setViewEditStatus(scope, status);
+                        $.view.cancelObj = { data: data, status: status };
+                        break;
+                }
+                $.view.initAfter(scope, status, dataguid);
+            }
+        },
+        initByRow: function (scope, status, row, condition) {
+            
+            var guid = row.GUID;
+            gRowIndex = condition.Index;
+            if (guid != "") {
+                var data = $.view.retrieveDoc(guid, "ysfp");
+                if (data) {
+                    $.view.loadData(scope, data);
+                }
+                $.view.setViewEditStatus(scope, "4");
+                $.view.cancelObj = { data: data, status: "4" };
+
+            } else {
+
+                var guid_project = row.GUID_Project;
+                var guid_department = row.GUID_Department;
+                var guid_dw = row.GUID_Dw;
+                var projectKey = row.ProjectKey;
+                var guid_functionClass = row.FunctionClass;
+
+                var opts = $('#history-BG_Assign-GUID_DW').combogrid('options');
+                opts.tempValue = guid_dw;
+
+                opts = $('#history-BG_Assign-GUID_Department').combogrid('options');
+                opts.tempValue = guid_department;
+
+                opts = $('#history-BG_Assign-GUID_BGSetUp').combogrid('options');
+                opts.tempValue = condition.Guid_BGSetup;
+
+                opts = $('#history-BG_Assign-BGYear').combobox('options');
+                opts.tempValue = condition.Year;
+
+                opts = $('#history-BG_Assign-GUID_BGTYPE').combogrid('options');
+                opts.tempValue = condition.BGType;
+
+                opts = $('#history-BG_Assign-GUID_BGStep').combogrid('options');
+                opts.tempValue = condition.BGStep;
+
+                opts = $('#history-BG_Assign-GUID_FunctionClass').combogrid('options');
+                opts.tempValue = guid_functionClass;
+
+                opts = $('#history-BG_Assign-GUID_PStep').combogrid('options');
+                opts.tempValue = condition.GUIDPStep;
+
+
+                opts = $('#history-BG_Assign-GUID_Maker').combobox('options');
+                opts.tempValue = condition.Maker;
+
+                opts = $('#history-BG_Assign-GUID_Modifier').combobox('options');
+                opts.tempValue = condition.Maker;
+
+                if (guid_project != "") {
+                    opts = $('#history-BG_Assign-GUID_Project').combogrid('options');
+                    opts.tempValue = guid_project;
+
+                    opts = $('#history-BG_Assign-ProjectKey').combogrid('options');
+                    opts.tempValue = projectKey;
+                }
+
+                $.view.setViewEditStatus(scope, "1");
+                SetAssignInfo();
+
+                // 发送请求
+                $.ajax({
+                    url: "/ysfp/GetFlowNode",
+                    data: {},
+                    dataType: "json",
+                    type: "POST",
+                    error: function (xmlhttprequest, textStatus, errorThrown) {
+                        $.messager.alert("错误", $.view.warning, 'error');
+                    },
+                    success: function (data) {
+                        $('#history-SS_RunTimeUsersSet').datagrid('loadData', data);
+                    }
+                });
+            }
+        }
+    })
+
+
+    /*    函数区域    */
+    function SetAssignInfo() {
+        // 是否启用
+        
+        $('#history-BG_Assign-IsPStep').attr('checked', true);
+        var myDate = new Date();
+        var time = GetTimeNow();
+        $('#history-BG_Assign-MakeDate').datebox('setValue', time);
+        $('#history-BG_Assign-SubmitDate').datebox('setValue', time);
+        $('#history-BG_Assign-ModifyDate').datebox('setValue', time);
+        $('#history-BG_Assign-BeginDate').datebox('setValue', time);
+        $('#history-BG_Assign-StopDate').datebox('setValue', time);
+    }
+    // 适用于easyui datebox使用 yyyy-mm-dd
+    function GetTimeNow() {
+        
+        var myDate = new Date();
+        var year = myDate.getFullYear();
+        var month = myDate.getMonth()+1;
+        var day = myDate.getDate();
+        if (parseInt(month)<10) {
+            month = "0" + month;
+        }
+
+        if (parseInt(day) < 10) {
+            day = "0" + day;
+        }
+
+        var time = year + "-" + month + "-" + day;
+        return time;
+    }
+    // 进入预算分配界面后 执行该函数，进入到预算分配查询界面
+    function historySearch() {
+        var winId = '#b-window';
+        $(winId).dialog({
+            resizable: false,
+            title: '预算分配',
+            width: 1000,
+            height: 600,
+            modal: true,
+            minimizable: false,
+            maximizable: false,
+            collapsible: false,
+            href: '/History/historySearch',
+            onLoad: function (c) {
+                $.view.setViewEditStatus("history", "1");
+            }
+        });
+    }
+
+    function GetSelectValue(name, field) {
+        var grid = $(name).combogrid("grid");
+        var row = grid.datagrid("getSelected");
+        if (null == row) {
+            return "";
+        }
+        else {
+            return row[field];
+        }
+    }
+</script>
+<style>
+    .panel layout-panel layout-panel-north layout-split-north
+    {
+    	border-top:0px;
+    	border-bottom:0px;
+    	border-bottom-width:0px;
+    	border-bottom-style:none;
+    	border-style:none;
+    	}
+    	.panel-body panel-body-noheader panel-body-noborder layout-body
+    	{
+    		border-top:0px;
+    	border-bottom:0px;
+    	border-bottom-width:0px;
+    	border-bottom-style:none;
+    	border-style:none;
+    		}
+</style>
+<div class="easyui-layout" id="history-dataregion" style="width: 900px" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px ;width: 500px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="history-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'history',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/history',['history-BG_Assign-moneychinese','history-BG_Assign-moneyunmber']]}">
+                   打印</a> 
+                    
+@*                   <a href="#" class="easyui-linkbutton"
+                   id="history-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'history',status:'1',
+                   bindparms:{'newDoc':['/history/New']},
+                   forbidstatus:[1,2,3]">新增</a> *@
+                   
+                   <a href="#" class="easyui-linkbutton" id="history-edit"
+                   data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'history-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'history',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="history-remove"
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'history-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'history',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="history-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'history-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'datebox':['history-BG_Assign-BeginDate','history-BG_Assign-StopDate'],
+                            'combogrid':['history-BG_Assign-GUID_DW','history-BG_Assign-GUID_Department','history-BG_Assign-GUID_BGSetUp']
+                        },
+                    'bubbleExamine':
+                        {
+                          @*'numberbox':['history-BG_Assign-BillCount']*@
+                        }
+                    },
+                   scope:'history',forbidstatus:[4]">校验</a>                   
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="history-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/ysfp/Save','history-examine']},scope:'history',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="history-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'history-BG_Assign-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/ysfp/CommitFlow']},scope:'history',
+                   forbidstatus:[1,2,3]">提交</a>                    
+
+                   <a href="#" class="easyui-linkbutton" id="history-help"
+                   data-options=" plain:'true',iconCls:'icon-bangzhu', scope:'history',
+                   bindmethod:{ 'click': ['help'] }">帮助</a> 
+                   
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="history-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'history', 
+                    window:'b-window',         
+                    iconCls:'icon-tuichu'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center',split:true,border:false" style="width: 600px" data-options="fit:true">
+        <div class="easyui-layout" data-options="fit:true,split:true,border:false">
+            <!--banner-->
+            <div data-options="region:'north',split:true,border:false" id="header" style="height: 50px; width: 100%;">
+                <table border="0" style="height: 40px; width: 100%; padding: 0; margin: 0">
+                    <tr>
+                        <td style="height: 40px;">
+                            <div style="font-size: x-large; text-align: center;">
+                                预算分配</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--center-->
+            <div data-options="region:'center',split:true,border:false" style="width: 900px" data-options="fit:true">
+                <div class="easyui-layout" data-options="fit:true,split:true, border:false">
+                    <!--center  ->  top-->
+                    <div data-options="region:'north',split:true, border:false" style="width: 900px; height: 120px">
+                        <div class="easyui-layout" data-options="fit:true,split:true, border:false">
+                            <div data-options="region:'west',split:true ,border:false" style="width: 495px;
+                                overflow: hidden">
+                                <table border="0" style="height: 120px; width: 490px; padding: 0; margin: 0">
+                                    <tr>
+                                        <td style="height: 15px; width: 75px; padding-left: 3%;">
+                                            &nbsp;功能分类&nbsp;
+                                        </td>
+                                        <td colspan="3">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_FunctionClass" data-options="
+                                                        columns:[[
+                                                            {field:'GUID',hidden:'true'},
+                                                            {field:'FinanceCode',hidden:'true'},
+                                                            {field:'IsProject',hidden:'true'},
+                                                            {field:'FunctionClassKey',title:'政府收支分类编码',width:'100'},
+                                                            {field:'FunctionClassName',title:'功能分类名称',width:'215'}
+                                                            ]],
+                                                            panelWidth:240,
+                                                            width:160,
+                                                            method:'post',
+                                                            idField:'GUID',
+                                                            textField:'FunctionClassName',
+                                                            filterField:'FunctionClassKey,FunctionClassName',
+                                                            remoteUrl:'/Combogrid/FunctionClass',
+                                                            forbidstatus:[-1]
+                                                        ">
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 75px; height: 15px; padding-left: 3%;">
+                                            <label for="field1" id="lbl-GUID_BGSetUp">
+                                                &nbsp;预算设置&nbsp;</label>   
+                                        </td>
+                                        <td style="width: 170px;">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_BGSetUp" data-options="
+                                                        columns:[[
+                                                            {field:'GUID',hidden:'true'},
+                                                            {field:'BGSetupKey',title:'预算设置编码',width:'100'},
+                                                            {field:'BGSetupName',title:'预算设置名称',width:'215'},
+                                                            {field:'GUID_BGStep',hidden:'true'},
+                                                            {field:'GUID_BGType',hidden:'true'},
+                                                            {field:'PBG_StepGUID',hidden:'true'},
+                                                            ]],
+                                                            associate:{
+                                                                'history-BG_Assign-GUID_BGTYPE':['GUID_BGType'],
+                                                                'history-BG_Assign-GUID_BGStep':['GUID_BGStep'],
+                                                                'history-BG_Assign-GUID_PStep':['PBG_StepGUID']
+                                                            },
+                                                            bindmethod: { 'onCloseEx': ['setAssociate'] },
+                                                            panelWidth:240,
+                                                            width:160,
+                                                            method:'post',
+                                                            idField:'GUID',
+                                                            textField:'BGSetupName',
+                                                            filterField:'BGSetupKey,BGSetupName',
+                                                            remoteUrl:'/Combogrid/BGStepUpView',
+                                                            forbidstatus:[-1]
+                                                        ">
+                                            </select>
+                                        </td>
+                                        <td style="width: 75px; height: 15px;">
+                                            &nbsp;预算类型&nbsp;
+                                        </td>
+                                        <td style="width: 170px;">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_BGTYPE" data-options="columns:[[
+                                                        {field:'GUID',hidden:'true'},
+                                                        {field:'BGTypeKey',title:'预算类型编码',width:'100'},
+                                                        {field:'BGTypeName',title:'预算类型名称',width:'215'}
+                                                        ]],
+                                                        width:160,
+                                                        panelWidth:240,
+                                                        method:'post',
+                                                        bindmethod:{ 'onCloseEx':['setAssociate'] },
+                                                        forbidstatus:[-1],
+                                                        remoteUrl:'/Combogrid/BGType',
+                                                        method:'post',
+                                                        idField:'GUID',
+                                                        textField:'BGTypeName',
+                                                        sortName:'BGTypeKey',
+                                                        filterField:'BGTypeKey,BGTypeName'">
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 15px; width: 75px; padding-left: 3%;">
+                                            <label for="field1" id="lbl-BGYear">
+                                                &nbsp;预算年度&nbsp;</label>                                            
+                                        </td>
+                                        <td style="width: 170px;">
+                                            <select id="history-BG_Assign-BGYear" style="width:160px;" class="easyui-combobox"  
+                                            data-options="editable:false,forbidstatus:[-1]">  
+                                            <option value="2011">2011</option>  
+                                            <option value="2012">2012</option>
+                                            <option value="2013">2013</option>
+                                            <option value="2014">2014</option>  
+                                            <option value="2015">2015</option>
+                                            <option value="2016">2016</option>    
+                                            <option value="2017">2017</option>  
+                                            <option value="2018">2018</option>
+                                            <option value="2019">2019</option>    
+                                            <option value="2020">2020</option>  
+                                            <option value="2021">2021</option>
+                                            <option value="2022">2022</option>    
+                                            <option value="2023">2023</option>  
+                                            <option value="2024">2024</option>
+                                            <option value="2025">2025</option>    
+                                            <option value="2026">2026</option>  
+                                            <option value="2027">2027</option>
+                                            <option value="2028">2028</option>    
+                                            <option value="2029">2029</option>  
+                                            <option value="2030">2030</option>
+                                            <option value="2031">2031</option>    
+                                            <option value="2032">2032</option>  
+                                            <option value="2033">2033</option>
+                                            <option value="2034">2034</option>    
+                                            <option value="2035">2035</option>  
+                                            <option value="2036">2036</option>
+                                            <option value="2037">2037</option>    
+                                            <option value="2038">2038</option>  
+                                            <option value="2039">2039</option>
+                                            <option value="2040">2040</option>    
+                                            <option value="2041">2041</option>  
+                                            <option value="2042">2042</option>
+                                            <option value="2043">2043</option>    
+                                            <option value="2044">2044</option>  
+                                            <option value="2045">2045</option>
+                                            <option value="2046">2046</option>    
+                                            <option value="2047">2047</option>  
+                                            <option value="2048">2048</option>
+                                            <option value="2049">2049</option>    
+                                            <option value="2050">2050</option>  
+                                        </select>
+                                        </td>
+                                        <td style="height: 15px; width: 75px;">
+                                            &nbsp;预算步骤&nbsp;
+                                        </td>
+                                        <td style="width: 170px;">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_BGStep" data-options="
+                                                        columns:[[
+                                                            {field:'GUID',hidden:'true'},
+                                                            {field:'BGStepKey',title:'预算步骤编码',width:'100'},
+                                                            {field:'BGStepName',title:'预算步骤名称',width:'215'}
+                                                            ]],
+                                                            panelWidth:240,
+                                                            width:160,
+                                                            method:'post',
+                                                            idField:'GUID',
+                                                            textField:'BGStepName',
+                                                            filterField:'BGStepKey,BGStepName',
+                                                            remoteUrl:'/Combogrid/BGStepView',
+                                                            forbidstatus:[-1]
+                                                        ">
+                                            </select>
+                                           
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 15px; padding-left: 3%;">
+                                            &nbsp;项目名称&nbsp;
+                                        </td>
+                                        <td style="width: 170px;">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_Project" data-options="
+                                                          panelWidth:365,
+                                                          width:160,
+                                                          remoteUrl:'/Combogrid/Project',
+                                                          method:'get',
+                                                          idField:'GUID',
+                                                          forbidstatus:[-1],
+                                                          textField:'ProjectName',
+                                                          filterField:'ProjectKey,ProjectName',
+                                                          sortName:'ProjectKey',
+                                                          associate:{
+                                                                'history-BG_Assign-ProjectKey':['GUID','ProjectKey'],
+                                                                'history-BG_Assign-GUID_FunctionClass':['GUID_FunctionClass']
+                                                            },
+                                                          bindmethod: { 'onCloseEx': ['setAssociate'] },     
+                                                          columns:[[
+                                                              {field:'GUID',title:'GUID',hidden:true},
+                                                              {field:'IsPStep',hidden:true},
+                                                              {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                                              {field:'ProjectKey',title:'项目编号',width:'115'},
+                                                              {field:'ProjectName',title:'项目名称',width:'215'}
+                                                           ]]
+                                                       ">
+                                            </select>
+                                        </td>
+                                        <td style="height: 15px;">
+                                            &nbsp;项目编码&nbsp;
+                                        </td>
+                                        <td style="width: 170px;">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-ProjectKey" data-options="
+                                                            realValue:true,
+                                                            width:160,
+                                                            panelWidth:365,
+                                                            remoteUrl:'/Combogrid/Project',
+                                                            method:'get',
+                                                            forbidstatus:[-1],
+                                                            idField:'ProjectKey',
+                                                            textField:'ProjectKey',
+                                                            filterField:'ProjectKey,ProjectName',
+                                                            sortName:'ProjectKey',
+                                                            associate:{
+                                                                'history-BG_Assign-GUID_Project':['GUID','ProjectName'],
+                                                                'history-BG_Assign-GUID_FunctionClass':['GUID_FunctionClass']
+                                                            },
+                                                            bindmethod: { 'onCloseEx': ['setAssociate'] },     
+                                                            columns:[[
+                                                                {field:'GUID',title:'GUID',hidden:true},
+                                                                {field:'IsPStep',hidden:true},
+                                                                {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                                                {field:'ProjectKey',title:'项目编号',width:'115'},
+                                                                {field:'ProjectName',title:'项目名称',width:'215'}
+                                                            ]]
+                                                     ">
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div data-options="region:'center', split:true, border:false" style="width: 495px;
+                                overflow: hidden" fit="true">
+                                <table border="0" style="height: 120px; width: 490px; padding: 0; margin: 0">
+                                    <tr>
+                                        <td colspan="4" style="height: 15px; width: 50px;">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="width: 75px; height: 15px; padding-left: 3%;">
+                                            <label for="field1" id="lbl-GUID_DW">
+                                                &nbsp;预算单位&nbsp;</label>
+                                            
+                                        </td>
+                                        <td style="width: 170px; text-align: left;">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_DW" data-options="
+                                                        columns:[[
+                                                            {field:'GUID',hidden:'true'},
+                                                            {field:'GUID_Department',hidden:'true'},
+                                                            {field:'DWKey',title:'预算单位编码',width:'100'},
+                                                            {field:'DWName',title:'预算单位名称',width:'215'}
+                                                            ]],
+                                                            panelWidth:240,
+                                                            width:160,
+                                                            method:'post',
+                                                            idField:'GUID',
+                                                            textField:'DWName',
+                                                            filterField:'DWKey,DWName',
+                                                            remoteUrl:'/Combogrid/DW',
+                                                            forbidstatus:[-1]
+                                                        ">
+                                            </select>
+                                        </td>
+                                        <td style="width: 75px; height: 15px;">
+                                            <label for="field1" id="lbl-GUID_Department">
+                                                &nbsp;预算部门</label>
+                                            
+                                        </td>
+                                        <td style="width: 160px;">
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_Department" data-options="columns:[[
+                                                        {field:'GUID',hidden:'true'},
+                                                        {field:'GUID_DW',hidden:'true'},
+                                                        {field:'DepartmentKey',title:'预算部门编码',width:'100'},
+                                                        {field:'DepartmentName',title:'预算部门名称',width:'200'},
+                                                        {field:'DWName',title:'所属单位名称',width:'215'}
+                                                        ]],
+                                                        width:160,
+                                                        panelWidth:440,
+                                                        method:'post',
+                                                        bindmethod:{ 'onCloseEx':['setAssociate'] },
+                                                        associate:{
+                                                            'history-BG_Assign-GUID_DW':['GUID_DW']
+                                                        },
+                                                        forbidstatus:[-1],
+                                                        remoteUrl:'/Combogrid/Department',
+                                                        method:'post',
+                                                        idField:'GUID',
+                                                        textField:'DepartmentName',
+                                                        sortName:'DepartmentKey',
+                                                        filterField:'DepartmentKey,DepartmentName'">
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 15px; text-align: center;">
+                                            <input class="easyui-checkbox" id="history-BG_Assign-IsPStep" data-options="
+                                                     bindmethod:{ 'onClick':['setCCZFCode'] },
+                                                     forbidstatus:[3,4]" type="checkbox"></input>
+                                        </td>
+                                        <td>
+                                            &nbsp;是否启用
+                                        </td>
+                                        <td style="height: 15px;">
+                                            &nbsp;上级步骤
+                                        </td>
+                                        <td>
+                                            <select class="easyui-combogrid" id="history-BG_Assign-GUID_PStep" data-options="
+                                                        columns:[[
+                                                            {field:'GUID',hidden:'true'},
+                                                            {field:'BGStepKey',title:'预算步骤编码',width:'100'},
+                                                            {field:'BGStepName',title:'预算步骤名称',width:'215'}
+                                                            ]],
+                                                            panelWidth:240,
+                                                            width:160,
+                                                            method:'post',
+                                                            idField:'GUID',
+                                                            textField:'BGStepName',
+                                                            filterField:'BGStepKey,BGStepName',
+                                                            remoteUrl:'/Combogrid/BGStepView',
+                                                            forbidstatus:[-1]
+                                                        ">
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 15px; padding-left: 3%;">
+                                            <label for="field1" id="lbl-BeginDate">
+                                                &nbsp;开始时间</label>
+                                        </td>
+                                        <td>
+                                            <input class="easyui-datebox" id="history-BG_Assign-BeginDate" data-options="width:160,forbidstatus:[3,4]"></input>
+                                        </td>
+                                        <td style="height: 15px;">
+                                        <label for="field1" id="lbl-StopDate">
+                                                &nbsp;完成时间</label>                                           
+                                        </td>
+                                        <td>
+                                            <input class="easyui-datebox" id="history-BG_Assign-StopDate" data-options="width:160,forbidstatus:[3,4]"></input>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!--center -> left-->
+                    <div data-options="region:'center', split:false, border:false" style="width: 900px;
+                        height: 350px; overflow: hidden">
+                        <table border="0" style="height: 220px; width: 900px; padding: 0; margin: 0">
+                            <tr>
+                                <td style="height: 10px; vertical-align: bottom; width: 50px; padding-left: 35%;">
+                                    流程分配 
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="height: 100%; padding-left: 30%;">
+                                    <table class="easyui-edatagrid" id="history-SS_RunTimeUsersSet" style="overflow: auto" data-options="
+                                             orderNum:'',
+                                            requireCol:[
+                       
+                                            ],
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:true,
+                                            checkOnSelect:true,
+                                            height:200,
+                                            width:465,
+                                            rownumbers:true,
+                                            scope:'history',
+                                            single:false,
+                                            forbidstatus:[4,3],
+                                            copyField:[
+                       
+                                            ]
+                                            ">
+                                        <thead>
+                                           <tr>
+                                                <th field="history-SS_RunTimeUsersSet-Id" hidden="true" width="60px"></th>
+                                                <th field="history-SS_RunTimeUsersSet-Sort" hidden="true" width="60px"></th>
+                                                <th field="history-SS_RunTimeUsersSet-WorkFlowId" hidden="true" width="60px"></th>
+                                                <th field="history-SS_RunTimeUsersSet-WorkFlowNodeId" hidden="true" width="60px"></th>
+                                                <th field="history-SS_RunTimeUsersSet-OperatorId" hidden="true" width="60px"></th>
+                                                <th field="history-SS_RunTimeUsersSet-WorkFlowNodeName"  title = "操作步骤" width="100px" align:'center'>操作步骤</th>
+                                                <th field="history-SS_RunTimeUsersSet-OperatorName"  title ="操作员名称" width="100px" align:'center' editor="{
+                                                    type:'combogrid',
+                                                    options:{
+                                                         gridassociate:{gridId:'history-SS_RunTimeUsersSet',
+                                                         map:{
+                                                            'history-SS_RunTimeUsersSet-OperatorId':['GUID']
+                                                            }
+                                                         },
+                                                         bindmethod: { 'onSelect': ['setAssociate'] },     
+                                                         width:520,
+                                                         panelWidth:240,
+                                                         remoteUrl:'/Combogrid/Operator',
+                                                         method:'get',
+                                                         idField:'GUID',
+                                                         delay:1500,
+                                                         filterField:'OperatorName',
+                                                         textField:'OperatorName',
+                                                         sortName:'OperatorName',
+                                                         columns:[[
+                                                                {field:'GUID',hidden:'true'},
+                                                                {field:'OperatorName',title:'操作员名称',width:'130'}
+                                                          ]]
+                                                    }
+                                                }">
+                                                操作员名称</th>
+                                                
+                                           </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                 </div>
+            </div>
+            <!--foot-->
+            <div data-options="region:'south',split:true,border:false" style="width: 490px; height: 60px;
+                overflow: hidden">
+                <table border="0" style="height: 60px; width: 100%; padding: 0; margin: 0">
+                    <tr>
+                        <td style="width: 60px; padding-left: 3%;">
+                            <label for="field1">
+                                制单人</label>
+                        </td>
+                        <td>
+                            <input class="easyui-combobox" id="history-BG_Assign-GUID_Maker" data-options="remoteUrl:'/Combo/Operator',
+                                    width:'180',
+                                    valueField:'GUID',
+                                    textField:'OperatorName',
+                                    filterField:'OperatorName',
+                                    forbidstatus:[-1]"> </input>
+                        </td>
+                        <td style="width: 60px; padding-left: 3%;">
+                            <label>
+                                修改人</label>
+                        </td>
+                        <td>
+                            <input class="easyui-combobox" id="history-BG_Assign-GUID_Modifier" data-options="remoteUrl:'/Combo/Operator',
+                                    width:'180',
+                                    valueField:'GUID',
+                                    textField:'OperatorName',
+                                    filterField:'OperatorName',
+                                    forbidstatus:[-1]"> </input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 60px; padding-left: 3%;">
+                            <label for="field1">
+                                制单日期</label>
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" id="history-BG_Assign-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                        </td>
+                        <td style="width: 60px; padding-left: 3%;">
+                            <label for="field1">
+                                提交日期</label>
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" id="history-BG_Assign-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                        </td>
+                        <td style="width: 60px; padding-left: 3%;">
+                            <label>
+                                修改日期</label>
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" id="history-BG_Assign-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <input class="easyui-validatebox" id="history-BG_Assign-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="history-BG_Assign-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="history-BG_Assign-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="history-BG_Assign-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="history-BG_Assign-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="history-BG_Assign-OAOTS" type="hidden"></input>
+</div>
+<label id="history-extendregion" style="display: none">
+    <input id="history-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="history-BudgetStatistics-datafilter" data-options="region:'north'">
+    <input class="easyui-validatebox" type="hidden" id="history-BG_Assign-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

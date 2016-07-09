@@ -1,0 +1,80 @@
+
+SELECT  
+NEWID() AS GUID,
+'A427FAE5-B5C9-41B0-AEC8-10BB61C6127B' AS GUID_ComparisonMain,
+3 AS ClassID,
+c.GUID AS  GUID_Self,
+a.PersonKey AS ExteriorKey,
+'PersonSR' AS Comparisontype
+FROM dbo.工资临时Table a
+LEFT JOIN (SELECT * FROM dbo.SS_ComparisonDetailSR WHERE GUID_ComparisonMain='A427FAE5-B5C9-41B0-AEC8-10BB61C6127B') b
+ON a.PersonKey=b.ExteriorKey
+LEFT JOIN dbo.SS_Person c ON c.PersonName=a.Personname
+WHERE b.GUID_Self IS NULL
+
+
+
+
+USE [baoth_ngccnew]
+GO
+
+/****** Object:  Table [dbo].[工资临时Table]    Script Date: 04/17/2015 17:48:47 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[工资临时Table](
+	[PersonKey] [nvarchar](50) NOT NULL,
+	[PersonName] [nvarchar](50) NULL,
+	[政府特贴] [float] NULL,
+	[人才特贴] [float] NULL,
+	[电话补助] [float] NULL,
+	[独补] [float] NULL,
+	[托补] [float] NULL,
+	[购房补贴] [float] NULL,
+	[房租补] [float] NULL,
+	[补发] [float] NULL,
+	[物业服务补贴] [float] NULL,
+	[其他] [float] NULL,
+	[绩效津贴] [float] NULL,
+	[补发1] [float] NULL,
+	[密码津贴] [float] NULL,
+	[过节费] [float] NULL,
+	[出车补助] [float] NULL,
+	[移动电话补贴] [float] NULL,
+	[应发合计] [float] NULL,
+	[扣房金] [float] NULL,
+	[扣失业保险] [float] NULL,
+	[扣医疗保险] [float] NULL,
+	[扣养老保险] [float] NULL,
+	[事假天数] [float] NULL,
+	[缺勤扣款] [float] NULL,
+	[病假天数] [float] NULL,
+	[缺勤扣] [float] NULL,
+	[其他扣] [float] NULL,
+	[其他计税额] [float] NULL,
+	[计税额] [float] NULL,
+	[代扣税] [float] NULL,
+	[扣款] [float] NULL,
+	[扣款合计] [float] NULL,
+	[其他奖金] [float] NULL,
+	[其他1] [float] NULL,
+	[免税额] [float] NULL,
+	[实发合计] [float] NULL,
+	[期间] [float] NULL,
+	[年终奖] [float] NULL,
+	[年终奖代扣税] [float] NULL,
+	[工资代扣税] [float] NULL,
+	[扣税合计] [float] NULL,
+	[签名] [float] NULL,
+ CONSTRAINT [PK_工资临时Table] PRIMARY KEY CLUSTERED 
+(
+	[PersonKey] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+

@@ -1,0 +1,24 @@
+/* css document */
+body{background:url(../../images/Logon/pixel.png);margin:0;padding:0;}
+.logon_bg_01 {margin:0; background:url(../../images/Logon/GradualChange.png) top center no-repeat;min-width:980px; min-height:700px; overflow:hidden; position:relative;border:0px solid red;margin: 0 0 0 0;}
+.logon_bg_02 {margin:0; background:url(../../images/Logon/bottom-1.png) center center no-repeat;min-width:980px; min-height:715px; overflow:hidden; position:relative;border:0px solid red;}
+.logon_top {position:absolute; left:50%;width:940px; height:104px; margin:0 0 0 -470px;background:url(../../images/Logon/top.png) no-repeat;}
+.logon_bottom {position:absolute; left:50%;width:940px; height:104px; margin:630px 0 0 -470px;background:url(../../images/Logon/bottom.png) no-repeat;}
+.logon_left {position:absolute; left:22%;margin:70px 0 0 0;background:url(../../images/Logon/left.png) center center no-repeat;min-width:100px; min-height:560px; border:0px solid red;}
+.logon_right {position:absolute; right:22%;margin:70px 0 0 0;background:url(../../images/Logon/right.png) center center no-repeat;min-width:100px; min-height:560px; border:0px solid red;}
+.logon_picleft {position:absolute; left:20%;margin:70px 0 0 0;background:url(../../images/Logon/pic_left.png) center center no-repeat;min-width:100px; min-height:560px; border:0px solid red;}
+.logon_picright {position:absolute;right:20%;margin:70px 0 0 0;background:url(../../images/Logon/pic_right.png) center center no-repeat;min-width:100px; min-height:560px; border:0px solid red;}
+
+.fl {float:left;}	/* Ïò×ó¸¡¶¯ */
+input {outline:none;}
+input.input3{width:210px;height:22px;}
+label { cursor:pointer;}
+
+.login_con{ background:url(../../images/Logon/window.png) no-repeat; width:532px; height:335px; position:absolute;top:180px; left:50%; margin:0 0 0 -264px;}
+.login_content{margin:110px 0 0 50px; width:inherit;}
+.login_content label{ clear:both; display:block; padding:0 0 15px 80px; height:40px; line-height:20px;}
+.login_content label span{color:#7E7E7E; font-size:14px; display:block; width:60px; font-weight:bold; line-height:20px;padding:3px 0 0 0;}
+
+.login_content label.login_input{ padding:8px 0 0 135px;}
+.login_content label.login_input input.logon{ background:url(../../images/Logon/logon1.png) no-repeat; width:95px; height:28px; border:none; color:#fff; cursor:pointer;}
+.login_content label.login_input input.cancle{ background:url(../../images/Logon/cancle1.png) no-repeat; width:95px; height:28px; border:none; color:#fff; cursor:pointer;}

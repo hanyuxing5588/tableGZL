@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<formula>
+  <sqlformula>
+    <ccol key="101" level="3" isEdit="1" conn="1" descript="基础测绘项目" Type="1" value="
+      SELECT  SUM(Total_BX)
+      FROM    dbo.BX_DetailView
+      WHERE   GUID_PaymentNumber IN ( SELECT  GUID
+                                FROM    dbo.CN_PaymentNumberView
+                                WHERE   FunctionClassKey = '01' )
+              AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' and docstate=999 )
+          "/>
+    <ccol key="105" level="3" isEdit="1" conn="1" descript="航空摄影管理费" Type="1" value="
+              SELECT  SUM(Total_BX)
+      FROM    dbo.BX_DetailView
+      WHERE   GUID_PaymentNumber IN ( SELECT  GUID
+                                FROM    dbo.CN_PaymentNumberView
+                                WHERE   FunctionClassKey = '02' )
+              AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' and docstate=999 )
+          "/>
+    <ccol key="110" level="3" isEdit="1" conn="1" descript="地理国情监测专项" Type="1" value="
+          SELECT  SUM(ISNULL(Total_BX,0))
+        FROM    dbo.BX_DetailView
+        WHERE    ProjectKey IN ('2012-ZX-Z02-4','2012-ZX-Z02-16','2012-ZX-Z02-7','2012-ZX-Z02-19','2012-ZX-Z02-34','2012-ZX-Z02-6','2012-ZX-Z02-20','2012-ZX-Z02-23','2012-ZX-Z02-42','2012-ZX-Z02-43','2012-ZX-Z02-44','2012-ZX-Z02-45','2012-ZX-Z02-46','2012-ZX-Z02-47','2012-ZX-Z02-48','2012-ZX-Z02-49','2012-ZX-Z02-25','2012-ZX-Z02-29','2012-ZX-Z02-1','2012-ZX-Z02-39','2012-ZX-Z02-53','2012-ZX-Z02-54','2012-ZX-Z02-55','2012-ZX-Z02-56','2012-ZX-Z02-57','2012-ZX-Z02-58','2012-ZX-Z02-40','2012-ZX-Z02-41')
+                AND GUID_BX_Main IN ( SELECT    GUID
+                                      FROM      dbo.BX_Main
+                                      WHERE     DocDate BETWEEN '@SDate' AND '@EDate' and docstate=999 )
+          "/>
+    <ccol key="115" level="3" isEdit="1" conn="1" descript="基础地理信息公益性应急服务" Type="1" value="
+          SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2013-QT-01-1','2013-QT-01-2','2013-QT-01-3')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )
+          "/>
+    <ccol key="120" level="3" isEdit="1" conn="1" descript="社会公益研究" Type="1" value="
+        SELECT  SUM(ISNULL(Total_BX,0))
+        FROM    dbo.BX_DetailView
+        WHERE   ProjectKey IN ('2014-GY-A01-0','2015-GY-A01-0','2015-GY-A02-0')
+                AND GUID_BX_Main IN ( SELECT    GUID
+                                      FROM      dbo.BX_Main
+                                      WHERE     DocDate BETWEEN '@SDate' AND '@EDate'  and docstate=999 )"/>
+    <ccol key="125" level="3" isEdit="1" conn="1" descript="其他制造业支出" Type="1" value="
+          SELECT  SUM(Total_BX)
+      FROM    dbo.BX_DetailView
+      WHERE   GUID_PaymentNumber IN ( SELECT  GUID
+                                FROM    dbo.CN_PaymentNumberView
+                                WHERE   FunctionClassKey = '06' )
+              AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )
+          "/>
+  <ccol key="130" level="3" isEdit="1" conn="1" descript="直属单位生产基地维修改造" Type="1" value="
+        SELECT  SUM(ISNULL(Total_BX,0))
+        FROM    dbo.BX_DetailView
+        WHERE   ProjectKey='2015-DXS-01'
+                AND GUID_BX_Main IN ( SELECT    GUID
+                                      FROM      dbo.BX_Main
+                                      WHERE     DocDate BETWEEN '@SDate' AND '@EDate'  and docstate=999 )"/>
+    <ccol key="135" level="3" isEdit="1" conn="1" descript="测绘保障能力建设" Type="1" value="
+                    SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2015-QT-02')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="140" level="3" isEdit="1" conn="1" descript="弱电系统改造工程" Type="1" value="
+                              SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('14-ZX-A01-0')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="145" level="3" isEdit="1" conn="1" descript="信息数据整合与安全保管环境维修改造" Type="1" value="
+                                      SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2015-QT-05')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="150" level="3" isEdit="1" conn="1" descript="大地基准一期工程专项" Type="1" value="
+            select sum(md) from Ufdata_113_2012..gl_accvouch where ccode IN ('234') and dbill_date  BETWEEN '@SDate' AND '@EDate'"/>
+    <ccol key="155" level="3" isEdit="1" conn="1" descript="国家测绘档案存储与服务设施项目" Type="1" value="
+         select sum(md) from ufdata_102_2015..gl_accvouch where ccode IN ('234') and dbill_date  BETWEEN '@SDate' AND '@EDate'"/>
+    <ccol key="160" level="3" isEdit="1" conn="1" descript="其它项目" Type="1" value="
+                  SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2015-QT-01','2012-MS-01','2013-QT-03','2015-QT-03','2015-QT-04')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="165" level="2" isEdit="1" conn="1" descript="  其中：收支两条线" Type="1" value="
+          SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2015-QT-01')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="170" level="2" isEdit="0" conn="1" descript="    ISPRS秘书处专项工作" Type="1" value="
+           SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2012-MS-01')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="175" level="2" isEdit="0" conn="1" descript="    TC211" Type="1" value="
+          SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2013-QT-03')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="180" level="2" isEdit="0" conn="1" descript="    基础地理信息运行维护管理" Type="1" value="
+            SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2015-QT-03')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="185" level="2" isEdit="0" conn="1" descript="    全球测图" Type="1" value="
+           SELECT  SUM(ISNULL(Total_BX,0))
+FROM    dbo.BX_DetailView
+WHERE   ProjectKey IN ('2015-QT-04')
+        AND GUID_BX_Main IN ( SELECT    GUID
+                              FROM      dbo.BX_Main
+                              WHERE     DocDate BETWEEN '@SDate' AND '@EDate' )"/>
+    <ccol key="190" level="3" isEdit="1" conn="1" descript="基本支出（人员及公用经费）" Type="1" value="
+           select sum(md) from ufdata_102_2015..gl_accvouch where ccode IN ('10303','10305','10306','10307','10308') and dbill_date  
+           BETWEEN '@SDate' AND '@EDate'"/>
+    <ccol key="195" level="4" isEdit="1" conn="1" descript="总经费" Type="1" value="SELECT '0' as v FROM dbo.BX_Main WHERE DocDate BETWEEN '@SDate' AND '@EDate'"/>
+    <ccol key="200" level="5" isEdit="1" conn="1" descript="国家局经费" Type="1" value="SELECT  '0' as v FROM dbo.BX_Main WHERE DocDate BETWEEN '@SDate' AND '@EDate'"/>
+    <ccol key="205" level="6" isEdit="1" conn="1" descript="中心实际预算经费" Type="1" value="SELECT  '0' as v FROM dbo.BX_Main WHERE DocDate BETWEEN '@SDate' AND '@EDate'"/>
+   </sqlformula>
+</formula>
+
+

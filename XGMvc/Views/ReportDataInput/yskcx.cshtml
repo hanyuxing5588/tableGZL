@@ -1,0 +1,216 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "应收款查询";
+}
+<link href="../../Content/commonjs/upload/default.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/fileprogress.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/handlers.js"></script>
+<script src="../../Scripts/bb/yskcx.js?r=12" type="text/javascript"></script>
+<script>
+    $.gridKeydownEnter = function (colName) {
+        var target = $('#lwflkd-BX_InviteFee');
+        var selectedRow = target.edatagrid('getSelected');
+        if (selectedRow) {
+            if (colName) {
+                var index = target.datagrid('getRowIndex', selectedRow);
+                target.datagrid('endEdit', index);
+                target.datagrid('selectRow', index);
+                target.edatagrid('editCell', { index: index, field: colName });
+            }
+        }
+    };
+    $.extend($.fn.datagrid.defaults.editors, {
+        text: {
+            init: function (_176, _177) {
+                var _178 = $("<input type=\"text\" class=\"datagrid-editable-input\">").appendTo(_176);
+                _178.bind("keydown", function (event) {
+
+                    if (event.keyCode == '13') {
+                        $.gridKeydownEnter(_177.nextColName);
+                    }
+                });
+                return _178;
+            },
+            getValue: function (_179) {
+                //过滤掉所有html标签
+                var temp = $(_179).val().stripHTML();
+                return temp;
+            },
+            setValue: function (_17a, _17b) {
+                $(_17a).val(_17b);
+            },
+            resize: function (_17c, _17d) {
+                $(_17c)._outerWidth(_17d)._outerHeight(22);
+            }
+        },
+        datebox: {
+            init: function (_19f, _1a0) {
+                var _1a1 = $("<input type=\"text\">").appendTo(_19f);
+                _1a1.datebox(_1a0);
+                _1a1.bind("keydown", function (event) {
+                    if (event.keyCode == '13') {
+                        $.gridKeydownEnter(_1a0.nextColName);
+                    }
+                });
+                return _1a1;
+            },
+            destroy: function (_1a2) {
+                $(_1a2).datebox("destroy");
+            },
+            getValue: function (_1a3) {
+
+                var date = $(_1a3).datebox("getValue");
+                
+                if (date != "" && date.length != 0) {
+                    date = new Date().FormatDate(date);
+                }
+                return date;
+            },
+            setValue: function (_1a4, _1a5) {
+                
+                if (_1a5 != "" && _1a5!=undefined && _1a5.length != 0) {
+                    _1a5 = new Date().FormatDate(_1a5);
+                }
+                $(_1a4).datebox("setValue", _1a5);
+            },
+            resize: function (_1a6, _1a7) {
+                $(_1a6).datebox("resize", _1a7);
+            }
+        }   
+    });
+</script>
+<div class="easyui-layout" id="yskcx-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+           <a href="#" class="easyui-linkbutton" 
+                   id="yskcx-ExcelImport" 
+                   data-options="plain:'true',iconCls:'icon-daoru'">导入</a> 
+            <a href="#" class="easyui-linkbutton" id="yskcx-addrow" 
+            data-options="plain:'true',iconCls:'icon-zenghang'">增行</a> 
+
+            <a href="#" class="easyui-linkbutton" id="yskcx-delrow" 
+            data-options="plain:'true',iconCls:'icon-shanhang'">删行</a> 
+                   
+            <a href="#" class="easyui-linkbutton" id="yskcx-save" 
+            data-options="plain:'true',iconCls:'icon-baocun'">保存</a> 
+
+            <a href="#" class="easyui-linkbutton" id="yskcx-close" 
+            data-options="plain:'true',iconCls:'icon-tuichu'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'"  data-options="fit:true">
+        <table border="0" style="width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 30px;">
+                    <div style="font-size: x-large; text-align: center;">应收款查询录入</div>
+                </td>
+            </tr>
+            <tr style="height: 30px;">
+                 <td colspan="4" style="width: 70%;">
+                </td>
+                <td style="width: 10%;">
+                   <input id="yskcx-RP_YSK-IsOrNot"  type="checkbox" class="easyui-checkbox">&nbsp;是否显示已还完</input>
+                </td>
+                <td style="width: 20%;">
+                    <select id="yskcx-RP_YSK-Account" class="easyui-combobox"  data-options="editable:false"; style="width:120px;">  
+                         <option value="0">实存账户</option>  
+                         <option value="1">当年借款</option>  
+                         <option value="2">以前年度</option>            
+                    </select> 
+                </td>
+            </tr>
+           
+        </table>
+          <table class="easyui-edatagrid" id="grid" 
+                        data-options="
+                           
+                            idField:'GUID',
+                           @* nowrap:false,*@
+                            singleSelect:true,
+                            showFooter: true,
+                            rownumbers: true,
+                            striped:true,
+                            remoteSort:false,
+                            formatters:{'Loan':'numberbox','Repayment':'numberbox','Balance':'numberbox'},
+                            onLoadSuccess:$.GridOnLoadSuccess
+                          @*  url:'/ReportDataInput/GetYskcxData?accountType=0'*@
+                            ">
+                        <thead>
+                            <tr>
+                                <th data-options="field:'GUID',hidden:'true'"  ></th>
+                                <th data-options="field:'GUID_Department',hidden:'true'"></th>
+                                <th data-options="field:'GUID_Person',hidden:'true'"></th>
+                                <th data-options="field:'AccountType',hidden:'true'"  ></th>
+                                <th data-options="field:'DocDate', title:'日期',halign:'center', align:'center', width:'100',editor:{type:'datebox',options:{nextColName:'DocNum'}}"></th>
+                                <th data-options="field:'DocNum', title:'凭证号',halign:'center', align:'left', width:'80',editor:{type:'text',options:{nextColName:'DocMemo'}}"></th>
+                                <th data-options="field:'DocMemo', title:'摘要',halign:'center', align:'left', width:'450',editor:{type:'text',options:{nextColName:'Loan'}}"></th>
+                                <th data-options="field:'Loan', title:'借款金额',halign:'center', align:'right', width:'100',editor:{type:'numberbox',options:{precision:2,max:99999999.99,isAdd:true}}"></th>
+                                <th data-options="field:'Repayment', title:'还款金额',halign:'center', 
+                                
+                                align:'right', width:'100',editor:{type:'numberbox',options:{precision:2,max:99999999.99,isAdd:false}}"></th>
+                                <th data-options="field:'Balance',
+                                styler:function(){return 'background-color:#EBEBE4;';},
+                                title:'余额',halign:'center', align:'right', width:'100'"></th>
+                                <th data-options="field:'PersonName', title:'借款人',halign:'center', align:'center', width:'150',
+                                    editor:{
+                                      type:'combogrid',
+                                      
+                                      options:{
+                                      rField:'GUID_Person',
+                                    @*  assField:['GUID_Department','DepartmentName'],*@
+                                        width:180,
+                                        panelWidth:400,
+                                      method:'post',
+                                    remoteUrl:'/Combogrid/Person',
+                                    idField:'GUID',
+                                    textField:'PersonName',
+                                    filterField:'PersonKey,PersonName',
+                                    remoteSort:false,
+                                    forbidstatus:[4,3],
+                                    singleSelect:true,
+                                    editable:true,
+                                    striped: false,
+                                    rownumbers:true,
+                                      columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_Department',hidden:'true'},
+                                            {field:'PersonKey',title:'人员编码',width:'100'},
+                                            {field:'PersonName',title:'人员名称',width:'100'},
+                                            {field:'DepartmentName',title:'部门名称',width:'100'}
+                                        ]]
+                                      }
+                                    }">借款人
+                                </th>
+                                <th data-options="field:'DepartmentName', title:'所属部门',halign:'center', align:'center', width:'150',
+                                    editor:{
+                                      type:'combogrid',
+                                      options:{
+                                      rField:'GUID_Department',
+                                      panelWidth:420,  
+                                      width:520,
+                                        remoteUrl:'/Combogrid/Department2ForGCY',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      columns:[[
+                                          {field:'GUID',title:'名称',width:'60',hidden:true},
+                                          {field:'DepartmentKey',title:'部门编码',width:'60'},
+                                          {field:'DepartmentName',title:'部门名称',width:'200'},
+                                          {field:'DWName',title:'所属单位名称',width:'130'}
+                                        ]]
+                                      }
+                                    }">所属部门
+                                </th>
+                                <th data-options="field:'Remark', title:'备注',halign:'center', align:'left', width:'200',editor:{type:'text'}"></th>
+                            </tr>
+                                            
+                        </thead>   
+                    </table>
+    </div>
+</div>
+<label id="xjbxd-extendregion" style="display: none">
+ <div id="b-window" line="true" />
+    </label>

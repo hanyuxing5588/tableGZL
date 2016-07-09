@@ -1,0 +1,10 @@
+﻿[{   
+    "MONEY":"01",   
+    "DESCRIPTION":"万元"
+},{   
+    "MONEY":"02",   
+    "DESCRIPTION":"千元"
+},{   
+    "MONEY":"03",   
+    "DESCRIPTION":"元"
+}]

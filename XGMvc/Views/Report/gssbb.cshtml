@@ -1,0 +1,287 @@
+﻿@{ 
+    ViewBag.Title = "个税申报表";
+ }
+<script type="text/javascript">
+    $(document).ready(function () {
+        var d = new Date();
+        $('#gssbb-history-Year').combo('setValue', d.getFullYear());
+        $('#gssbb-history-Year').combo('setText', d.getFullYear());
+
+        $('#gssbb-history-Month').combo('setValue', d.getMonth() + 1);
+        $('#gssbb-history-Month').combo('setText', d.getMonth() + 1);
+        $('#gssbb_grid').datagrid({
+            height:$('body').height()-160         
+        })
+        var formatNum = function (s1) {
+            var p = /(\d+)(\d{3})/;
+            while (p.test(s1)) {
+                s1 = s1.replace(p, "$1,$2");
+            }
+            return s1;
+        }
+        var colConfig = $('#gssbb_grid').datagrid('getColumnOption', 'T4');
+        var GetData = function () {
+            $("#gssbb_grid").datagrid('loadData', { total: 0, rows: [] });
+            var data = $.view.retrieveData("gssbb", "historydatafilter");
+            var url;
+            var tcondition;
+            var result = {};
+            var ids = "";
+            if (data && data.m) {
+                for (var i = 0, j = data.m.length; i < j; i++) {
+                    var temp = data.m[i];
+                    if (!temp && !temp.v) continue;
+                    result[temp.n] = temp.v;
+                }
+            }
+
+            var treeCondition = [];
+            //树节点
+            result = $.extend(result, {});
+            $('#gssbb_grid').datagrid("loading");
+            $.ajax({
+                url: '/Report/GetLoadGSSBBData/',
+                data: { condition: JSON.stringify(result) },
+                dataType: "json",
+                type: "POST",
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                    $.messager.alert("错误", '网络超时,请重新登录', 'error');
+                    $('#gssbb_grid').datagrid("loaded");
+                },
+                success: function (data) {
+                    if (!data || data == null) {
+                        return;
+                    }
+                    if (data.length == 1) {
+                        $.messager.alert("操作提示", data[0].msg);
+                    }
+                    else {
+                        $('#gssbb_grid').datagrid('loadData', data);
+                    }
+                    $('#gssbb_grid').datagrid("loaded");
+                }
+            });
+
+        }
+        var ExportExcel = function () {
+            var tcondition = {};
+            var l = $('#gssbb_grid').datagrid('getRows');
+            if (l <= 1) {
+                $.messager.alert('系统提示', '没有要输出的数据！');
+                return;
+            }
+            var year = $('#gssbb-history-Year').combo('getValue');
+            tcondition["Year"] = year;
+            var month = $('#gssbb-history-Month').combo('getValue');
+            tcondition["Month"] = month;
+            var url = $.format("/Report/ExportGSSBBReport?year={0}&month={1}", year, month)
+            window.open(url);
+
+        }
+
+        $('#gssbb-select').bind('click', function () {
+            GetData();
+        })
+        $('#gssbb-shuchu').bind('click', function () {
+            ExportExcel();
+        })
+        //        $('#gssbb-tuichu').bind('click', function () {
+        //            $($(parent.document).find("#closeTab")).click();
+        //        })
+
+    })
+</script>
+<body>
+    <div class="easyui-layout" id="gssbb-dataregion" data-options="fit:true" z="1">       
+       <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+             <a href="#" class="easyui-linkbutton" id="gssbb-print"
+                      data-options="plain:'true',iconCls:'icon-dayin',
+                  scope:'gssbb'">打印</a>
+            <a href="#" b-type="1"  class="easyui-linkbutton" id="gssbb-shuchu"
+                data-options="plain:'true',iconCls:'icon-shuchu',                 
+                forbidstatus:[-1]">输出</a>
+            <a href="#" class="easyui-linkbutton" id="gssbb-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  scope:'gssbb',
+                  forbidstatus:[-1]">查询</a>           
+            <a href="#" class="easyui-linkbutton" id="gssbb-help" data-options="
+            plain:'true',iconCls:'icon-bangzhu', scope:'gssbb',
+            bindmethod:{ 'click': ['help'] }">帮助</a>  
+            <a href="#" class="easyui-linkbutton" id="gssbb-tuichu"
+                data-options="plain:'true',iconCls:'icon-tuichu',
+                bindmethod:{ 'click': ['closeTab'] },
+            scope:'gssbb'">退出</a>
+            </div>
+        </div>
+       <div data-options="region:'center'">
+            <div class="easyui-layout" data-options="fit:true">
+            <div b-type="1" id="gssbb-historydatafilter" data-options="region:'north',height:50" style="width: 100%; margin: 0px; text-align:center; padding: 0px;">              
+                <table border="0" style="height: 40px; padding: 0px; margin: 0">
+                    <tr>
+                        <td>
+                            <label for="field1" style="width:80px;">年度</label>
+                        </td>
+                        <td>
+                            <select id="gssbb-history-Year" class="easyui-combobox"  data-options="editable:false"; style="width:80px;">  
+                                <option value="2010">2010</option>  
+                                <option value="2011">2011</option>  
+                                <option value="2012">2012</option>
+                                <option value="2013">2013</option>
+                                <option value="2014">2014</option>  
+                                <option value="2015">2015</option>
+                                <option value="2016">2016</option>    
+                                <option value="2017">2017</option>  
+                                <option value="2018">2018</option>
+                                <option value="2019">2019</option>    
+                                <option value="2020">2020</option>  
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>    
+                                <option value="2023">2023</option>  
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>    
+                                <option value="2026">2026</option>  
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>    
+                                <option value="2029">2029</option>  
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>    
+                                <option value="2032">2032</option>  
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>    
+                                <option value="2035">2035</option>  
+                                <option value="2036">2036</option>
+                                <option value="2037">2037</option>    
+                                <option value="2038">2038</option>  
+                                <option value="2039">2039</option>
+                                <option value="2040">2040</option>    
+                                <option value="2041">2041</option>  
+                                <option value="2042">2042</option>
+                                <option value="2043">2043</option>    
+                                <option value="2044">2044</option>  
+                                <option value="2045">2045</option>
+                                <option value="2046">2046</option>    
+                                <option value="2047">2047</option>  
+                                <option value="2048">2048</option>
+                                <option value="2049">2049</option>    
+                                <option value="2050">2050</option>  
+                            </select> 
+                        </td>
+                        <td>
+                            <label for="field1"  style="width:80px;">月</label>
+                        </td>
+                        <td>
+                            <select id="gssbb-history-Month" class="easyui-combobox"  data-options="editable:false"; style="width:80px;">  
+                                <option value="1">1</option>  
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>  
+                                <option value="5">5</option>
+                                <option value="6">6</option>    
+                                <option value="7">7</option>  
+                                <option value="8">8</option>
+                                <option value="9">9</option>    
+                                <option value="10">10</option>  
+                                <option value="11">11</option>  
+                                <option value="12">12</option>                                          
+                            </select> 
+                        </td>
+                        
+                    </tr>
+                   
+                </table> 
+            </div>
+          
+            <div data-options="region:'center',fit:true"">
+                 <div style="width: 100%;">
+                <table border="0" style="height: 40px; width: 100%; padding: 0px; margin: 0">
+                    <tr>
+                        <td colspan="18" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                            个人所得税报告表
+                        </td>
+                    </tr>
+                </table>
+                </div>
+                <table class="easyui-edatagrid" id="gssbb_grid"  data-options="
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:true,
+                                            checkOnSelect:true,
+                                                                         
+                                            rownumbers:true,
+                                            editable:false,
+                                            scope:'ysbz',
+                                            single:false,
+                                            formatters:{'sre':'numberbox','fykcbz':'numberbox','ykse':'numberbox'},
+                                            forbidstatus:[4,3]
+                                            ">
+                    <thead>
+                        <tr>
+                             <th field="PersonKey" width="80px;" align="left" halign="center">
+                                内部编号
+                            </th>
+                            <th field="PersonName" width="100px;" align="left" halign="center" >
+                                纳税人姓名
+                            </th>                           
+                            <th field="CredentialTypeName" width="100px;" align="left" halign="center">
+                                身份证照类别
+
+                            </th>
+                            <th field="IDCard" width="150px;" align="right" halign="center">
+                                身份证照号码
+
+                            </th>
+                            <th field="gjdq" width="100px;" align="right" halign="center">
+                                国家与地区
+                            </th>
+                            <th field="zybm" width="150px;" align="right" halign="center">
+                                职业编码
+                            </th>                            
+                            <th field="DepartmentKey" width="80px;" align="right" halign="center">
+                                部门
+
+                            </th>
+                            <th field="sdxm" width="80px;" align="right" halign="center">
+                                所得项目
+                            </th>
+                            <th field="sre" width="80px;" align="right" halign="center">
+                                收入额
+                            </th>
+                            <th field="mssre" width="80px;" align="right" halign="center">
+                                免税收入额
+                            </th>
+                            <th field="yskcdsf" width="80px;" align="right" halign="center">
+                                允许扣除的税费
+                            </th>
+                            <th field="fykcbz" width="80px;" align="right" halign="center">
+                                费用扣除标准
+
+                            </th>
+                            <th field="zykcdjke" width="80px;" align="right" halign="center">
+                                准予扣除的捐赠额
+                            </th>
+                            <th field="ynssde" width="80px;" align="right" halign="center">
+                                应纳税所得额
+                            </th>
+                            <th field="sl" width="80px;" align="right" halign="center">
+                                税率(%)
+                            </th>
+                            <th field="ykse" width="80px;" align="right" halign="center">
+                                应扣税额
+                            </th>
+                        </tr>
+                    </thead>
+                   
+                </table>
+            </div>
+            </div>
+        </div>
+        <label id="gssbb-extendregion" style="display: none">
+        <input id="gssbb-status" type="text"></input>
+        <input id="initscope" type="text" value="gssbb"></input>
+        <input id="initstatus" type="text" value=@ViewData["status"]></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+       
+</label>
+</div>
+</body>

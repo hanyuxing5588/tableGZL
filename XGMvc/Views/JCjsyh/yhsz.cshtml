@@ -1,0 +1,269 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "用户设置";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //控制权限有效期的日期时间是否显示
+        var IsTimeId = $(":checkbox").eq(1).attr("id");
+        $('#' + IsTimeId).bind('click', function () {
+            var style = $("#DateText").attr('style');
+            if ($('#' + IsTimeId).is(":Checked")) {
+                //checkbox等于true之前，要判断是否有增加行，如果有的话，先remove(),在show()
+                var content = $('#contentId');
+                if (content) {
+                    content.remove();
+                    $("#DateText").show();
+                }
+                //如果是初始化时，直接show()
+                $("#DateText").show();
+            } else {
+                $("#DateText").hide();
+                var flag = true;
+                if (flag) {
+                    //拿到要插入行的上一行
+
+                    var $CurrentRow = $("#TwoTr");
+                    //要插入的内容
+                    var content = '<tr id="contentId" style="height:50px; width:550px;"><td colspan="4"></td>></tr>';
+                    $CurrentRow.after(content);
+                    flag = false;
+                }
+            }
+        });
+    });
+
+    $.extend($.fn.linkbutton.methods, {
+        OpenPwdWin: function () {
+            var opts = $(this).linkbutton('options');
+            var parms = $(this).linkbutton('getParms', 'OpenPwdWin');
+            var pageState = $.view.getStatus(opts.scope);
+            var url = parms[0];
+            var treeId = '#' + parms[3];
+            if (parms.length < 4) return;
+            $('#b-window').dialog({
+                isCancel: true,
+                resizable: false,
+                title: '密码修改',
+                width: 450,
+                height: 250,
+                modal: true,
+                draggable: true,
+                resizable: true,
+                minimizable: false,
+                maximizable: false,
+                collapsible: false,
+                href: url,
+                onLoad: function (c) {
+                    debugger
+                    var getRows = $(treeId).tree('getSelected');
+                    $.view.setViewEditStatus(parms[1], pageState);
+                }
+            });
+        }
+
+    });
+
+</script>
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<div class="easyui-layout" id="yhsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                 <a href="#" class="easyui-linkbutton" id="yhsz-add" 
+                 data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newStatus']},scope:'yhsz',status:'1',                        
+                  forbidstatus:[1,2,3]">新增</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="yhsz-edit"
+                  data-options="plain:'true',iconCls:'icon-xiugai',
+                  treeId:['yhsz-tree-ren'],
+                  bindmethod:{'click':['setStatusexamine']},scope:'yhsz',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="yhsz-remove"
+                  data-options="plain:'true',iconCls:'icon-shanchu',
+                  treeId:['yhsz-tree-ren'],
+                  bindmethod:{ 'click': ['setStatusexamine'] },scope:'yhsz',status:'3',
+                  forbidstatus:[1,2,3]">删除</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="yhsz-save"
+                  data-options="plain:'true',iconCls:'icon-baocun',
+                  JCDA:true,
+                  treeId:['yhsz-tree-ren'],
+                  NewIdStatus:'1',
+                  bindmethod:{ 'click': ['saveDoc'] },
+                  bindparms:{'saveDoc':['/JCjsyh/Saveyhsz']},
+                  scope:'yhsz',status:'4',forbidstatus:[4]">保存</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="yhsz-cancel" 
+                  data-options="plain:'true',iconCls:'icon-quxiao', 
+                  scope:'yhsz',forbidstatus:[4],
+                  bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="yhsz-close" 
+                  data-options="plain:'true',iconCls:'icon-tuichu',
+                  bindmethod:{ 'click': ['closeTab'] },
+                  scope:'yhsz'">退出</a>
+
+                  <a href="#" class="easyui-linkbutton" id="yhsz-pwd"
+                  data-options="plain:'true',iconCls:'icon-password',
+                  bindmethod:{ 'click': ['OpenPwdWin'] },
+                  bindparms:{'OpenPwdWin':['/JCjsyh/pwd','pwd-SS_Operator','pwd','yhsz-tree-ren']},
+                  window:'b-window',status:1,
+                  scope:'yhsz'
+                  ">密码</a> 
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="操作员">
+                <ul class="easyui-tree" id="yhsz-tree-ren" data-options="
+                msg:'操作员',
+                m:'SS_Operator',
+                  associate:{
+                        'yhsz-SS_Operator-OperatorKey':['OperatorKey'],
+                        'yhsz-SS_Operator-OperatorName':['OperatorName'],
+                        'yhsz-SS_Operator-GUID':['GUID'],
+                        'yhsz-SS_Operator-Password':['Password'],
+                        'yhsz-SS_Operator-IsStop':['IsStop'],
+                        'yhsz-SS_Operator-IsTimeLimited':['IsTimeLimited'],
+                        'yhsz-SS_Operator-StartTime':['StartTime'],
+                        'yhsz-SS_Operator-StopTime':['StopTime']
+                  },
+                  gridassociate:{
+                        'gridId':'yhsz-SS_Role',
+                        'associateId':'yhsz-SS_Role-GUID',
+                        'map':{
+                            'yhsz-SS_Role-GUID':['GUID_Role']
+                        }
+                  },
+                  associateEX:{
+                    @*修改时不做任何处理*@
+                  },
+                  bindmethod: { 'onClick': ['setAsso'] },
+                  url:'/Tree/GetJCOperatorTree',
+                  forbidstatus:[3],
+                  scope:'yhsz',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  IsDocStatusAssociate:true,
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true">
+            <table border="0px" style="margin-top: 10%;padding: 0px;">
+                            <tr>
+                                <td style="padding-right: 50px; width: 75%;">
+                                    <table  border="0px" style="width: 550px; height: 170px;" id="ContextTab">
+                                        <tr style="height: 50px;">
+                                            <td style="width: 90px;">
+                                                <label for="field1" id="lbl-OperatorKey">
+                                                    <font color="red">*</font>编&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validatebox" id="yhsz-SS_Operator-OperatorKey" style="width: 176px"
+                                                    data-options="forbidstatus:[4,3]"></input>
+                                            </td>
+                                            <td style="width: 90px;">
+                                                <label for="field" id="lbl-OperatorName">
+                                                    姓&nbsp;&nbsp;&nbsp;&nbsp;名</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validatebox" id="yhsz-SS_Operator-OperatorName" style="width: 176px"
+                                                    data-options="forbidstatus:[4,3]"></input>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 50px;" id="TwoTr">
+                                            <td style="text-align: right; width: 90px; height: 50px;">
+                                                <input id="yhsz-SS_Operator-IsStop" type="checkbox" class="easyui-checkbox" data-options="forbidstatus:[4,3]"></input>&nbsp;&nbsp;&nbsp;
+                                            </td>
+                                            <td style="text-align: left;">
+                                                是否停用
+                                            </td>
+                                            <td style="text-align: right; height: 50px;">
+                                                <input id="yhsz-SS_Operator-IsTimeLimited" type="checkbox" class="easyui-checkbox"
+                                                    data-options="forbidstatus:[4,3]"></input>&nbsp;&nbsp;&nbsp;
+                                            </td>
+                                            <td style="text-align: left;">
+                                                权限有效期
+
+                                            </td>
+                                        </tr>
+                                        <tr id="DateText" style="display: none; width: 550px; height: 50px;">
+                                            <td style="width: 90px;">
+                                                <label for="field1" id="lbl-StartTime">
+                                                    开始日期</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-datebox" id="yhsz-SS_Operator-StartTime" data-options="
+                                                        width:182,
+                                                        forbidstatus:[4,3],
+                                                        bindmethod: { 'onCloseEx': ['setAssociate'] }
+                                                        " />
+                                            </td>
+                                            <td style="width: 90px;">
+                                                <label for="field1" id="lbl-StopTime">
+                                                    结束日期</label>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-datebox" id="yhsz-SS_Operator-StopTime" data-options="
+                                                        width:182,
+                                                        forbidstatus:[4,3],
+                                                        required:false,
+                                                        bindmethod: { 'onCloseEx': ['setAssociate'] }" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td style="padding-left: 10px; width: 25%;">
+                                    <table border="0px" cellpadding="0" cellspacing="0" style="margin: 0px; padding: 0px;
+                                        width: 170px;">
+                                        <tr>
+                                            <td style="width: 150px; height: 350px; border-bottom: 1px solid #000; border-right: 1px solid #000;
+                                                border-top: 1px solid #000; border-left: 1px solid #000;">
+                                                <table class="easyui-edatagrid" id="yhsz-SS_Role" data-options="
+                                                    scope:'yhsz',
+                                                    method:'get',
+                                                    height:350,
+                                                    isEndNotEdit:true,
+                                                    width:169,
+                                                    checkbox:true,
+                                                    forbidstatus:[4,3]
+                                                    ">
+                                                    <thead>
+                                                        <tr>
+                                                            <th field="b-sel" data-options="width:60, checkbox:'true'">
+                                                            </th>
+                                                            <th field="yhsz-SS_Operator-GUID" hidden="true">
+                                                            </th>
+                                                            <th field="yhsz-SS_Role-GUID" hidden="true">
+                                                            </th>
+                                                            <th field="yhsz-SS_Role-RoleName" align="left" width="120" sortable="false" title="角色">
+                                                                角色
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+    </div>
+    <input class="easyui-validatebox" id="yhsz-SS_Operator-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="yhsz-SS_Role-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="yhsz-SS_Operator-Password" type="hidden" keyattr="1"></input>
+</div>
+<label id="yhsz-extendregion" style="display: none">
+    <input id="yhsz-status" type="text"></input>
+    <input id="initscope" type="text" value="yhsz"></input>
+    <input id="initstatus" type="text" value="4"></input>
+    <input id="initController" type="text" value="JCjsyh"></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

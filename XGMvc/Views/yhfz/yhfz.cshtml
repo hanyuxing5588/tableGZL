@@ -1,0 +1,106 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "用户分组";
+}
+<div class="easyui-layout" id="yhfz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#" class="easyui-linkbutton" id="yhfz-cancels" 
+                    data-options="plain:'true',iconCls:'icon-quxiao', 
+                    scope:'yhfz',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">
+                    全选</a> 
+                    
+                <a href="#" class="easyui-linkbutton" id="yhfz-cancel" 
+                    data-options="plain:'true',iconCls:'icon-quxiao', 
+                    scope:'yhfz',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">
+                    全消</a> 
+                        
+                <a href="#" class="easyui-linkbutton" id="yhfz-save" 
+                    data-options="plain:'true',iconCls:'icon-baocun',
+                    bindmethod:{ 'click': ['saveDoc'] },
+                    bindparms:{'saveDoc':['/yhfz/Save']},
+                    scope:'yhfz',status:'4',forbidstatus:[4]">
+                    保存</a> 
+                            
+                <a href="#" class="easyui-linkbutton" id="yhfz-close" 
+                    data-options="plain:'true',iconCls:'icon-tuichu',
+                    bindmethod:{ 'click': ['closeTab'] },
+                    scope:'yhfz'">
+                    退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="角色">
+                <ul class="easyui-tree" id="yhfz-tree-ren" data-options="
+                  @*gridassociate:{
+                      'gridId':'yhfz-SS_Role',              
+                      'map': {
+                            'yhfz-SS_Role-RoleKey':['yhfz-SS_Role-RoleKey','yhfz-SS_Role-RoleKey'],
+                            'yhfz-SS_Role-RoleName':['GUID','yhfz-SS_Role-RoleName']
+                        },
+                      'append':'true'
+                  },*@
+                  filterField:'RoleKey',
+                  textField:'RoelName',
+                  idField:'GUID',
+                  associate:{
+                    'yhfz-SS_Role-RoleKey':['RoleKey'],
+                    'yhfz-SS_Role-RoleName':['RoleName']
+                  },
+                  bindmethod: { 'onSelect': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetInvitePeson',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 960px; padding-left: 10px;">
+        <table border="0" style="height: 350px; width: 960px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="yhfz-abandonedStatus" statuscontrolid="yhfz-BX_Main-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="text-align: center;">
+                        <table border="0px" cellpadding="0" cellspacing="0" style="margin-left: 40%; margin-top:10%; padding: 0px;">
+                            <tr>
+                                <td style=" width:150px; height:350px; border-bottom:1px solid #000; border-right:1px solid #000; border-top:1px solid #000; border-left:1px solid #000;">
+                                    <table class="easyui-edatagrid" id="yhfz-" data-options="
+                                        scope:'yhfz',
+                                        ">
+                                        <thead>
+                                            <tr>
+                                                <th field="b-sel" data-options="width:60, checkbox:'true'"></th>
+                                                <th field="yhfz-SS_Role-GUID" hidden="true"></th>
+                                                <th field="yhfz-SS_Operator-GUID" hidden="true"></th>
+                                                <th field="yhfz-SS_Operator-OperatorName" align="center" editor="{
+                                                    type:'text'}">wwqwqwq</th>
+                                                
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <label id="yhfz-extendregion" style="display: none">
+        <input id="yhfz-status" type="text"></input>
+        <input id="initscope" type="text" value=@ViewData["scope"]></input>
+        <input id="initstatus" type="text" value=@ViewData["status"]></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+        <div id="yhfz-b-window" line="true">
+        </div>
+    </label>
+    <div b-type="1" id="yhfz-BudgetStatistics-datafilter" data-options="region:'north'"
+        style="height: 90px">
+        <input class="easyui-validatebox" type="hidden" id="yhfz-BX_Main-DWKey" />
+    </div>
+    <iframe id="printIframe" style="display: none"></iframe>

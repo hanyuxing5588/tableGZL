@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "预算查询";
+}
+<link href="../../Scripts/jquery-easyui-1.3.4/themes/metro/easyui.css?r=11" rel="stylesheet" />
+<script>
+    //新增tab标签 for 穿透到单据列表
+    window.openTabs2 = parent.window.openTabs2;
+    //标记是否从新刷新
+    var reload = "T";
+    window.mainKey = "";
+    $(function () {
+        $(".iframe1").height($('body').height()-35);
+        //            var mainheight = $(this).contents().find("body").height() -62;
+        //            $(this).height(mainheight);
+        //        }); 
+        $('#tab-user-right').tabs({
+            onSelect: function () {
+                openTab();
+
+            }
+        });
+        $('#closeTab').on('click', function () {
+            parent.window.CloseTabs();
+        });
+    });
+//    function closeTab() {
+//        parent.window.CloseTabs();
+    //    };
+    window.openPageTabs = function (t1,t2,t3,t4,t5) {
+        window.parent.openPageTabs(t1, t2, t3, t4, t5);
+    }
+    window.CloseTabs = function () {
+        parent.window.CloseTabs();
+    }
+    function openTab() {
+        var tab = $('#tab-user-right').tabs('getSelected');
+        var tbId = tab.attr("id");
+        var tabSrc = tab.attr("src");
+
+//        if (!window.mainKey && tabSrc != "/AReport/Index") {
+//            $.messager.alert('提示', '请先录入封面')
+//            $('#tab-user-right').tabs("select", 0);
+//            return;
+//        }
+        //获取tab的iframe对象
+        var tbIframe = $("#" + tbId + " iframe:first-child");
+        if (reload == "T") {
+            tbIframe.attr("src", tabSrc);
+        } else {
+            if (tbIframe.attr("src") == "") {
+                tbIframe.attr("src", tabSrc);
+            }
+        }
+    }
+</script>
+<div class="easyui-layout" id="xjbxd-dataregion" data-options="fit:true" z="1">
+    <div id="tab-user-right" > 
+      
+          <div title="预算查询" id="user-right-all1145" src="/yslb">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+          <div title="管理费用执行查询" id="user-right-all114" src="/Report/XMFTZXQK">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+
+          <div title="项目预算查询" id="user-right-role" src="/Report/xmflhzb">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+
+	  
+	     <div title="部门预算汇总表" id="user-right-all1145" src="/Report/bmyshzb">			
+		    <iframe class="iframe1" scrolling="yes" frameborder="0" height="800" width="100%"  frameborder="0" ></iframe>
+	    </div>
+        
+          
+    </div>
+    <div style="display:none">
+       <button id="closeTab" type="button"></button>
+    </div>
+ 
+</div>

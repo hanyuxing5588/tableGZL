@@ -1,0 +1,333 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "支票采购";
+}
+<script type="text/javascript">
+//    //继承
+//    Function.prototype.extend = function (superClass) {
+//        if (typeof (superClass) !== 'function') {
+//            throw new Error("继承失败");
+//        }
+//        var F = function () { };
+//        F.prototype = superClass.prototype;
+//        this.prototype = new F();
+//        //设置自身的构造函数
+//        this.prototype.constructor = this;
+//        //方便父类的方法可以调用
+//        this.superClass = superClass;
+//        return this;
+//    }
+//    var Person = function (name) {
+//        this.name = name;
+//        this.getName = function () {
+//            return this.name;
+//        }
+//    }
+//    var DerivedPerson = function (name) {
+//        Person.call(this, name);
+//        this.Firends = [];
+//        this.addFirends = function (firend) {
+//            this.Firends.splice(0, 0, firend);
+//        }
+//    }
+//    DerivedPerson.extend(Person);
+//    var test1 = new DerivedPerson("离歌");
+//    test1.addFirends("萧寒");
+//    alert(test1.name+"朋友是:"+test1.Firends.join(','));
+    $(document).ready(function () {
+        $('#zpcg-CN_CheckNew-StartNumber').blur(function (a) {
+            var startNumber = a.currentTarget.value;
+            if (!startNumber) return;
+            var stopNumber = $('#zpcg-CN_CheckNew-StopNumber').val();
+            if (!$.isNumeric(startNumber)) {
+                $.messager.alert('提示', '开始票号输入不合法,,票号由0-9数字组成');
+                $('#zpcg-CN_CheckNew-StartNumber').val('');
+                /// $('#zpcg-CN_CheckNew-StopNumber').focus();
+                return;
+            }
+            if ($.isNumeric(stopNumber) && $.isNumeric(startNumber)) {
+                var checkCount = parseInt(stopNumber) - parseInt(startNumber);
+                if (checkCount < 0) {
+                    $.messager.alert('提示', '开始票号不能大于结束票号');
+                    $('#zpcg-CN_CheckNew-StartNumber').val('');
+                    /// $('#zpcg-CN_CheckNew-StartNumber').focus();
+                    return;
+                }
+                $('#zpcg-CN_CheckNew-CheckCount').val(checkCount + 1);
+            }
+        })
+        $('#zpcg-CN_CheckNew-StopNumber').blur(function (a) {
+            var stopNumber = a.currentTarget.value;
+            if (!stopNumber) return;
+            var startNumber = $('#zpcg-CN_CheckNew-StartNumber').val();
+            if (!$.isNumeric(stopNumber)) {
+                $.messager.alert('提示', '结束票号输入不合法,票号由0-9数字组成');
+                $('#zpcg-CN_CheckNew-StopNumber').val('');
+                /// $('#zpcg-CN_CheckNew-StopNumber').focus();
+                return;
+            }
+            if ($.isNumeric(startNumber)) {
+                var checkCount = parseInt(stopNumber) - parseInt(startNumber);
+                if (checkCount < 0) {
+                    $.messager.alert('提示', '结束票号不能小于开始票号');
+                    $('#zpcg-CN_CheckNew-StopNumber').val('');
+                    /// $('#zpcg-CN_CheckNew-StopNumber').focus();
+                    return;
+                }
+                $('#zpcg-CN_CheckNew-CheckCount').val(checkCount + 1);
+            }
+        });
+    })     
+    //点击树，刷新下方数据表数据
+    $.extend($.fn.tree.methods, {
+        //点击节点时发生
+        setAssociate1: function (node) {
+//            $('#zpcg-CN_CheckNew-StartNumber').val('');
+//            $('#zpcg-CN_CheckNew-StopNumber').val('');
+//            $('#zpcg-CN_CheckNew-CheckCount').val('');
+            //得到节点id
+            var id = node.id;
+            //获取树
+            var options = $(this).tree('options');
+            //得到树的id
+            var gridId = options.gridId;
+            //console.log(gridId);
+            //将节点数据重新reload到datagrid上，将后台的参数传过来作为参数
+            $('#' + gridId).datagrid('reload', { bankAccountID: id });
+        }
+    });
+</script>
+<div class="easyui-layout" id="zpcg-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#" class="easyui-linkbutton" id="zpcg-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'zpcg',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/zpcg',['zpcg-BX_Main-moneychinese','zpcg-BX_Main-moneyunmber']]}">
+                打印</a> 
+                <a href="#" class="easyui-linkbutton"
+                       id="zpcg-export" data-options="
+                   plain:'true',iconCls:'icon-shuchu', scope:'zpcg',forbidstatus:[1,2,3],
+                   bindmethod:{ 'click': ['export'] }">输出</a> 
+                    <a href="#" class="easyui-linkbutton" 
+                   id="zpcg-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',forbidstatus:[1,2,3],
+                   bindmethod:{ 'click':['newDoc'] },scope:'zpcg',status:'1',
+                   bindparms:{'newDoc':['/xjbxd/New']}">新增</a> 
+                  <a href="#" class="easyui-linkbutton"
+                       id="zpcg-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'zpcg-BX_Main-DocState',forbidstatus:[1,3],
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zpcg',status:'2'
+                   ">修改</a> 
+                    
+                   <a href="#" class="easyui-linkbutton" id="zpcg-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'zpcg-BX_Main-DocState',forbidstatus:[1,2],
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zpcg',status:'3'
+                 ">删除</a> 
+                     <a href="#" class="easyui-linkbutton" style="display:none" id="zpcg-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'xjbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'validatebox':['zpcg-CN_CheckNew-StartNumber','zpcg-CN_CheckNew-StopNumber','zpcg-CN_Check-BankAccountName'],
+                            'datebox':['zpcg-CN_CheckNew-CheckNewDatetime']
+                        }                  
+                    },
+                   scope:'zpcg',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                       id="zpcg-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/zpcg/Save','zpcg-examine']},scope:'zpcg',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                    <a href="#" class="easyui-linkbutton" id="zpcg-cancel"
+                       data-options=" plain:'true',iconCls:'icon-quxiao', 
+                   scope:'zpcg',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   <a href="#" class="easyui-linkbutton" id="zpcg-close"
+                       data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'zpcg'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 280px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="银行账号" style="height: 125px; width: 198px;">
+                <ul class="easyui-tree" id="zpcg-tree-bank" data-options="
+                associate:{
+                        'zpcg-CN_Check-BankAccountName':['BankAccountName'],
+                        'zpcg-CN_Check-BankAccountNo':['BankAccountNo'],
+                        'zpcg-CN_Check-DWName':['DWName'],
+                        'zpcg-CN_Check-BankName':['BankName'],
+                        'zpcg-CN_Check-GUID_BankAccount':['GUID']
+                        
+                      },
+                      height:160,
+                      gridId:'zpcg1-CN_Check',
+                      bindmethod:{ 'onDblClick': ['setAssociate','setAssociate1'] },
+                      url:'/Tree/GetBankAccountTree',
+                      method:'post'
+                      ">
+                </ul>
+            </div>
+        </div>
+    </div>
+     <div data-options="region:'center'" data-options="fit:true" >
+        <table id="table" border="0" style="width:100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        支票新增</div>
+                </td>
+            </tr>
+            <tr>
+           
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BankAccountName">
+                        <font color="red">*</font>&nbsp;账户名称</label>
+                </td>
+                <td class="tdValueTr2">
+                        <input class="easyui-validatebox" id="zpcg-CN_Check-BankAccountName"  maxlength="200"
+                        data-options="forbidstatus:[-1],required:false"/>
+                  
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BankAccountNo">
+                        <font color="red">*</font>&nbsp;所属账号</label>
+                </td>
+                <td class="tdValueTr2">
+                 <input class="easyui-validatebox" id="zpcg-CN_Check-BankAccountNo" maxlength="200"
+                        data-options="forbidstatus:[-1],required:false" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-DWName">
+                        <font color="red">*</font>&nbsp;所属单位</label>
+                </td>
+                <td class="tdValueTr2">
+                <input class="easyui-validatebox" id="zpcg-CN_Check-DWName"  maxlength="200"
+                        data-options="forbidstatus:[-1],required:false" />
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BankName">
+                        <font color="red">*</font>&nbsp;所属银行</label>
+                </td>
+                <td class="tdValueTr2">
+                 <input class="easyui-validatebox" id="zpcg-CN_Check-BankName"  maxlength="200"
+                        data-options="forbidstatus:[-1],required:false" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2" >
+                    <label for="field1" id="lbl-StartNumber">
+                        <font color="red">*</font>&nbsp;开始票号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="zpcg-CN_CheckNew-StartNumber" data-options="forbidstatus:[4,3]"
+                        ></input>
+                </td>
+                <td class="TextTr2">
+                    <label for="field1" id="lbl-StopNumber">
+                        <font color="red">*</font>&nbsp;结束票号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="zpcg-CN_CheckNew-StopNumber" data-options="forbidstatus:[4,3]"
+                        ></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-CheckType">
+                       &nbsp;支票类型</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combobox" id="zpcg-CN_CheckNew-CheckType"  data-options="editable:false,tempValue:0">
+                         <option value="0">现金支票</option>  
+                        <option value="1">转账支票</option>  
+                    </select>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-IsInvalid">
+                        &nbsp;支票状态</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combobox" id="zpcg-CN_CheckNew-CheckNewState" data-options="editable:false,tempValue:0">
+                        <option value="0">有效</option>  
+                        <option value="1">无效</option>  
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-CheckCount">
+                        &nbsp;总数量</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="zpcg-CN_CheckNew-CheckCount" data-options="forbidstatus:[-1]"
+                        ></input>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-CheckNewDatetime">
+                        <font color="red">*</font>&nbsp;新增日期</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-datebox" id="zpcg-CN_CheckNew-CheckNewDatetime" data-options="tempValue:new Date().Format('yyyy-MM-dd')"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                  <table class="easyui-datagrid" id="zpcg1-CN_Check"  data-options="
+                            height:360,@*document.body.offsetHeight-265,  *@                 
+                            scope:'zpcg',
+                            fitColumns:false,
+                            pagination:true,
+                            pageSize:10,
+                            pageList:[20,50,100],
+                            rownumbers:true,
+                            url:'/Grid/GetCheckList',
+                            method:'post',
+                            singleSelect:true,
+                            checkOnSelect:true,
+                            single:false
+                        ">
+                        <thead>
+                            <tr>
+                                <th field="GUID" hidden="true"></th>
+                                <th field="GUID_BankAccount" hidden="true">   </th>
+                                <th field="BankAccountNo" hidden="true">   </th>
+                                <th field="CN_Check-GUID" hidden="true"> </th>
+                                <th field="BankAccountName" title="银行名称" width="150px" halign="center" align="left">  银行名称 </th>
+                                <th field="CheckNumber" title="支票号" width="150px" halign="center" align="right">支票号</th>
+                                <th field="CheckType" title="支票类型" width="110px" align="center">  支票类型   </th>
+                                <th field="IsInvalid" title="是否失效" width="80px" align="center"> 是否失效 </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        </div>
+    <input class="easyui-validatebox" id="zpcg-CN_CheckNew-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="zpcg-CN_Check-GUID_BankAccount" type="hidden"></input>
+</div>
+<label id="zpcg-extendregion" style="display: none">
+    <input id="zpcg-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+    (function () {
+        
+        var datagridId = "zpcg1-CN_Check";
+        var rowColCount = 4;
+        $.setControl("divWest", datagridId, rowColCount);
+    })();
+</script>

@@ -1,0 +1,28 @@
+﻿--收入单
+update ss_doctypeURL set DocTypeUrl='srpd' where GUID_Doctype in(
+select GUID from ss_doctype where doctypekey='14')
+--收款凭单
+update ss_doctypeURL set DocTypeUrl='skpd' where GUID_Doctype in(
+select GUID from ss_doctype where doctypekey='34')
+--工资单
+update ss_doctypeURL set DocTypeUrl='gzd' where GUID_Doctype in(
+select GUID from ss_doctype where doctypekey='29')
+
+--更新一条数据
+declare @zyjjlzd uniqueidentifier
+select @zyjjlzd=guid from ss_doctype where doctypename like '%专用基金支取单%' order by doctypekey
+select @zyjjlzd
+
+delete SS_DocTypeUrl where GUID_DocType=@zyjjlzd
+insert SS_DocTypeUrl(GUID,GUID_DocType,DocTypeUrl) values(newid(),@zyjjlzd, 'zyjjlzd'	)
+select * from SS_DocTypeUrl where GUID_DocType='0842C7B2-751D-4E0E-AD7A-E0A10D0F4424'
+--会计凭证
+update ss_doctypeURL set DocTypeUrl='kjpz' where guid_docType in(select GUID from ss_doctype where doctypename='会计凭证')
+
+--单据编号 页面
+update ss_menu set scope = 'JCqtsz/djbh' where menukey = '010716'
+
+---更新人员的脚步
+update ss_person set personKey=b.personkey from ss_person a
+join tempperson b
+on a.personName=b.personName

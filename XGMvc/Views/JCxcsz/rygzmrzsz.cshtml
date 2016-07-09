@@ -1,0 +1,402 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "人员工资默认值设置";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        //根据设置方式加载页面元素
+        $('#item_set').hide();
+        $('#setStyleId').combobox({
+            onSelect: function (rec) {
+                if (!rec) return;
+                var selVal = rec.value;
+                var PerId = '#person_tab', ProId = '#item_tab';
+                if (selVal == "0") {
+                    $(PerId).show();
+                    $(ProId).hide();
+                    $('#item_set').hide();
+                    $('#person_set').show();
+                }
+                
+                if (selVal == "1") {
+                    $(PerId).hide();
+                    $(ProId).show();
+                    $('#rygzmrzsz-SA_PersonEx').datagrid({
+                        width:document.body.clientWidth - 315
+                    });
+                    $('#item_set').show();
+                    $('#person_set').hide();
+                }
+
+            }
+        });
+        $('#rygzmrzsz-SA_ItemEx').edatagrid({
+            onAfterEdit: function (rowIndex, rowData, changes) {
+
+                var v1 = $('#rygzmrzsz-SA_PersonItemSet-GUID_SS_Person').val();
+                var v2 = rowData["rygzmrzsz-SA_ItemEx-GUID"];
+                var v3 = rowData["rygzmrzsz-SA_ItemEx-DefaultValue"];
+                var Item = { "GUID_SS_Person": v1, "GUID_SA_Item": v2, "DefaultValue": v3 };
+                if (parseInt(v3) == 0) return;
+                var gridOpts = $('#rygzmrzsz-SA_ItemEx').edatagrid('options');
+                var Obj = gridOpts.store = gridOpts.store || [];
+                Obj.push(Item);
+            }
+
+        });
+        $('#rygzmrzsz-SA_PersonEx').edatagrid({
+            onAfterEdit: function (rowIndex, rowData, changes) {
+
+                var v1 = $('#rygzmrzsz-SA_Item-GUID_SA_Item').val();
+                var v2 = rowData["rygzmrzsz-SA_PersonEx-GUID"];
+                var v3 = rowData["rygzmrzsz-SA_PersonEx-DefaultValue"];
+                var Item = { "GUID_SA_Item": v1, "GUID_SS_Person": v2, "DefaultValue": v3 };
+                if (parseInt(v3) == 0) return;
+                var gridOpts = $('#rygzmrzsz-SA_PersonEx').edatagrid('options');
+                var Obj = gridOpts.store = gridOpts.store || [];
+                Obj.push(Item);
+            }
+
+        });
+
+    });
+    $.extend($.fn.tree.methods, {
+        //扩展tree给控件赋值的方法
+        ToControlAssign: function (node) {
+            
+            var me = this;
+            var opts = $(me).tree('options');
+            var requestUrl = opts.requestUrl;
+            var type = opts.type;
+            var gridId = '#' + opts.gridId;
+
+            var setStyle = $('#setStyleId').combobox('getValue');
+            if (setStyle == "0") {
+                $('#rygzmrzsz-SA_PersonItemSet-GUID_SS_Person').val(node.id);
+            }
+            if (setStyle == "1") {
+                $('#rygzmrzsz-SA_Item-GUID_SA_Item').val(node.id);
+            }
+            $.ajax({
+                data: { guid: node.id, type: type },
+                url: requestUrl,
+                type: "POST",
+                dataType: "json",
+                success: function (data) {
+                    
+                    $.view.loadData('rygzmrzsz', data);
+                    $(gridId)["edatagrid"]("alterStatus", '4');
+                }
+            });
+
+        }
+    });
+    $.extend($.fn.linkbutton.methods, {
+        SaveDoc: function () {
+        
+            var parms = $(this).linkbutton('getParms', 'SaveDoc');
+            var opts = $(this).linkbutton('options');
+            var url, gridId, setStyle;
+            if (parms && parms.length >= 2) {
+                url = parms[0];
+                setStyle = '#' + parms[1];
+                var val = $(setStyle).combobox('getValue');
+                if (parseInt(val) == 0) {
+                    gridId = '#rygzmrzsz-SA_ItemEx';
+                }
+                if (parseInt(val) == 1) {
+                    gridId = '#rygzmrzsz-SA_PersonEx';
+                }
+            }
+            var selRow = $(gridId).edatagrid('getSelected');
+            var selIndex = $(gridId).edatagrid('getRowIndex', selRow);
+            if (selIndex >= 0) {
+                $(gridId).edatagrid('endEdit', selIndex);
+            }
+
+            var obj = $(gridId).edatagrid('options').store;
+            $.ajax({
+                url: url,
+                data: { "contions": JSON.stringify(obj) },
+                dataType: "json",
+                type: "POST",
+                success: function (data) {
+                    if (data) {
+                        $("[id^='" + opts.scope + "'].easyui-linkbutton").linkbutton('alterStatus', opts.status);
+                        $("[id^='" + opts.scope + "'].easyui-edatagrid").edatagrid('alterStatus', opts.status);
+
+                        $.messager.alert('提示', data, 'info');
+                    }
+
+                }
+            });
+
+        },
+        //取消单据
+        cancel: function () {
+
+            var me = this;
+            var cancel = $.view.cancelObj;
+            if (!cancel.data) cancel.data = [];
+            $.messager.confirm("提示", "正在编辑,是否取消?", function (data) {
+                if (!data) {
+                    return;
+                } else {
+                    var opts = $(me).linkbutton('options');
+                    $.view.setViewEditStatus(opts.scope, cancel.status);
+                }
+            })
+        },
+        setWholeStatus: function (jq) {
+            
+            var opts = $(jq).linkbutton('options');
+            if (!opts.scope) opts.scope = $(jq).attr('id').split("-")[0];
+            $("[id^='" + opts.scope + "'].easyui-linkbutton").linkbutton('alterStatus', opts.status);
+            $("[id^='" + opts.scope + "'].easyui-edatagrid").edatagrid('alterStatus', opts.status);
+        }
+    });
+</script>
+<div class="easyui-layout" id="rygzmrzsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   <a href="#" class="easyui-linkbutton"
+                   id="rygzmrzsz-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'rygzmrzsz-SA_PersonItemSet-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'rygzmrzsz',status:'2',
+                   forbidstatus:[2]">修改</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="rygzmrzsz-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'rygzmrzsz',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="rygzmrzsz-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['SaveDoc'] },
+                   bindparms:{'SaveDoc':['/JCxcsz/SaveDoc','setStyleId']},scope:'rygzmrzsz',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                  
+                   <a href="#" class="easyui-linkbutton" id="rygzmrzsz-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'rygzmrzsz',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="rygzmrzsz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'rygzmrzsz'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" id="person_tab" data-options="fit:true">
+            <div title="人员" id="Person-tree">
+                <ul class="easyui-tree" id="rygzmrzsz-tree-per" 
+                  data-options="
+                  requestUrl:'/JCxcsz/RequestData',
+                  gridId:'rygzmrzsz-SA_ItemEx',
+                  type:'Person',
+                  bindmethod:{'onDblClick': ['ToControlAssign'] },
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+        <div class="easyui-tabs" id="item_tab" data-options="fit:true">
+            <div title="工资项目" id="Project-tree">
+                <ul class="easyui-tree" id="rygzmrzsz-tree-item" 
+                 data-options="
+                  requestUrl:'/JCxcsz/RequestData',
+                  gridId:'rygzmrzsz-SA_PersonEx',
+                  type:'Item',
+                  bindmethod:{'onDblClick': ['ToControlAssign'] },
+                  url:'/Tree/GetSalaryItemTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <table border="0" style=" width:100%">
+           <tr>
+                <td class="tdTextTr2">
+                    <label style="color:Blue;vertical-align: middle;">设置方式</label>  
+                </td>
+                <td class="tdValueTr2">
+                    <select id="setStyleId" class="easyui-combobox" 
+                        data-options="editable:false,panelHeight:45" >
+                        <option value="0">按人员</option>
+                        <option value="1">按工资项目</option>
+                    </select>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+
+        <div id="person_set">
+            <table border="0" id="table" style=" width:100%">
+            
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PersonKey">
+                        人员编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-PersonKey" data-options="forbidstatus:[4]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PersonName">
+                        人员名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-PersonName" data-options="forbidstatus:[4]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-DWName">
+                        所属单位</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-DWName" data-options="forbidstatus:[4]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-DepartmentName">
+                        所属部门</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-DepartmentName" data-options="forbidstatus:[4]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-IDCardType">
+                        证件类型</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-CredentialTypeName" data-options="forbidstatus:[4]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-IDCard">
+                        证件号码</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-IDCard" data-options="forbidstatus:[4]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PersonTypeName">
+                        人员类别</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-PersonTypeName" data-options="forbidstatus:[4]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-OfficialCard">
+                        公务卡号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SS_Person-OfficialCard" data-options="forbidstatus:[4]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                <table class="easyui-edatagrid" id="rygzmrzsz-SA_ItemEx"   data-options="
+                    height:395,                   
+                    forbidstatus:[4],
+                    rownumbers:true">
+                        <thead>
+                            <tr>
+                                <th field="rygzmrzsz-SA_ItemEx-GUID" title="" hidden="true" align="center" width="80" ></th>
+                                <th field="rygzmrzsz-SA_ItemEx-ItemType" title="" hidden="true" align="center" width="80" ></th>
+                                <th field="rygzmrzsz-SA_ItemEx-IsStop" title="" align="center" hidden="true" width="80" ></th>
+                                <th field="rygzmrzsz-SA_ItemEx-ItemKey" title="工资项目编号" align="left" width="120" >工资项目编号</th>
+                                <th field="rygzmrzsz-SA_ItemEx-ItemName" title="工资项目名称" align="left" width="120" >工资项目名称</th>
+                                <th field="rygzmrzsz-SA_ItemEx-DefaultValue" title="默认值" align="right" width="120" 
+                                    editor="{type:'numberbox',options:{precision:2,max:99999999.99}}" >默认值
+                                </th>
+                                <th field="rygzmrzsz-SA_ItemEx-ItemTypeName" title="工资项目类别"  align="left" width="120" >工资项目类别</th>
+                                <th field="rygzmrzsz-SA_ItemEx-TingYong" title="是否停用" align="center" width="80" >是否停用</th>
+                                
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+           
+        </div>
+        <div id="item_set">
+            <table border="0" id="table_item_set" style=" width:100%">
+             <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-ItemKey">
+                        工资项目编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SA_Item-ItemKey" data-options="forbidstatus:[4]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-ItemName">
+                        工资项目名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SA_Item-ItemName" data-options="forbidstatus:[4]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-ItemType">
+                        工资项目类型</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="rygzmrzsz-SA_Item-ItemType" data-options="forbidstatus:[4]"></input>
+                </td>
+                <td colspan="2">
+                    <input type="checkbox" class="easyui-checkbox"  id="rygzmrzsz-SA_Item-IsStop" data-options="forbidstatus:[4]">是否停用</input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                 <table class="easyui-edatagrid" id="rygzmrzsz-SA_PersonEx"   data-options="
+                    height:450,                   
+                    forbidstatus:[4],
+                    rownumbers:true">
+                        <thead>
+                            <tr>
+                                <th field="rygzmrzsz-SA_PersonEx-GUID" title="" hidden="true" align="center" width="80" ></th>
+                                <th field="rygzmrzsz-SA_PersonEx-PersonKey" title="人员编号" align="left" width="80" >人员编号</th>
+                                <th field="rygzmrzsz-SA_PersonEx-PersonName" title="人员名称" align="left" width="80" >人员名称</th>
+                                <th field="rygzmrzsz-SA_PersonEx-DefaultValue" title="默认值" align="right" width="120" 
+                                    editor="{type:'numberbox',options:{precision:2,max:99999999.99}}" >默认值
+                                </th>
+                                <th field="rygzmrzsz-SA_PersonEx-DWName" title="单位名称" align="left" width="120" >单位名称</th>
+                                <th field="rygzmrzsz-SA_PersonEx-DepartmentName" title="部门名称" align="left" width="120" >部门名称</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+           
+        </div>
+    </div>
+    <input class="easyui-validatebox" id="rygzmrzsz-SA_PersonItemSet-GUID_SS_Person" type="hidden"></input>
+    <input class="easyui-validatebox" id="rygzmrzsz-SA_Item-GUID_SA_Item" type="hidden"></input>
+</div>
+<label id="rygzmrzsz-extendregion" style="display: none">
+    <input id="rygzmrzsz-status" type="text"></input>
+    <input id="initscope" type="text" value='rygzmrzsz'></input>
+    <input id="initstatus" type="text" value='4'></input>
+    <input id="initguid" type="text" value=''></input>
+</label>
+<div id="b-window" line="true"></div>
+ <script type="text/javascript">
+     (function () {
+         var datagridId = "rygzmrzsz-SA_ItemEx,rygzmrzsz-SA_PersonEx";
+         var colCount = 4;
+         $.setControl("divWest", datagridId, colCount);
+     })();
+      
+</script>

@@ -1,0 +1,409 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "工资发放";
+}
+
+<script src="../../Scripts/kj/gzff.js?r=211012111217" type="text/javascript"></script>
+<link href="../../Content/commonjs/upload/default.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/fileprogress.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/handlers.js"></script>
+<link href="../../Content/css/table.css" rel="stylesheet" type="text/css" />
+<script src="../../Content/commonjs/setControlWidth.js" type="text/javascript"></script>
+
+<div class="easyui-layout" id="gzd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="gzd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'gzd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/gzd',['gzd-SA_PlanAction-moneychinese','gzd-SA_PlanAction-moneyunmber']]}">打印</a> 
+                   
+                  @*  <a href="#" class="easyui-linkbutton" id="gzd-liulan" data-options="
+                    plain:'true',iconCls:'icon-queren', scope:'gzd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">浏览</a>*@
+
+                    <a href="#" class="easyui-linkbutton" id="gzd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'gzd',forbidstatus:[1,2,3],
+                    bindparms:{'export':['/gzd/Export','gzd-SA_PlanActionDetail']},
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="gzd-ExcelImport" 
+                   data-options="plain:'true',iconCls:'icon-daoru',
+                   bindmethod:{ 'click':['ExcelImport'] },scope:'gzd',status:'1',
+                   bindparms:{'ExcelImport':['/gzd/excelImport','excelImport']},
+                   forbidstatus:[4]">导入</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="gzd-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'gzd',status:'1',
+                   bindparms:{'newDoc':['/gzd/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="gzd-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'gzd-SA_PlanAction-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'gzd',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="gzd-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'gzd-SA_PlanAction-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'gzd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" id="gzd-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delGZDRow'] },
+                   bindparms:{'delGZDRow':['gzd-SA_PlanActionDetail']},scope:'gzd',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                    <a href="#" class="easyui-linkbutton" id="gzd-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'gzd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                     <a href="#" class="easyui-linkbutton" id="gzd-fafang" data-options="plain:'true',iconCls:'icon-yusuan',
+                   window:'b-window',scope:'gzd',
+                   forbidstatus:[1,2,3]">发放</a>
+                    @*<a href="#" class="easyui-linkbutton" id="gzd-giveOut" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'gzd',forbidstatus:[1,2,3]
+                     ">发放</a> *@
+
+                   <a href="#" class="easyui-linkbutton" id="gzd-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/gzd/Save1','gzd-examine']},scope:'gzd',status:'4',
+                   forbidstatus:[4]">保存</a> 
+
+                    <a href="#" class="easyui-linkbutton" id="gzd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'gzd-SA_PlanAction-DocState',                   
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'datagrid':['gzd-SA_PlanActionDetail'],
+                            'validatebox':['gzd-SA_PlanAction-Descrip'],
+                            'datebox':['gzd-SA_PlanAction-DocDate'],
+                            'combogrid':['gzd-SA_PlanAction-GUID_DW']
+                        }                    
+                    },                   
+                   scope:'gzd',forbidstatus:[4]">校验</a>
+                     
+                   <a href="#" class="easyui-linkbutton" id="gzd-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'gzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/gzd/CommitFlow']},scope:'gzd',
+                   forbidstatus:[1,2,3]">提交</a>
+
+                   <a href="#" class="easyui-linkbutton" id="gzd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'gzd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'gzd',
+                   forbidstatus:[1,2,3]">退回</a>
+                   <a href="#" class="easyui-linkbutton"
+                   id="gzd-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/xjbxd','/Process/process','xjbxd-process','process']},
+                   window:'b-window',scope:'gzd',
+                   forbidstatus:[1,2,3]">流程</a>
+                    <a href="#" class="easyui-linkbutton" id="gzd-setValue"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'gzd-SA_PlanAction-DocState',
+                   scope:'gzd'
+                  ">设值</a>
+
+                    <a href="#" class="easyui-linkbutton" id="gzd-Count"
+                   data-options="plain:'true',iconCls:'icon-jisuan',docState:'gzd-SA_PlanAction-DocState',
+                   scope:'gzd',status:'4'
+                   ">计算</a>
+
+                    <a href="#" class="easyui-linkbutton" id="gzd-selectPerson"
+                   data-options="plain:'true',iconCls:'icon-tijiao',
+                   bindmethod:{ 'click': ['selectPerson'] },
+                   bindparms:{'selectPerson':['/gzd/selectPerson','selectPerson']},scope:'gzd',
+                    window:'b-window'
+                  ">人员</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="gzd-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/gzdHistory','history-wuyong','history']},
+                   historyBtnId:'history-hselect',
+                   window:'b-window',scope:'gzd'">历史</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="gzd-saemail" data-options="plain:'true',iconCls:'icon-diaoyong1',
+                   bindmethod:{ 'click': ['SAemail'] },
+                   bindparms:{'SAemail':['/gzd/SAemail']},
+                   window:'b-window',scope:'gzd'">邮件</a> 
+
+                 
+                
+                   <a href="#" class="easyui-linkbutton"
+                   id="gzd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'gzd'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" style="width:20px"></div>
+    <div data-options="region:'center'" style="width:100%" data-options="fit:true">
+        <table id="table" border="0" style="height: 350px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="gzd-abandonedStatus" statusControlID="gzd-SA_PlanAction-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        工资计划执行</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText" >
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>工资计划</label>
+                </td>
+                <td class="tdValue">
+               
+            <select id="gzd-SA_PlanAction-GUID_Plan" class="easyui-combobox"
+            data-options="forbidstatus:[4,3],panelWidth:250,textV:'PlanName'"
+             style="width:200px;">   
+                <option value="32a69626-78fc-c448-92ae-3506034edd11">离退休</option>   
+                <option value="dda6c0dd-ebc8-47fd-8087-84df718953eb">工资</option>   
+            </select>
+                  
+                </td>
+                <td class="tdText" >
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>发放日期</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-datebox" id="gzd-SA_PlanAction-DocDate" data-options="forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td class="tdText" >
+                    <label id="lbl-GUID_Person">
+                        状态</label>
+                </td>
+                <td class="tdValue">
+                   <select class="easyui-combobox" id="gzd-SA_PlanAction-ActionState" data-options="forbidstatus:[-1],textV:'ActionState'" >
+                       <option value="0" selected="selected">未发放</option>
+                       <option value="1">已发放</option>                        
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText" >
+                    <label for="field1" id="lbl-DocNum">
+                        单据编号</label>
+                </td>
+                <td class="tdValue">                    
+                    <input class="easyui-validatebox" id="gzd-SA_PlanAction-DocNum"  maxlength="100"
+                        data-options="forbidstatus:[-1],required:false"></input>
+                </td>
+                <td class="tdText"  id="lbl-GUID_DW">
+                    <label>
+                        <font color="red">*</font>单位</label>
+                </td>
+                <td class="tdValue">
+                
+
+                       <select id="gzd-SA_PlanAction-GUID_DW" class="easyui-combobox"
+            data-options="forbidstatus:[4,3],panelWidth:250,textV:'DWName'"
+             style="width:200px;">   
+                <option value="3518e9a8-bcb7-4d00-8687-e2f808db0e70">国家基础地理信息中心</option>   
+            </select>
+                </td>
+                <td class="tdText" >
+                    <label id="lbl-Descrip">
+                       <font color="red">*</font> 描述</label>
+                </td>
+                <td class="tdValue">
+                   <input class="easyui-validatebox" id="gzd-SA_PlanAction-Descrip"  style="background-color:#FFFFCC" data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText" >
+                    <label id="lbl-ActionYear">
+                        工资年</label>
+                </td>
+                <td class="tdValue">
+                    <select id="gzd-SA_PlanAction-ActionYear"class="easyui-combobox"  data-options="forbidstatus:[4,3],editable:false,textV:'ActionYear'";>  
+                    <option value="1999">1999</option> 
+                    <option value="2000">2000</option>  
+                    <option value="2001">2001</option> 
+                    <option value="2002">2002</option>  
+                    <option value="2003">2003</option>  
+                    <option value="2004">2004</option>  
+                    <option value="2005">2005</option>  
+                    <option value="2006">2006</option>  
+                    <option value="2007">2007</option>  
+                    <option value="2008">2008</option>  
+                    <option value="2009">2009</option>  
+                    <option value="2010">2010</option>  
+                    <option value="2011">2011</option>  
+                    <option value="2012">2012</option>
+                    <option value="2013">2013</option>
+                    <option value="2014">2014</option>  
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>    
+                    <option value="2017">2017</option>  
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>    
+                    <option value="2020">2020</option>  
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>    
+                    <option value="2023">2023</option>  
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>    
+                    <option value="2026">2026</option>  
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>    
+                    <option value="2029">2029</option>  
+                    <option value="2030">2030</option>
+                    <option value="2031">2031</option>    
+                    <option value="2032">2032</option>  
+                    <option value="2033">2033</option>
+                    <option value="2034">2034</option>    
+                    <option value="2035">2035</option>  
+                    <option value="2036">2036</option>
+                    <option value="2037">2037</option>    
+                    <option value="2038">2038</option>  
+                    <option value="2039">2039</option>
+                    <option value="2040">2040</option>    
+                    <option value="2041">2041</option>  
+                    <option value="2042">2042</option>
+                    <option value="2043">2043</option>    
+                    <option value="2044">2044</option>  
+                    <option value="2045">2045</option>
+                    <option value="2046">2046</option>    
+                    <option value="2047">2047</option>  
+                    <option value="2048">2048</option>
+                    <option value="2049">2049</option>    
+                    <option value="2050">2050</option>  
+                    </select> 
+                </td>
+                <td class="tdText" >
+                    <label id="lbl-Month">
+                        工资月</label>
+                </td>
+                <td class="tdValue">
+                    <select id="gzd-SA_PlanAction-ActionMouth" class="easyui-combobox"  data-options="forbidstatus:[4,3],editable:false,textV:'ActionMouth'";>  
+                    <option value="1">1</option>  
+                    <option value="2">2</option>  
+                    <option value="3">3</option>  
+                    <option value="4">4</option>  
+                    <option value="5">5</option>  
+                    <option value="6">6</option>  
+                    <option value="7">7</option>  
+                    <option value="8">8</option>  
+                    <option value="9">9</option>  
+                    <option value="10">10</option>  
+                    <option value="11">11</option>  
+                    <option value="12">12</option>
+                   </select> 
+                </td>
+                <td class="tdText" >
+                    <label id="lbl-ActionPeriod">
+                        工资期间</label>
+                </td>
+                <td class="tdValue">
+                    <select id="gzd-SA_PlanAction-ActionPeriod" class="easyui-combobox"  data-options="forbidstatus:[4,3],editable:false,textV:'ActionPeriod'";>  
+                    <option value="1">1</option>
+                </select> 
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">             
+                    <table class="easyui-edatagrid"  id="gzd-SA_PlanActionDetail" style="overflow:auto"  data-options="
+                    orderNum:'gzd-SA_PlanActionDetail-OrderNum',                 
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:400,                   
+                    rownumbers:true,
+                    scope:'gzd',
+                    single:false,
+                    requireCol:[
+                       'gzd-SA_PlanPersonSetModel-GUID_Bank',
+                       'gzd-SA_PlanPersonSetModel-BankCardNo'
+                    ],
+                    forbidstatus:[4,3]
+                    ">
+                     <thead data-options="frozen:true">
+                                <tr>
+                                <th  data-options="field:'gzd-SA_PlanPersonSetModel-PersonKey',width:100">人员编码</th>
+                                <th  data-options="field:'gzd-SA_PlanPersonSetModel-PersonName',width:100" >人员名称</th>
+                                </tr>
+                            </thead>
+                    </table>
+                </td>
+            </tr>      
+            <tr>
+                <td class="tdText" >
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-validatebox" 
+                        id="gzd-SA_PlanAction-Maker"  data-options="forbidstatus:[-1]"              
+                    </input>
+                </td>
+                <td class="tdText" >
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-validatebox" id="gzd-SA_PlanAction-MakeDate" data-options="forbidstatus:[-1]"></input>
+                </td>
+
+                <td class="tdText" >
+                    <label>
+                        发放次数</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-validatebox"
+                        id="gzd-SA_PlanAction-ActionTimes"  
+                        data-options="forbidstatus:[-1]" value="1"                      
+                    </input>
+                </td>
+            </tr>
+           
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="gzd-SA_PlanAction-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="gzd-SA_PlanAction-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="gzd-SA_PlanAction-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="gzd-SA_PlanAction-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="gzd-SA_PlanAction-DocState"  type="hidden"></input> 
+    <input class="easyui-validatebox" id="gzd-SA_PlanAction-PlanKey"  type="hidden"></input>
+</div>
+<label id="gzd-extendregion" style="display: none">
+    <input id="gzd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-setwindow" line="true">
+    <div id="b-window" line="true"></div>
+
+    </div>
+</label>
+<div b-type="1" id="gzd-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="gzd-SA_PlanAction-DWKey" />
+</div>
+<div id="b-windowPBar" style="text-align:center; padding:90px; border:0; border-width:0;"   >
+     正在保存中，请稍等...    
+</div>
+
+<iframe id="printIframe" style="display: none"></iframe>
+
+<script type="text/javascript">
+    (function () {
+        var datagridId = "gzd-SA_PlanActionDetail";
+        $.setControl("divWest", datagridId);
+    })();
+</script>

@@ -1,0 +1,458 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "核销处理";
+}
+<script src="../../Scripts/cn/hx.js?r=11121212991" type="text/javascript"></script>
+<style type="text/css">
+#hxcl-btn span span.l-btn-text 
+{
+	color:Red;
+	padding-top:0px !important;
+}
+#hxcl-btn {
+    position: relative;
+    top: 1px;
+    background-color:#D0DCE5;
+    height:24px;
+}
+</style>
+
+<div class="easyui-layout" id="hxcl-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                @*<a href="#" class="easyui-linkbutton" id="hxcl-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'hxcl',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/jkxx',['hxcl-BX_Main-moneychinese','hxcl-BX_Main-moneyunmber']]}">
+                        打印</a> *@
+                <a href="#" class="easyui-linkbutton" id="hxcl-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'hxcl',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/hkspdframe',['hxcl-DebitDetail']]}">
+                   打印</a> 
+
+                <a href="#" class="easyui-linkbutton" id="hxcl-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/hxcl/Save']},scope:'hxcl',status:'4',
+                   forbidstatus:[4]">保存</a>
+
+
+                    <a href="#" class="easyui-linkbutton" id="hxcl-xuandan"
+                       data-options="plain:'true',iconCls:'icon-xuandan',
+                                bindmethod:{ 'click': ['selectDoc'] },
+                                bindparms:{'selectDoc':['/hxcl/selectDoc','history']},
+                                window:'b-window',scope:'hxcl'">选单</a> 
+
+                    <a href="#" class="easyui-linkbutton" id="hxcl-borrow"
+                        data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/hxcl/jk','jk-wl_main','jk']},
+                    window:'b-window',scope:'hxcl'">借款</a>
+
+                    <a href="#" class="easyui-linkbutton" id="hxcl-yichu" 
+                   data-options="plain:'true',iconCls:'icon-yichu',
+                   docState:'hxcl-HX_Main-DocState',
+                   bindmethod:{ 'click': ['deleteRow'] },
+                   bindparms:{'gridIds':['hxcl-DebitDetail','hxcl-CreditDetail']},
+                   scope:'hxcl',status:'3'">移除</a> 
+                    
+                  @*  <a href="#" class="easyui-linkbutton" id="hxcl-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'xjbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess1'] },
+                   bindparms:{'submitProcess':['/hxcl/CommitFlow']},scope:'hxcl',
+                   forbidstatus:[1,2,3]">提交</a>*@
+                    <a href="#" class="easyui-linkbutton" id="hxcl-close"
+                        data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },closeWin:true,
+                   scope:'hxcl'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true" z="1">
+        <!--在center中布局-->
+        <div class="easyui-layout" data-options="fit:true">
+            <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+                <div class="easyui-layout" data-options="fit:true">
+                    <div data-options="region:'north',split:true" style="height: 198px">
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'west',split:false, border:false" style="width: 600px; overflow:hidden">
+                                <table border="0" style="height: 195px; width: 350px; padding: 0; margin: 0">
+                                    <tr>
+                                        <td style="height: 15px;">
+                                                <label id="showje">合计金额</label>
+                                            <input class="easyui-numberbox" id="hxcl-SumTotal" readonly="readonly" style="width: 176px" data-options="precision:2,forbidstatus:[4],groupSeparator:',',max:99999999.99"></input>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 100%">
+                                            <table class="easyui-datagrid" id="hxcl-SumDetail" style="overflow: auto" data-options="
+                                        fitColumns:false,
+                                        pagination:false,
+                                        method:'get',
+                                        singleSelect:true,
+                                        checkOnSelect:true,
+                                        height:157,
+                                        width:592,
+                                        formatters:{'Total_XX':'numberbox'},
+                                        rownumbers:true,
+                                        scope:'hxcl',
+                                        single:false,
+                                        forbidstatus:[4,3],
+                                       ">
+                                                <thead>
+                                                    <tr>
+                                                        <th field="BankName" title="银行名称" width="180" sortable="false" align="left"> 银行名称  </th>
+                                                        <th field="Total_XX" title="金额" sortable="false" align="right" width="100"> 金额</th>
+                                                        <th field="PaymentNumber" title="财政支付码" sortable="false" align="center"  width="160">财政支付码</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div data-options="region:'center',split:false, border:false" style=" overflow:hidden" fit="true">
+                                <table border="0" style="height: 195px;  padding: 0; margin: 0">
+                                    <tr>
+                                        <td style="height: 25px; font-size: x-large; color: #0054E3;">
+                                                借款信息
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 100%">
+                                            <table border="0" style="height: 148px;  padding: 0; margin: 0">
+                                                <tr>
+                                                    <td style="width: 70px; height: 25px;">
+                                                        <div style="float: right;">
+                                                            借款人员</div>
+                                                    </td>
+                                                    <td>
+                                                        <input class="easyui-validatebox" readonly="readonly" id="hxcl-borrow-PersonName" style="width: 250px"></input>
+                                                    </td>
+                                                    <td style="width: 70px; height: 25px;">
+                                                        <div style="float: right;">
+                                                            核销日期</div>
+                                                    </td>
+                                                    <td field="">
+                                                       <input class="easyui-datebox" id="hxcl-DocDate" data-options="" style="width: 100px"></input>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 70px; height: 25px;">
+                                                        <div style="float: right; margin-left: 10px;">
+                                                            借款部门</div>
+                                                    </td>
+                                                    <td colspan="3">
+                                                        <input class="easyui-validatebox" readonly="readonly" id="hxcl-borrow-DepartmentName" style="width: 250px"></input>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 70px; height: 25px;">
+                                                        <div style="float: right; margin-left: 15px;">
+                                                            借款单位</div>
+                                                    </td>
+                                                    <td colspan="3">
+                                                        <input class="easyui-validatebox" readonly="readonly" id="hxcl-borrow-DWName" style="width: 250px"></input>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 70px; height: 25px;">
+                                                        <div style="float: right; margin-left: 15px;">
+                                                            借款余额</div>
+                                                    </td>
+                                                    <td colspan="3">
+                                                        <input class="easyui-validatebox" readonly="readonly" id="hxcl-borrow-Money" style="width: 250px" ></input>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'west',split:false, border:false" style="width: 600px; overflow:hidden">
+                        <table border="0" style="height: 185px; width: 350px; padding: 0; margin: 0">
+                            <tr>
+                                <td style="height: 25px;">
+                                    <div style="font-size: x-large; color: #0054E3;">
+                                        借方单据</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="height: 100%">
+                                    <table class="easyui-datagrid" id="hxcl-DebitDetail" style="overflow: auto" data-options="
+                                             orderNum:'hxcl-BX_Detail-OrderNum',
+                                            requireCol:[
+                       
+                                            ],
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:false,
+                                            checkOnSelect:true,
+                                            height:158,
+                                            width:590,
+                                            rownumbers:true,
+                                            scope:'hxcl',
+                                            formatters:{'DocDate':'datebox','Total_XX':'numberbox'},
+                                            single:false,
+                                            forbidstatus:[4,3],
+                                            copyField:[
+                       
+                                            ]
+                                            ">
+                                        <thead >
+                                            <tr>
+                                                <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+                                                <th field="GUID" hidden="true"> </th>
+                                                 <th field="DWName" hidden="true"> </th>
+                                                   <th field="DocFlag" title="" sortable="false" hidden=true align="left" width="100px"></th>
+                                                <th field="DocNum" title="单号" sortable="false" align="left" width="100px">
+                                                    单号
+                                                </th>
+                                               
+                                                <th field="DocTypeName" title="单据类型" sortable="false" align="left" width="100px">
+                                                    单据类型
+                                                </th>
+                                                <th field="DocDate" title="单据日期" sortable="false" align="center" width="80px">
+                                                    单据日期
+                                                </th>
+                                                <th field="PersonName" title="人员" sortable="false" align="left" width="100px">
+                                                    人员
+                                                </th>
+                                                <th field="DepartmentName" title="部门" sortable="false" align="left" width="200px">
+                                                    部门
+                                                </th>
+                                                <th field="Total_XX" title="金额" sortable="false" align="right" width="100px">
+                                                    金额
+                                                </th>
+                                                <th field="DocMemo" title="摘要" sortable="false" align="left" width="300px">
+                                                    摘要
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div data-options="region:'center',split:false,border:false" style="overflow:hidden">
+                        <table border="0" style="height: 185px; width: 350px; padding: 0; margin: 0">
+                            <tr>
+                                <td style="height: 25px;">
+                                    <div style="font-size: x-large; color: #0054E3;">
+                                        贷方单据</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="height: 100%">
+                                    <table class="easyui-datagrid" id="hxcl-CreditDetail" style="overflow: auto" data-options="
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:false,
+                                            checkOnSelect:true,
+                                            height:158,
+                                            width:640,
+                                            formatters:{'DocDate':'datebox','Total_XX':'numberbox'},
+                                            rownumbers:true,
+                                            scope:'hxcl',
+                                            single:false,
+                                            forbidstatus:[4,3]
+                                           
+                                            ">
+                                        <thead >
+                                            <tr>
+                                                <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+                                                <th field="GUID" hidden="true">
+                                                </th>
+                                                 <th field="DocFlag" title="" sortable="false" hidden=true align="left" width="100px"> </th>
+                                                 <th field="DWName" hidden="true"> </th>
+                                                <th field="DocNum" title="单号" sortable="false" align="left" width="100px">  单号</th>
+                                                
+                                                <th field="DocTypeName" title="单据类型" sortable="false" align="left" width="100px">
+                                                    单据类型
+                                                </th>
+                                                <th field="DocDate" title="单据日期" sortable="false" align="center" width="80px">
+                                                    单据日期
+                                                </th>
+                                                <th field="PersonName" title="人员" sortable="false" align="left" width="100px">
+                                                    人员
+                                                </th>
+                                                <th field="DepartmentName" title="部门" sortable="false" align="left" width="200px">
+                                                    部门
+                                                </th>
+                                                <th field="Total_XX" title="金额" sortable="false" align="right" width="100px">
+                                                    金额
+                                                </th>
+                                                <th field="DocMemo" title="摘要" sortable="false" align="left" width="300px">
+                                                    摘要
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div data-options="region:'south',split:false,border:false" style="height: 195px; overflow:hidden">
+                <table border="0" style="height: 150px; width: 600; padding: 0; margin: 0">
+                    <tr>
+                        <td style="height: 30px;">
+                            <table border="0" style="padding: 0px; margin: 0px;">
+                                <tr>
+                                    <td style="width: 100px; height: 30px;">
+                                        <div style="font-size: x-large; color: #0054E3;">
+                                            会计凭证</div>
+                                    </td>
+                                    <td style="width: 60px;">
+                                        <div style="float: right;">
+                                            对方帐套</div>
+                                    </td>
+                                    <td>
+                                        <input class="easyui-validatebox" readonly="readonly" id="hxcl-zaccount" width="176" />
+                                    </td>
+                                    <td style="width: 75px;">
+                                        <div style="float: right;">
+                                            对方帐套年度</div>
+                                    </td>
+                                    <td>
+                                        <input class="easyui-validatebox" readonly="readonly" id="hxcl-ztnd" width="176" />
+                                    </td>
+                                     <td style="width: 75px;">
+                                        <div style="float: right;">
+                                            会计期间</div>
+                                    </td>
+                                    <td>
+                                        <input class="easyui-validatebox" readonly="readonly" id="hxcl-kjqj" width="176" />
+                                    </td>
+                                      <td style="width: 75px;">
+                                        <div style="float: right;">
+                                            凭证号</div>
+                                    </td>
+                                    <td>
+                                        <input class="easyui-validatebox"  id="hxcl-pzh" width="176" />
+                                    </td>
+                                    <td>
+                                        <a href="#" class="easyui-linkbutton" id="hxcl-btn" 
+                                        data-options="plain:'true',
+                                        bindmethod:{ 'click': ['openCer'] },
+                                        bindparms:{'openCer':['kjpz-status']},
+                                        window:'b-kjpzwindow',
+                                        scope:'kjpz'">会计凭证</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table class="easyui-datagrid" id="hxcl-KJPZDetail" style="overflow: auto" data-options="
+                             orderNum:'hxcl-BX_Detail-OrderNum',
+                                requireCol:[
+                       
+                                ],
+                                fitColumns:false,
+                                pagination:false,
+                                method:'get',
+                                singleSelect:true,
+                                checkOnSelect:true,
+                                formatters:{'Total_JF':'numberbox','Total_DF':'numberbox'},
+                                height:147,
+                                width:1242,
+                                rownumbers:true,
+                                scope:'hxcl',
+                                single:false,
+                                forbidstatus:[4,3],
+                                copyField:[
+                       
+                                ]
+                                ">
+                                <thead>
+                                    <tr>
+                                        <th field="GUID" hidden="true"/>
+                                        <th field="GUID_AccountTitle" hidden="true"/>
+                                        <th field="GUID_Project" hidden="true"/>
+                                        <th field="GUID_Department" hidden="true"/>
+                                        <th field="GUID_Customer" hidden="true"/>
+                                        <th field="GUID_Person" hidden="true
+                                        <th field="IsDC" hidden="true"/>
+                                        <th field="PZMemo" title="摘要" sortable="false" align="left" width="200px;">
+                                            摘要
+                                        </th>
+                                        <th field="AccountTitleKey" title="科目编码" sortable="false" align="left" width="100px;">
+                                            科目编码
+                                        </th>
+                                        <th field="AccountTitleName" title="科目名称" sortable="false" align="left" width="100px;">
+                                            科目名称
+                                        </th>
+                                        <th field="Total_JF" title="借方金额" sortable="false" align="right" width="100px;">
+                                            借方金额
+                                        </th>
+                                        <th field="Total_DF" title="贷方金额" sortable="false" align="right" width="80px;" >
+                                            贷方金额
+                                        </th>
+                                        <th field="DepartmentName" title="部门" sortable="false" align="left" width="200px;">
+                                            部门
+                                        </th>
+                                        <th field="ProjectName" title="项目名称" sortable="false" align="left" width="200px;">
+                                            项目名称
+                                        </th>
+                                        <th field="ProjectKey" title="项目编码" sortable="false" align="left" width="150px;">
+                                            项目编码
+                                        </th>
+                                        <th field="CustomerName" title="往来单位" sortable="false" align="left" width="150px;">
+                                            往来单位                                        </th>
+                                        <th field="PersonName" title="人员" sortable="false" align="left" width="100px;">
+                                            人员
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <input class="easyui-validatebox" id="hxcl-BX_Main-GUID" type="hidden" keyattr="1"></input>
+     <input class="easyui-validatebox" id="hxcl-maker" value='@ViewData["curPerson"]' type="hidden"></input>
+    <input class="easyui-validatebox" id="hxcl-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="hxcl-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="hxcl-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="hxcl-BX_Main-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="hxcl-BX_Main-OAOTS" type="hidden"></input>
+    <input class="easyui-validatebox"  type="hidden" id="hxcl-borrow-PersonId" style="width: 250px"></input>
+    <input class="easyui-validatebox"  type="hidden" id="hxcl-borrow-DwId" style="width: 250px"></input>
+    <input class="easyui-validatebox"  type="hidden" id="hxcl-borrow-DepartmentId" style="width: 250px"></input>
+    <input class="easyui-validatebox"  type="hidden" id="hxcl-BillCount" style="width: 250px"></input>
+    <input class="easyui-validatebox"  type="hidden" id="hxcl-DocNum" style="width: 250px"></input>
+</div>
+<label id="hxcl-extendregion" style="display: none">
+    <input id="hxcl-status" type="text" value="1"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value="@ViewData["guid"]"></input>
+      <input id="initDocType" type="text" value="@ViewData["DocType"]" </input>
+    <div id="b-kjpzwindow" line="true"></div>
+    <div id="b-window" line="true"></div>
+</label>
+<div b-type="1" id="hxcl-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="hxcl-BX_Main-DWKey" />
+</div>
+<div>
+    @*用来存值单据的GUID*@
+    <input class="easyui-validatebox" type="hidden" id="storId"/>
+    @*用来存值单据类型*@
+    <input class="easyui-validatebox" type="hidden" id="stortype"/>
+    @*用来存值是选单还是借款*@
+    <input class="easyui-validatebox" type="hidden" id="stormark"/>
+    <input class="easyui-validatebox" type="hidden" id="transObject"/>
+   
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

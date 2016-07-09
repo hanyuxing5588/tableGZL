@@ -1,0 +1,155 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "工资项目设置";
+}
+
+<script src="../../Scripts/jc/jc.js?r=1" type="text/javascript"></script>
+
+<div class="easyui-layout" id="gzxmsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                ` <a href="#" class="easyui-linkbutton" id="gzxmsz-add" 
+                  data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newStatus']},scope:'gzxmsz',status:'1',                        
+                  forbidstatus:[1,2,3]">新增</a> 
+                  
+                  <a href="#" class="easyui-linkbutton"
+                  id="gzxmsz-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                  treeId:['gzxmsz-tree-gpro'],
+                  bindmethod:{'click':['setStatusexamine']},scope:'gzxmsz',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="gzxmsz-remove"
+                  data-options="plain:'true',iconCls:'icon-shanchu',
+                  treeId:['gzxmsz-tree-gpro'],
+                  bindmethod:{ 'click': ['setStatusexamine'] },
+                  scope:'gzxmsz',status:'3',
+                  forbidstatus:[1,2,3]">删除</a>
+                  
+                  <a href="#" class="easyui-linkbutton" id="gzxmsz-tingyong"
+                  data-options="plain:'true',iconCls:'icon-tingyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                   bindparms:{'setEnable':['gzxmsz-SA_Item-IsStop','1','gzxmsz-tree-gpro']},
+                  forbidstatus:[1,2,3]">停用</a>
+
+                  <a href="#" class="easyui-linkbutton" id="gzxmsz-qiyong"
+                  data-options="plain:'true',iconCls:'icon-qiyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['gzxmsz-SA_Item-IsStop','0','gzxmsz-tree-gpro']},
+                  forbidstatus:[1,2,3]">启用</a>
+                     
+                  <a href="#" class="easyui-linkbutton"
+                  id="gzxmsz-save" data-options="plain:'true',iconCls:'icon-baocun',
+                  JCDA:true,
+                  treeId:['gzxmsz-tree-gpro'],
+                  NewIdStatus:'1',
+                  saveStatus:'1',
+                  bindmethod:{ 'click': ['saveDoc'] },
+                  bindparms:{'saveDoc':['/JCxcsz/Savegzxmsz']},
+                  scope:'gzxmsz',status:'4',forbidstatus:[4]">保存</a>
+                  
+                  <a href="#" class="easyui-linkbutton" id="gzxmsz-cancel"
+                  data-options="plain:'true',iconCls:'icon-quxiao', 
+                  scope:'gzxmsz',forbidstatus:[4],
+                  bindmethod:{ 'click': ['cancel'] }">取消</a>  
+                   
+                  <a href="#" class="easyui-linkbutton"
+                  id="gzxmsz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                  bindmethod:{ 'click': ['closeTab'] },
+                  scope:'gzxmsz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" id="divWest" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="工资项目">
+                <ul class="easyui-tree" id="gzxmsz-tree-gpro" data-options="
+                msg:'工资项目',
+                m:'SA_Item',
+                    associate:{
+                            'gzxmsz-SA_Item-ItemKey':['ItemKey'],
+                            'gzxmsz-SA_Item-ItemName':['ItemName'],
+                            'gzxmsz-SA_Item-GUID':['GUID'],
+                            'gzxmsz-SA_Item-IsStop':['IsStop'],
+                            'gzxmsz-SA_Item-ItemType':['ItemType']
+                  },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  forbidstatus:[3],
+                  checkbox:false,
+                  url:'/Tree/GetJCItemTree',
+                  scope:'gzxmsz',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table border="0" style=" width:100%" id="table" padding: 0; margin: 0">
+            <tr>
+                <td colspan="4" style="height: 50px;">
+                        <div style="font-size: x-large; text-align: center;">
+                        工资项目档案</div>
+                 </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-ItemKey">
+                        <font color="red">*</font>工资项目编号</label>
+                </td>
+                <td  class="tdValueTr2">
+                    <input class="easyui-validatebox" id="gzxmsz-SA_Item-ItemKey"  data-options="forbidstatus:[4,3]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field" id="lbl-ItemName">
+                        <font color="red">*</font>工资项目名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="gzxmsz-SA_Item-ItemName"
+                        data-options="forbidstatus:[4,3]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field" id="lbl-ItemType">
+                        工资项目类型</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combobox" id="gzxmsz-SA_Item-ItemType" 
+                            data-options="panelHeight:100,forbidstatus:[4,3]">
+                            <option value="0"></option>
+                            <option value="1">数字</option>
+                            <option value="2">日期</option>
+                            <option value="3">文本</option>
+                        </select>
+                </td>
+                <td class="tdTextTr2">
+                    <input type="checkbox" class="easyui-checkbox" id="gzxmsz-SA_Item-IsStop" data-options="forbidstatus:[4,3]"></input>&nbsp;&nbsp;&nbsp;&nbsp;
+                </td>
+                <td class="tdValueTr2">
+                    是否停用
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="gzxmsz-SA_Item-GUID" type="hidden" keyattr="1"></input>
+    </div>
+    <label id="gzxmsz-extendregion" style="display: none">
+        <input id="gzxmsz-status" type="text"></input>
+        <input id="initscope" type="text" value="gzxmsz"></input>
+        <input id="initstatus" type="text" value="4"></input>
+        <input id="initController" type="text" value="JCxcsz"></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+        <div id="gzxmsz-b-window" line="true">
+        </div>
+    </label>
+    <iframe id="printIframe" style="display: none"></iframe>
+
+  <script type="text/javascript">
+      (function () {        
+            var datagridId = "";
+            var colCount = 4;                      
+            $.setControl("divWest", datagridId,colCount);
+      })();
+      
+</script>

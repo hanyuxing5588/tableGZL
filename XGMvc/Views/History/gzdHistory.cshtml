@@ -1,0 +1,218 @@
+﻿
+<script type="text/javascript">
+    $(document).ready(function () {
+        //用于工资计划选择改变值 控制开关按钮
+        $('#history-haffirm').bind('click', function () {
+            $.isLoadGrid = true;
+            $.isHistoryData = true;
+        });
+        //        $("#history-SA_PlanAction-GUID_Plan").combogrid({
+        //            onLoadSuccess: function () {
+        //                alert("dd");
+        //                
+        //                $("#history-SA_PlanAction-GUID_Plan").combogrid("selectRow", 0);
+        //            },
+        //            onLoadError: function () {
+        //                alert("error");
+        //            }
+        //        });
+
+    });
+</script>
+<body>
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+<div b-type="1" data-options="region:'north',tools:'#tbar'" style="height:51px">
+<div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">
+                   
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="history-haffirm" b-action="haffirm" gridId="history-bxdetail" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitHistory'] },
+                   bindparms:{'submitHistory':['history-SA_PlanAction','@ViewData["ModelUrl"]']},
+                   window:'b-window',
+                   scope:'history',
+                   iconCls:'icon-queren'">浏览</a>
+
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="history-hselect" b-action="hselect" data-options=" 
+                   bindmethod:{ 'click': ['historySearch'] },
+                   bindparms:{'historySearch':['/History/History','history-SA_PlanAction','history','historydatafilter']},
+                   scope:'history',
+                   plain:'true',iconCls:'icon-chaxun'" >查询</a>
+
+                @*   <a href="#" class="easyui-linkbutton" id="history-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'history',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['']}">打印</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="history-export" data-options="
+                   plain:'true',iconCls:'icon-shuchu', scope:'history',
+                   bindmethod:{ 'click': ['export'] }">输出</a>*@
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="history-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'history', 
+                    window:'b-window',         
+                    iconCls:'icon-quxiao'">取消</a>
+</div>
+</div>
+
+<div b-type="1" data-options="region:'center'" >
+<div b-type="1" id="history-historydatafilter" data-options="region:'north'"   style="height:35px">
+<table border="0" style="width:100%;">
+<tr>
+    <td style="width:13%;">
+        <label for="field1">工资计划名称</label>
+    </td>
+    <td style="width:20%;">        
+        <select class="easyui-combogrid" id="history-SA_PlanAction-GUID_Plan" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},                           
+                            {field:'PlanKey',hidden:'true'},
+                            {field:'PlanName',title:'工资计划名称',width:'100'}                            
+                            ]],
+                        width:150,
+                        panelWidth:250,
+                        method:'post',
+                        remoteUrl:'/Combogrid/SAPlan',
+                        idField:'GUID',
+                        textField:'PlanName',
+                        filterField:'PlanKey,PlanName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },           
+                        rownumbers:true
+                        "
+                        >
+         </select>
+    </td>
+    <td style="width:10%;">
+        <label for="field1">工资年</label>
+    </td>
+    <td style="width:20%;">        
+         <select id="history-history-Year" class="easyui-combobox"  data-options="width:150,editable:false"; style="width:150px;">  
+            <option value="2000">2000</option>  
+            <option value="2001">2001</option> 
+            <option value="2002">2002</option>  
+            <option value="2003">2003</option>  
+            <option value="2004">2004</option>  
+            <option value="2005">2005</option>  
+            <option value="2006">2006</option>  
+            <option value="2007">2007</option>  
+            <option value="2008">2008</option>  
+            <option value="2009">2009</option>  
+            <option value="2010">2010</option>  
+            <option value="2011">2011</option>  
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+            <option value="2014">2014</option>  
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>    
+            <option value="2017">2017</option>  
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>    
+            <option value="2020">2020</option>  
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>    
+            <option value="2023">2023</option>  
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>    
+            <option value="2026">2026</option>  
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>    
+            <option value="2029">2029</option>  
+            <option value="2030">2030</option>
+            <option value="2031">2031</option>    
+            <option value="2032">2032</option>  
+            <option value="2033">2033</option>
+            <option value="2034">2034</option>    
+            <option value="2035">2035</option>  
+            <option value="2036">2036</option>
+            <option value="2037">2037</option>    
+            <option value="2038">2038</option>  
+            <option value="2039">2039</option>
+            <option value="2040">2040</option>    
+            <option value="2041">2041</option>  
+            <option value="2042">2042</option>
+            <option value="2043">2043</option>    
+            <option value="2044">2044</option>  
+            <option value="2045">2045</option>
+            <option value="2046">2046</option>    
+            <option value="2047">2047</option>  
+            <option value="2048">2048</option>
+            <option value="2049">2049</option>    
+            <option value="2050">2050</option>  
+            </select> 
+    </td>
+    <td style="width:10%;">
+        <label for="field1">工资月</label>
+    </td>
+    <td style="width:20%;">
+         <select id="history-history-Month" class="easyui-combobox"  data-options="width:150,editable:false"; style="width:150px;">  
+            <option value="1">1</option>  
+            <option value="2">2</option>  
+            <option value="3">3</option>  
+            <option value="4">4</option>  
+            <option value="5">5</option>  
+            <option value="6">6</option>  
+            <option value="7">7</option>  
+            <option value="8">8</option>  
+            <option value="9">9</option>  
+            <option value="10">10</option>  
+            <option value="11">11</option>  
+            <option value="12">12</option>
+        </select> 
+    </td>
+
+     <td style="width:10%;">
+        <label for="field1">发放状态</label>
+    </td>
+    <td style="width:20%;">
+         <select id="history-history-PayOutState" class="easyui-combobox"  data-options="width:150,editable:false,tempValue:-1"; style="width:150px;">  
+            <option value="-1">全部</option>  
+            <option value="0">未发放</option>  
+            <option value="1">已发放</option>
+        </select> 
+    </td>
+    </tr>
+     <input id="history-history-ModelUrl" class="easyui-validatebox" type="hidden" name="ModelUrl" value="@ViewData["ModelUrl"]"/>
+</table>
+</div>
+<div b-type="1" data-options="region:'center',fit:true" >
+<table style="height:455px;padding:5px"  class="easyui-datagrid"  id="history-SA_PlanAction" b-type="1" 
+        data-options="
+        fitColumns:false,
+        method:'get',
+        singleSelect:true,
+       @* formatters:{'':'numberbox'},*@
+        checkOnSelect:true,
+        pagination:true,
+        striped: false,
+        pageSize:20,
+        pageList:[20,50,100],
+        rownumbers:true
+        ">
+        <thead>
+            <tr>
+            <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+            <th field="GUID" hidden="true"></th>
+            <th field="DocNum"align="center" width="120" >单据编号</th>                       
+            <th field="PlanName"lign="center" width="80" >计划名称</th>            
+            <th field="ActionYear"align="center" width="80" >工资年</th>              
+            <th field="ActionMouth"align="center" width="80" >工资月</th>                
+            <th field="DocDate"align="center" width="80" >发放日</th>                
+            <th field="ActionPeriod"align="right" width="80" >工资期间</th>               
+            <th field="ActionTimes"align="center" width="200" >发放次数</th>                  
+            <th field="Descrip"align="center" width="80" >描述</th>
+            </tr>
+
+           
+        </thead>
+</table>
+</div>
+</div>
+
+</body>

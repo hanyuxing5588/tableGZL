@@ -1,0 +1,360 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "支票管理";
+}
+<script src="../../Scripts/cn/zp.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //点击树，刷新下方数据表数据
+
+    $(document).ready(function () {
+        $('#zpgl-bankAccount').tree({
+            onDblClick: function (node, c, d, e) {
+                var id = node.id;
+                //获取树
+
+                $('#zpgl-CN_Check').datagrid('reload', { bankAccountID: id });
+            }
+        });
+
+        //获取grid的选中行
+
+        
+        //支票管理datagrid的Id
+        var zpglgridId = '#zpgl-CN_Check';
+        $(zpglgridId).datagrid({
+            onSelect: function (rowIndex, rowData) {
+                $('#zpgl-SS_Bank-BankName').val(rowData.BankName);
+                $('#zpgl-CN_Check-CheckNumber').val(rowData.CheckNumber);
+                $('#zpgl-SS_BankAccount-BankAccountNo').val(rowData.BankAccountNo);
+                $('#zpgl-SS_BankAccount-BankAccountNo').val(rowData.BankAccountNo);
+                $('#zpgl-CN_Check-CheckType').combobox('setValue', rowData.CheckType);
+                $('#zpgl-CN_Check-InvalidDatetime').datebox('setValue', rowData.InvalidDatetime);
+                $('#zpgl-CN_CheckDrawMain-CheckMoney').numberbox('setValue', rowData.CheckMoney);
+                $('#zpgl-CN_CheckDrawMain-CheckUsed').val(rowData.CheckUsed);
+                $('#zpgl-CN_Check-GUID_BankAccount').val(rowData.GUID_BankAccount);
+                $('#zpgl-CN_Check-GUID').val(rowData.GUID);
+
+                if (rowData.IsInvalidSource == "是") {
+                    $('#zpgl-CN_Check-IsInvalid').checkbox('setValue', true);
+                } else if (rowData.IsInvalid == "否") {
+                    $('#zpgl-CN_Check-IsInvalid').checkbox('setValue', false);
+                }
+//                var flag = $('#zpgl-CN_Check-IsInvalid').checkbox('getValue');
+//                if (flag) {
+//                    $('#zpgl-CN_Check-IsInvalid').checkbox('setValue', true);
+//                } else {
+//                    $('#zpgl-CN_Check-IsInvalid').checkbox('setValue', false);
+//                }
+            }
+        });
+        $('#zpgl-CN_Check-CheckSelect').keydown(function (e) {
+            var chrKey = e.which;
+            if (chrKey == 13) {
+                
+                $.fn.linkbutton.methods["zpSearch"].call($('#zpgl-hselect'));
+                return false;
+            }
+        });
+    });
+    $.extend($.fn.linkbutton.methods, {
+        beforeSaveFun: function (jq, status) {
+            
+            var opts = this.linkbutton('options');
+            var gridId = opts.gridId;
+            var optsGrid = $('#' + gridId).datagrid('options');
+            var selRow = $('#' + gridId).datagrid('getSelected');
+            
+            optsGrid.gridSelected = selRow;
+        },
+        afterSave: function (status) {
+            
+            //获取到grid的id
+            var opts = $(this).linkbutton('options');
+            var gridId ='#'+opts.gridId;
+            //获取到checkbox的id
+            var IsInvalid = opts.IsInvalid;
+            if (gridId && IsInvalid) {
+                var flag = $('#' + IsInvalid).checkbox('getValue');
+                var optsGrid = $(gridId).datagrid('options')
+                var selRow = optsGrid.gridSelected;
+                if (flag) {
+                    selRow["IsInvalid"] = "是";
+                } else {
+                    selRow["IsInvalid"] = "否";
+                }
+                var selRowIndex = $(gridId).datagrid('getRowIndex', selRow);
+                $(gridId).datagrid("updateRow", { index: selRowIndex, row: selRow });
+                //                var selRow = $('#' + gridId).datagrid('getChecked');
+                //                if (flag) {
+                //                    selRow[0]["IsInvalid"] = "是";
+                //                } else {
+                //                    selRow[0]["IsInvalid"] = "否";
+                //                }
+                //                var selRowIndex = $(gridId).datagrid('getRowIndex', selRow);
+                //                alert(selRow[0]["IsInvalid"]);
+                //                $(gridId).datagrid("updateRow", { index: selRowIndex, row: selRow });
+                //                $(gridId).datagrid('clearSelections');
+            }
+
+
+        }
+    });
+
+</script>
+<div class="easyui-layout" id="zpgl-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="zpgl-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'zpgl',forbidstatus:[-1],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/zpgl',['zpgl-BX_Main-moneychinese','zpgl-BX_Main-moneyunmber']]}">打印</a>
+
+                   <a href="#" class="easyui-linkbutton" b-type="1" id="zpgl-hselect" b-action="hselect"
+                   data-options="  bindmethod:{ 'click': ['zpSearch'] },
+                   bindparms:{'zpSearch':['/Grid/GetCheckList','zpgl-CN_Check','zpgl','zpgldatafilter']},
+                   scope:'zpgl',forbidstatus:[1,2,3],
+                   plain:'true',iconCls:'icon-chaxun'">查询</a>
+
+                 @*<a href="#" class="easyui-linkbutton" id="zpgl-yulan" data-options="
+                   plain:'true',iconCls:'icon-yulan', scope:'zpgl',forbidstatus:[1,2,3],
+                   bindmethod:{ 'click': ['export'] }">预览</a>*@ 
+                   
+                  @* <a href="#" class="easyui-linkbutton" id="zpgl-export" data-options="
+                   plain:'true',iconCls:'icon-shuchu', scope:'zpgl',forbidstatus:[1,2,3],
+                   bindmethod:{ 'click': ['export'] }">输出</a> *@
+                   
+                   <a href="#" class="easyui-linkbutton" id="zpgl-edit" data-options="
+                   plain:'true',iconCls:'icon-xiugai',
+                   docState:'zpgl-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zpgl',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+
+                   @*<a href="#" class="easyui-linkbutton" id="zpgl-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'zpgl-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zpgl',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> *@
+                   @*<a href="#" class="easyui-linkbutton" id="zpgl-abandoned"
+                       data-options="plain:'true',iconCls:'icon-zuofei',docState:'zpgl-BX_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['zpgl-BX_Main-DocState','9']},scope:'zpgl',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> *@
+                   
+                   @*<a href="#" class="easyui-linkbutton" id="zpgl-recover"
+                       data-options="plain:'true',iconCls:'icon-huifu',docState:'zpgl-BX_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['zpgl-BX_Main-DocState','6']},scope:'zpgl',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a> *@
+                   <a href="#" class="easyui-linkbutton" id="zpgl-cancel"
+                       data-options=" plain:'true',iconCls:'icon-quxiao', 
+                   scope:'zpgl',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                  @* <a href="#" class="easyui-linkbutton" style="display:none" id="zpgl-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'xjbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'validatebox':['zpgl-CN_CheckNew-StartNumber','zpgl-CN_CheckNew-StopNumber','zpgl-CN_Check-BankAccountName'],
+                            'datebox':['zpgl-CN_CheckNew-CheckNewDatetime']
+                        }                  
+                    },
+                   scope:'zpgl',forbidstatus:[4]">校验</a>*@
+
+                   <a href="#" class="easyui-linkbutton"
+                       id="zpgl-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/zpgl/Save']},scope:'zpgl',status:'4',
+                   gridId:'zpgl-CN_Check',
+                   IsInvalid:'zpgl-CN_Check-IsInvalid',
+                   forbidstatus:[4]">保存</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="zpgl-help" 
+                   data-options=" plain:'true',iconCls:'icon-bangzhu', 
+                   scope:'zpgl',forbidstatus:[-1],
+                   bindmethod:{ 'click': ['help'] }">帮助</a>
+
+                    <a href="#" class="easyui-linkbutton" id="zpgl-close"
+                       data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'zpgl'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 280px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="银行账号" style="height: 125px; width: 198px;">
+                <ul class="easyui-tree" id="zpgl-bankAccount" data-options="
+                      height:160,
+                      url:'/Tree/GetBankAccountTree',
+                      method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table id="table" border="0" style="height: 350px; width:100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="zpgl-abandonedStatus" statuscontrolid="zpgl-BX_Main-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        支票管理</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BankName">
+                        @*<font color="red">*</font>*@&nbsp;银行名称</label>
+                </td>
+                <td class="tdValueTr2">
+                <input class="easyui-validatebox" id="zpgl-SS_Bank-BankName" 
+                        maxlength="200" data-options="required:false,forbidstatus:[-1]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-CheckNumber">
+                        @*<font color="red">*</font>*@&nbsp;支票编号</label>
+                </td>
+                <td class="tdValueTr2">
+                <input class="easyui-validatebox" id="zpgl-CN_Check-CheckNumber" 
+                        maxlength="200" data-options="required:false,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BankAccountNo">
+                        @*<font color="red">*</font>*@&nbsp;银行账号</label>
+                </td>
+                <td class="tdValueTr2">
+                <input class="easyui-validatebox" id="zpgl-SS_BankAccount-BankAccountNo" 
+                        maxlength="200" data-options="required:false,forbidstatus:[-1]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-CheckType">
+                        @*<font color="red">*</font>*@&nbsp;支票类型</label>
+                </td>
+                <td class="tdValueTr2">
+                      <select class="easyui-combobox" id="zpgl-CN_Check-CheckType"  data-options="editable:false,tempValue:0,forbidstatus:[-1]">
+                         <option value="0">现金支票</option>  
+                        <option value="1">转账支票</option>  
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-InvalidDatetime">
+                        @*<font color="red">*</font>*@&nbsp;失效时间</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-datebox" id="zpgl-CN_Check-InvalidDatetime"  data-options="required:false,forbidstatus:[4]"></input>
+                   
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-CheckMoney">
+                        @*<font color="red">*</font>*@&nbsp;金&nbsp;&nbsp;&nbsp;&nbsp;额</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-numberbox" id="zpgl-CN_CheckDrawMain-CheckMoney" 
+                        data-options="
+                        changeColor:true,precision:2,forbidstatus:[-1],max:99999999.99,groupSeparator:','">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-CheckUsed">
+                        @*<font color="red">*</font>*@&nbsp;用&nbsp;&nbsp;&nbsp;&nbsp;途</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="zpgl-CN_CheckDrawMain-CheckUsed" 
+                        maxlength="200" data-options="required:false,forbidstatus:[-1]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-DocDate">
+                        @*<font color="red">*</font>*@&nbsp;是否失效</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-checkbox" id="zpgl-CN_Check-IsInvalid" data-options="
+                     bindmethod:{ 'onClick':['setCCZFCode'] },
+                     forbidstatus:[4],
+                     bindparms:{
+                        'setCCZFCode':[
+                    ]}
+                " type="checkbox"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    &nbsp;支票过滤<br />
+                    &nbsp;&nbsp;(编号)
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="zpgl-CN_Check-CheckSelect" data-options="" ></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table class="easyui-datagrid" id="zpgl-CN_Check" style="overflow: auto" data-options="
+                            height:document.body.offsetHeight-265,                           
+                            scope:'zpgl',
+                            fitColumns:false,
+                            pagination:true,
+                            pageSize:10,
+                            pageList:[20,50,100],
+                            rownumbers:true,
+                            url:'/Grid/GetCheckList',
+                            method:'post',
+                            singleSelect:true,
+                            checkOnSelect:true,
+                            single:false
+                        ">
+                        <thead>
+                            <tr>
+                               @* <th field="b-sel" data-options="width:100,checkbox:'true'"></th>*@
+                                <th field="GUID" hidden="true"></th>
+                                <th field="GUID_BankAccount" hidden="true"></th>
+                                <th field="BankAccountNo" hidden="true" </th>
+                                <th field="DWName" hidden="true"> </th>
+                                <th field="CheckMoney" hidden="true"> 金额</th>
+                                <th field="InvalidDatetime" hidden="true"> </th>
+                                <th field="BankAccountName" hidden="true"> </th>
+                                <th field="IsInvalid" hidden="true" title="是否失效" width="80px" align="center">是否失效</th>
+                                <th field="BankName" title="银行名称" width="150px" align="center">银行名称</th>
+                                <th field="CheckNumber" title="支票号" width="150px" align="center">支票号</th>
+                                <th field="CheckType" title="支票类型" width="110px" align="center">支票类型</th>
+                            
+                                   <th field="IsInvalidSource" title="是否失效" width="80px" align="center">是否失效</th>
+                                <th field="LingYong" title="是否领用" width="80px" align="center">是否领用</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="zpgl-CN_Check-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="zpgl-CN_Check-GUID_BankAccount" type="hidden"></input>
+  
+</div>
+<label id="zpgl-extendregion" style="display: none">
+    <input id="zpgl-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="zpgl-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="zpgl-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+    (function () {
+        var datagridId = "zpgl-CN_Check";
+        var rowColCount = 4;
+        $.setControl("divWest", datagridId, rowColCount);
+    })();
+</script>

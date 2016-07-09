@@ -1,0 +1,761 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "应付单";
+}
+<div class="easyui-layout" id="yfd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="yfd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'yfd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/yfd',['yfd-WL_Main-moneychinese','yfd-WL_Main-moneyunmber']]}">打印</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'yfd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/yfd',['yfd-WL_Main-moneychinese','yfd-WL_Main-moneyunmber']]}">预览</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yfd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'yfd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yfd-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'yfd',status:'1',
+                   bindparms:{'newDoc':['/yfd/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="yfd-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'yfd-WL_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'yfd',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yfd-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'yfd-WL_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'yfd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yfd-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['yfd-WL_Detail']},
+                   scope:'yfd',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['yfd-WL_Detail']},scope:'yfd',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['yfd-WL_Detail']},scope:'yfd',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="yfd-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/yfd','yfd-WL_Detail','parti']},scope:'yfd',forbidstatus:[3]">明细</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yfd-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/yfd','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'yfd'">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="yfd-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                     columnMap:{
+                        'yfd-WL_Detail-GUID':'GUID', 
+                        'yfd-WL_Detail-GUID_Department':'GUID_Department',
+                        'yfd-WL_Detail-Total_WL':'ThisTimeTotal'                        
+                     },
+                     columnMapText:{
+                        'yfd-WL_Detail-GUID_BGCode':'GUID_BGCode',  
+                        'yfd-WL_Detail-BGCodeKey':'BGCodeKey',  
+                        'yfd-WL_Detail-BGCodeName':'BGCodeName', 
+                        'yfd-WL_Detail-GUID_ProjectKey':'GUID_Project',
+                        'yfd-WL_Detail-ProjectKey':'ProjectKey',
+                        'yfd-WL_Detail-ProjectName':'ProjectName', 
+                        'yfd-WL_Detail-GUID_Department':'DepartmentName',
+                        'yfd-CN_PaymentNumber-GUID_BGResource':'GUID_BGResource',
+                        'yfd-CN_PaymentNumber-BGSourceName':'BGSourceName',
+                        'yfd-WL_Detail-GUID_BGType':'BGTypeName'
+                     },
+                     configBudget:{
+                        'yfd-WL_Main-DWKey':'validatebox',
+                        'yfd-WL_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{
+                        'BudgetStatistics':[
+                            '/BudgetStatistics/yfd',
+                            '/BudgetStatistics/BudgetStatistics',
+                            'BudgetStatistics-BG_Main',
+                            'yfd-WL_Main-DocDate',
+                            'yfd-WL_Detail',
+                            'BudgetStatistics',
+                            '05' @*往来管理*@
+                     ]},
+                     window:'b-window',
+                     scope:'yfd'">预算</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'yfd-WL_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['yfd-WL_Main-DocState','9']},scope:'yfd',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'yfd-WL_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['yfd-WL_Main-DocState','6']},scope:'yfd',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'yfd-WL_Main-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                   'examine':
+                       {
+                           'datagrid':['yfd-WL_Detail'],
+                           'validatebox':['yfd-WL_Main-DocMemo'],
+                           'datebox':['yfd-WL_Main-DocDate'],
+                           'combogrid':['yfd-WL_Main-GUID_Person','yfd-WL_Main-GUID_DW','yfd-WL_Main-GUID_Department'],
+                          'numberbox':['yfd-WL_Main-BillCount']
+                    }},
+                   scope:'yfd',forbidstatus:[4,5,6]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'yfd',forbidstatus:[4,5,6],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yfd-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/yfd/Save','yfd-examine']},scope:'yfd',status:'4',
+                   forbidstatus:[4,5,6]">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="yfd-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'yfd-WL_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/yfd/CommitFlow']},scope:'yfd',
+                   forbidstatus:[1,2,3]">提交</a>
+                   
+                    <a href="#" class="easyui-linkbutton" id="yfd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'yfd-WL_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'yfd',
+                   forbidstatus:[1,2,3]">退回</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="yfd-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/yfd','history-WL_Main','history']},
+                    window:'b-window',scope:'yfd'">历史</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="yfd-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/yfd','/Process/process','yfd-process','process']},
+                   window:'b-window',scope:'yfd',
+                   forbidstatus:[1,2,3,5]">流程</a>
+
+                   <a href="#" class="easyui-linkbutton" id="yfd-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'yfd',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="yfd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'yfd'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs">
+            <div title="人员">
+                <ul class="easyui-tree" id="yfd-tree-per" data-options="associate:{
+                    'yfd-WL_Main-GUID_Person':['GUID','PersonName'],
+                    'yfd-WL_Main-GUID_DW':['GUID_DW','DWName'],
+                    'yfd-WL_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  gridassociate:{
+                      'gridId':'yfd-WL_Detail',
+                      'map': {
+                       'yfd-WL_Detail-GUID_Person':['GUID','PersonName'],
+                       'yfd-WL_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'yfd-WL_Detail',
+                        'defaultdatamap': {
+                            'GUID_Department':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID_Department':'GUID_Department'
+                            }
+                    },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="yfd-tree-dep" data-options="associate:{
+                    'yfd-WL_Main-GUID_DW':['GUID_DW','DWName'],
+                    'yfd-WL_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                      'gridId':'yfd-WL_Detail',
+                      'map': {
+                       'yfd-WL_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'yfd-WL_Detail',
+                        'defaultdatamap': {
+                            'GUID':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID':'GUID_Department'
+                            }
+                    },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="yfd-tree-dw" data-options="associate:{
+                    'yfd-WL_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="yfd-tree-code" data-options="gridassociate:{
+                      'gridId':'yfd-WL_Detail',
+                      'map': {
+                        'yfd-WL_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                        'yfd-WL_Detail-GUID_BGCode':['GUID'],
+                        'yfd-WL_Detail-BGCodeName':['BGCodeName'],
+                        'yfd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'yfd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                        'yfd-CN_PaymentNumber-PaymentNumber':['clear']
+                      },
+                      'append':'true'
+                  },
+                 
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="yfd-tree-project" data-options="gridassociate:{
+                    'gridId':'yfd-WL_Detail',
+                    'map':{
+                        'yfd-WL_Detail-GUID_ProjectKey':['GUID'],
+                        'yfd-WL_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                         'yfd-WL_Detail-ProjectName':['ProjectName','ProjectName'],
+                        'yfd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                        'yfd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                       @* 'yfd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                        'yfd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                        'yfd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="yfd-abandonedStatus" statusControlID="yfd-WL_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        应付单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>单据编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yfd-WL_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>单据日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="yfd-WL_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>人员名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="yfd-WL_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        sortName:'PersonKey',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        griddefaultassociate:{
+                            'gridId':'yfd-WL_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department',
+                                'GUID':'GUID_Person'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department',
+                                   'PersonName':'GUID_Person'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department',
+                                  'GUID':'GUID_Person'
+                             }
+                        },
+                        associate:
+                            {
+                                'yfd-WL_Main-GUID_DW':['GUID_DW'],
+                                'yfd-WL_Main-GUID_Department':['GUID_Department']
+                            }
+                        ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="yfd-WL_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',sortable:'true',width:'80'},
+                            {field:'DWName',title:'单位名称',sortable:'true',width:'180'}]],
+                        width:180,
+                        panelWidth:265,
+                        method:'post',
+                        delay:1500,
+                        required:false,
+                        filterField:'DWKey,DWName',
+                        SortName:'DWKey',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="yfd-WL_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:'true',width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:'true',width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'150'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        griddefaultassociate:{
+                            'gridId':'yfd-WL_Detail',
+                            'defaultdatamap': {
+                                'GUID':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID':'GUID_Department'
+                             }
+                        },
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'yfd-WL_Main-GUID_DW':['GUID_DW']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="yfd-WL_Main-DocMemo"  style="width: 500px"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                   <font color="red">*</font>附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="yfd-WL_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="yfd-WL_Detail" data-options="
+                    orderNum:'yfd-WL_Detail-OrderNum',
+                    requireCol:[
+                        'yfd-WL_Detail-Total_WL',
+                        'yfd-WL_Detail-ActionMemo',
+                        'yfd-CN_PaymentNumber-IsGuoKu',
+                        'yfd-WL_Detail-GUID_Department',
+                        'yfd-WL_Detail-GUID_WLType',
+                        'yfd-WL_Detail-GUID_SettleType'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:350,
+                    width:905,
+                    rownumbers:true,
+                    scope:'yfd',
+                    single:false,
+                    formatters:{'yfd-CN_PaymentNumber-IsGuoKu':'boolbox','yfd-WL_Detail-Total_WL':'numberbox'},
+                    disableColMap:{
+                            'yfd-CN_PaymentNumber-IsGuoKu':['yfd-CN_PaymentNumber-GUID_FunctionClass','yfd-WL_Detail-GUID_ProjectKey']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['yfd','yfd-WL_Detail','yfd-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'yfd-WL_Detail-GUID_WLType',
+                        'yfd-WL_Detail-ProjectKey',
+                        'yfd-WL_Detail-GUID_ProjectKey',
+                        'yfd-WL_Detail-GUID_SettleType',
+                        'yfd-CN_PaymentNumber-IsGuoKu',
+                        'yfd-CN_PaymentNumber-IsProject',
+                        'yfd-WL_Detail-GUID_Department',
+                        'yfd-WL_Detail-GUID_BGType',
+                        'yfd-CN_PaymentNumber-GUID_FunctionClass',
+                        'yfd-CN_PaymentNumber-GUID_BGResource',
+                        'yfd-WL_Detail-GUID_Person'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'yfd-WL_Detail-Total_WL',target:['yfd-WL_Main-moneyunmber','yfd-WL_Main-moneychinese']},
+                        {name:'cconcat',field:'yfd-WL_Detail-ActionMemo',target:['yfd-WL_Main-DocMemo']}
+                    ]">
+                        <thead>
+                            <tr>
+                                 @*扩展码 来源项目 功能分类 经济分类 支出类型 预算类型 预算类型*@
+                                <th field="yfd-CN_PaymentNumber-GUID_ProjectEx" hidden="true"></th> @*附加项目*@
+                                <th field="yfd-CN_PaymentNumber-ExtraCodeEx" hidden="true"></th> @*附加项目码*@
+                                <th field="yfd-CN_PaymentNumber-ExtraCode" hidden="true"></th>
+                                <th field="yfd-CN_PaymentNumber-FinanceCode" hidden="true"></th>
+                                <th field="yfd-CN_PaymentNumber-EconomyClassKey" hidden="true"></th>
+                                <th field="yfd-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>
+                                <th field="yfd-CN_PaymentNumber-BGSourceKey" hidden="true"></th>
+                                <th field="yfd-CN_PaymentNumber-BGType" hidden="true"></th>
+
+                                <th field="yfd-WL_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="yfd-WL_Detail-GUID_Person" hidden="true">
+                                </th>
+                                <th field="yfd-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="yfd-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="yfd-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="yfd-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="yfd-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th> 
+                                <th field="yfd-CN_PaymentNumber-ExpendTypeName" hidden="true">
+                                </th>
+                                <th field="yfd-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                </th>
+                                <th field="yfd-CN_PaymentNumber-BGSourceName" hidden="true">
+                                </th> 
+                                <th field="yfd-WL_Detail-GUID_ProjectKey" hidden="true">
+                                </th>
+                                <th field="yfd-WL_Detail-ProjectKey" hidden="true">
+                                </th>  
+                                <th field="yfd-WL_Detail-ProjectName" hidden="true">
+                                </th>
+                                <th field="yfd-WL_Detail-GUID_BGCode" hidden="true">
+                                </th>
+                                <th field=" yfd-WL_Detail-BGCodeKey" hidden="true">
+                                </th>
+                                <th field="yfd-WL_Detail-BGCodeName" hidden="true">
+                                </th>  
+                               <th  field="yfd-WL_Detail-Total_WL" title="往来金额" width="90"
+                                    align="right" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    往来金额
+                                </th>
+                                <th field="yfd-WL_Detail-ActionMemo" width="150" title="摘要" align="center"
+                                    editor="text">
+                                    摘要
+                                </th>
+                                
+                                <th field="yfd-CN_PaymentNumber-IsGuoKu" title="是否国库" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="yfd-WL_Detail-GUID_SettleType" title="结算方式" align="center"
+                                    width="80" editor="{
+                                      type:'combogrid',
+                                          options:{
+                                            panelWidth:168,
+                                            width:520,
+                                            remoteUrl:'/Combogrid/SettleType',
+                                            method:'get',
+                                            idField:'GUID',
+                                            textField:'SettleTypeName',
+                                            filterField:'SettleTypeKey,SettleTypeName',
+                                            columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'SettleTypeKey',title:'结算方式编码',width:'60'},
+                                              {field:'SettleTypeName',title:'结算方式名称',width:'100'}
+                                            ]]
+                                          }
+                                  }">
+                                    结算方式
+                                </th>
+                                <th field="yfd-WL_Detail-GUID_WLType" title="往来类型" align="center"
+                                    width="350" editor="{
+                                    type:'combogrid',
+                                      options:{
+                                        panelWidth:450,width:400,
+                                        remoteUrl:'/Combogrid/WLType',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'WLTypeName',
+                                        filterField:'WLTypeKey,WLTypeName',
+                                        sortName:'WLTypeKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'WLTypeKey',title:'往来类型编码',width:'90'},
+                                          {field:'WLTypeName',title:'往来类型名称',width:'350'}
+                                        ]]
+                                      }
+                                  }">
+                                    往来类型
+                                </th>
+                                <th field="yfd-WL_Detail-GUID_Cutomer" title="往来客户" align="center"
+                                    width="200" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                        panelWidth:255,width:240,
+                                        remoteUrl:'/Combogrid/Customer',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'CustomerName',
+                                        filterField:'CustomerKey,CustomerName',
+                                        sortName:'CustomerKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'CustomerKey',title:'往来客户编码',width:'80'},
+                                          {field:'CustomerName',title:'往来客户名称',width:'150'}
+                                        ]]
+                                      }
+                                  }">
+                                    往来客户
+                                </th>
+                                <th field="yfd-WL_Detail-GUID_Department" title="部门名称" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:420,  
+                                      width:520,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      columns:[[
+                                          {field:'GUID',title:'名称',width:'60',hidden:true},
+                                          {field:'DepartmentKey',title:'部门编码',width:'60'},
+                                          {field:'DepartmentName',title:'部门名称',width:'200'},
+                                          {field:'DWName',title:'所属单位名称',width:'130'}
+                                        ]]
+                                      }
+                                    }">
+                                    部门名称
+                                </th>
+                               <th field="yfd-CN_PaymentNumber-PaymentNumber" title="财政支付令" align="center"
+                                    width="120" editor="
+                                    {
+                                            type:'searchbox',
+                                            options:{
+                                            'particulars':['/particulars/yfd','yfd-WL_Detail','parti'],
+                                            'window':'b-window'
+                                        }
+                                    }">
+                                    财政支付令
+                                 </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="yfd-WL_Main-moneychinese" style="width: 495px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="yfd-WL_Main-moneyunmber"  style="width: 176px"
+                    data-options="setNotValue:true,forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="yfd-WL_Main-GUID_Maker" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="yfd-WL_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="yfd-WL_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="yfd-WL_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="yfd-WL_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="yfd-WL_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="yfd-WL_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="yfd-WL_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="yfd-WL_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="yfd-WL_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="yfd-WL_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="yfd-extendregion" style="display: none">
+    <input id="yfd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="yfd-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="yfd-WL_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

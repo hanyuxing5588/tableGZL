@@ -1,0 +1,379 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "建竣决03表";/*基本建设项目交付使用资产总表*/
+}
+
+<style type="text/css">
+        .headerText {
+
+            height: 40px;
+    text-align: center;
+    font-size: 25px;
+    margin-top: 5px;
+        }
+</style> 
+<script>
+    Number.prototype.toPercent = function () {
+        return (Math.round(this * 10000) / 100).toFixed(2) + '%';
+    }
+    var formatNum = function (s1) {
+        if (s1 == 0) return "";
+        s1 = new Number(s1).toFixed(2);
+        var p = /(\d+)(\d{3})/;
+        while (p.test(s1)) {
+            s1 = s1.replace(p, "$1,$2");
+        }
+        return s1;
+    }
+
+    var mainKey = parent.window.mainKey;
+    $(document).ready(function () {
+        var yearDic = { '2015': [12] }
+        var yearCur = [];
+        var d = new Date();
+        var s = d.getFullYear(), s1 = s + "-01-01";
+        var m = (d.getMonth() + 1);        // 获取月份。
+
+        m = m.toString().length == 2 ? m : ('0') + m;
+        s = s + "-" + m + "-";
+        var r = d.getDate() // 获取日。
+
+        r = r.toString().length == 2 ? r : ('0') + r;
+        s = s + r;
+        //         alert(s);
+        $('#State_DocDate').datebox('setValue', s1);
+        $('#End_DocDate').datebox('setValue', s);
+        $(".headerText").text("国家基础地理信息中心" + d.getFullYear() + "年财政预算执行情况");
+        yearCur = yearDic[d.getFullYear()];
+        var id = "[id^='xjbxd-'].easyui-linkbutton";
+        $(id).linkbutton('bind', true);
+        $('#xjbxd-print').bind('click', function () {
+            window.open("/APrint/JFSYZCZBPrint?mainId=" + mainKey);
+        })
+        $('#xjbxd-export').bind('click', function () {
+            var SDate = $('#State_DocDate').datebox('getText');
+            var EDate = $('#End_DocDate').datebox('getValue');
+            var url = '/Report/ExportCZYSZXQK?SDate=' + SDate + '&EDate=' + EDate;
+            window.open(url);
+        })
+        $('#tableid').edatagrid({
+            width: $('body').width() - 5,
+            height: $('body').height() - 145,
+            singleSelect: true,
+            fitColumns: true,
+            url: '/Report/GetCZYSZXQKData/',
+            queryParams: { SDate: s1, EDate: s },
+            columns: [[
+                         { field: 'IsEdit', title: 'IsEdit', hidden: true, width: 80, halign: 'center', align: 'right', rowspan: 2 },
+                         { field: 'Level', title: 'Level', hidden: true, width: 80, halign: 'center', align: 'right', rowspan: 2 },
+                         { field: 'CodeKey', title: '科目Key', hidden: true, width: 80, halign: 'center', align: 'right', rowspan: 2 },
+                         { field: 'CodeName', title: '科目名称', width: 180, halign: 'center', align: 'left', rowspan: 2 },
+                         { field: '', title: '年预算', width: 400, halign: 'center', align: 'left', colspan: 3 },
+                         { field: 'LJZC', title: '累计支出', width: 100, halign: 'center', align: 'right', rowspan: 2
+                            , formatter: function (value, row, index) {
+                                return formatNum(value)
+                            }, editor: {
+                                type: 'numberbox', options: { precision: 2, min: 0, max: 99999999999.99 }
+                            }
+                         },
+                         { field: 'ZCBL', title: '支出比例', width: 100, halign: 'center', align: 'right', rowspan: 2, formatter: function (value, row, index) {
+                             if (value == 0) return '0.00%'
+                             return value;
+                         }
+                         },
+                         { field: 'JSJF', title: '结余经费', width: 100, halign: 'center', align: 'right', rowspan: 2,
+                             formatter: function (value, row, index) {
+                                 return formatNum(value);
+                             }
+                         },
+                         { field: 'BZ', title: '备注', width: 100, halign: 'center', align: 'right', rowspan: 2,
+                             editor: {
+                                 type: 'text'
+                             }
+                         },
+                         { field: 'JZZC', title: '结转支出', width: 100, halign: 'center', align: 'right', rowspan: 2,
+                             editor: {
+                                 type: 'numberbox', options: { precision: 2, min: 0, max: 99999999999.99 }
+                             }, formatter: function (value, row, index) {
+                                 return formatNum(value);
+                             }
+                         }
+                     ], [//SNJZ+BNYS=HJ
+                         {field: 'SNJZ', title: '上年结转', width: 100, halign: 'center', align: 'right',
+                         editor: {
+                             type: 'numberbox', options: { precision: 2, min: 0, max: 99999999999.99 }
+                         }, formatter: function (value, row, index) {
+                             return formatNum(value);
+                         }
+                     },
+                         { field: 'BNYS', title: '本年预算', width: 100, halign: 'center', align: 'right',
+                             editor: {
+                                 type: 'numberbox', options: { precision: 2, min: 0, max: 99999999999.99 }
+                             }, formatter: function (value, row, index) {
+                                 return formatNum(value);
+                             }
+                         }, //LJZC/HJ=ZCBL JSJF= HJ-LJZC
+                     {field: 'HJ', title: '合计', width: 100, halign: 'center', align: 'right'
+                             , formatter: function (value, row, index) {
+                                 return formatNum(value);
+                             }
+                 }
+	            ]],
+            onLoadSuccess: function (data) {
+                $("#tableid").edatagrid('editCell', { index: 16, field: "BNYS" });
+                curField = "BNYS"
+                $("#tableid").datagrid('endEdit', 16)
+            },
+            editBefore: function (p) {
+                debugger
+                var rowIndex = p.index;
+                var field = p.field;
+                curField = field;
+                if (rowIndex == 21) return false;
+                if (field == "LJZC") {
+                    if (rowIndex == 20) { return true; } else { return false; }
+                }
+                if (yearCur.exist(rowIndex)) {
+                    return false;
+                }
+                return true;
+            },
+            onAfterEdit: function (index, row) {
+                var rNumFun = function (v) {
+                    var a = parseFloat(v);
+                    if (isNaN(a)) {
+                        return 0;
+                    }
+                    return a;
+                }
+                var funSum2015 = function (rows) {
+                    var row1 = rows[rows.length - 2]
+                    row1["HJ"] = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]);
+                    var c = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]) - rNumFun(row1["LJZC"]);
+                    row1["JSJF"] = c < 0 ? 0.001 : c;
+                    if (c < 0) {
+                        row1["LJZC"] = rNumFun(row1["HJ"]);
+                    }
+                    row1["ZCBL"] = rNumFun(row1["HJ"]) == 0 ? 0 : (rNumFun(row1["LJZC"]) / rNumFun(row1["HJ"])).toPercent();
+
+                    $('#tableid').edatagrid('updateRow', {
+                        index: 20,
+                        row: row1
+                    });
+                    var row1 = rows[rows.length - 1];
+                    var row19 = rows[19];
+                    var row20 = rows[20];
+                    row1["SNJZ"] = rNumFun(row19["SNJZ"]) - rNumFun(row20["SNJZ"]);
+                    row1["BNYS"] = rNumFun(row19["BNYS"]) - rNumFun(row20["BNYS"]);
+
+                    row1["LJZC"] = rNumFun(row19["LJZC"]) - rNumFun(row20["LJZC"]);
+                    row1["JZZC"] = rNumFun(row19["JZZC"]) - rNumFun(row20["JZZC"]);
+
+                    row1["HJ"] = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]);
+
+                    var c = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]) - rNumFun(row1["LJZC"]);
+                    row1["JSJF"] = c < 0 ? 0.001 : c;
+                    if (c < 0) {
+                        row1["LJZC"] = rNumFun(row1["HJ"]);
+                    }
+
+                    row1["ZCBL"] = rNumFun(row1["HJ"]) == 0 ? 0 : (rNumFun(row1["LJZC"]) / rNumFun(row1["HJ"])).toPercent();
+                    //                    row1["JSJF"] = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]) - rNumFun(row1["LJZC"]);
+                    $('#tableid').edatagrid('updateRow', {
+                        index: 21,
+                        row: row1
+                    });
+                }
+                var JSRow = function (rows, index) {//SNJZ+BNYS=HJ  //LJZC/HJ=ZCBL JSJF= HJ-LJZC
+                    debugger
+                    var row1 = rows[index];
+                    row1["HJ"] = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]);
+
+                    var c = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]) - rNumFun(row1["LJZC"]);
+                    row1["JSJF"] = c < 0 ? 0.001 : c;
+                    if (c < 0) {
+                        row1["LJZC"] = rNumFun(row1["HJ"]);
+                    }
+                    row1["ZCBL"] = rNumFun(row1["HJ"]) == 0 ? 0 : (rNumFun(row1["LJZC"]) / rNumFun(row1["HJ"])).toPercent();
+                    //                    row1["JSJF"] = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]) - rNumFun(row1["LJZC"]);
+                    $('#tableid').edatagrid('updateRow', {
+                        index: index,
+                        row: row1
+                    });
+                }
+                var field1 = curField;
+                if (!(field1 == "SNJZ" || field1 == "BNYS" || field1 == "LJZC")) return;
+                debugger
+
+                var colSum = function (row1, sum, curRowIndex) {
+                    row1[curField] = sum;
+                    row1["HJ"] = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]);
+                    var c = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]) - rNumFun(row1["LJZC"]);
+                    row1["JSJF"] = c < 0 ? 0.001 : c;
+                    if (c < 0) {
+                        row1["LJZC"] = rNumFun(row1["HJ"]);
+                    }
+
+                    row1["ZCBL"] = rNumFun(row1["HJ"]) == 0 ? 0 : (rNumFun(row1["LJZC"]) / rNumFun(row1["HJ"])).toPercent();
+                    //                    row1["JSJF"] = rNumFun(row1["SNJZ"]) + rNumFun(row1["BNYS"]) - rNumFun(row1["LJZC"]);
+                    $('#tableid').edatagrid('updateRow', {
+                        index: curRowIndex,
+                        row: row1
+                    });
+                    $('#tableid').edatagrid('refreshRow', curRowIndex);
+                }
+                //Sum1=DYYSF1+Money1
+                var levelField = "Level";
+                //比本级大的无限汇总
+                var hSum = function (rows, index, iJC) {
+                    var sumvalue = 0, nextIndex = 0, nextIJC;
+                    if (iJC == undefined || iJC == 4) return;
+                    for (var z1 = index; z1 > -1; z1--) {
+                        var rowNext = rows[z1];
+                        var jcNext = $.isNumeric(rowNext[levelField]) ? parseFloat(rowNext[levelField]) : 0; ;
+                        if (jcNext > iJC) {
+                            nextIndex = z1;
+                            nextIJC = jcNext;
+                            break;
+                        }
+                        if (jcNext == iJC) {
+                            sumvalue += $.isNumeric(rowNext[field1]) ? parseFloat(rowNext[field1]) : 0;
+                        }
+                    }
+                    for (var zi = index + 1; zi < rows.length; zi++) {
+                        var rowNext1 = rows[zi];
+                        var jcNext1 = $.isNumeric(rowNext1[levelField]) ? parseFloat(rowNext1[levelField]) : 0; ;
+                        if (jcNext1 > iJC) {
+                            if (iJC == 3) {
+                                nextIndex = zi;
+                                nextIJC = jcNext1;
+                            }
+                            break;
+                        }
+                        if (jcNext1 == iJC) {
+
+                            sumvalue += $.isNumeric(rowNext1[field1]) ? parseFloat(rowNext1[field1]) : 0;
+                        }
+                    }
+                    colSum(rows[nextIndex], sumvalue, nextIndex);
+                    if (iJC < 3) {
+                        hSum(rows, nextIndex, nextIJC);
+                    }
+                }
+                var iJC = row[levelField];
+                if (iJC == '4') return;
+                var rows = $('#tableid').datagrid('getRows');
+                if (iJC > 4) {
+                    funSum2015(rows);
+                } else {
+                    hSum(rows, index, iJC);
+                    //sumHJ(rows);
+                    JSRow(rows, index);
+                    funSum2015(rows);
+                }
+            }
+        });
+
+        $('#End_DocDate').datebox({
+            onSelect: function (date) {
+                var dateHx = date.Format('yyyy-MM-dd');
+                var dateArr = dateHx.split('-')
+                $(".headerText").text("国家基础地理信息中心" + dateArr[0] + "年财政预算执行情况");
+                yearCur = yearDic[dateArr[0]];
+            }
+        });
+
+    });
+    var funSave = function () {
+        $('.easyui-edatagrid').edatagrid('saveRow');
+        var data = $('#tableid').datagrid('getRows');
+
+        var date = $('#End_DocDate').datebox('getText');
+        var strData = JSON.stringify(data);
+        $.ajax({
+            dataType: "json",
+            type: "POST",
+            url: '/Report/SaveCZYSZXQKData',
+            data: { data: strData, date: date },
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert('提示', "保存错误", 'info');
+            },
+            success: function (data) {
+                $('#tableid').datagrid('reload');
+                $.messager.alert('提示', data.Msg, 'info');
+            }
+
+        })
+    }
+    $.extend($.fn.linkbutton.methods, {
+        select: function () {
+            var SDate = $('#State_DocDate').datebox('getValue');
+            var EDate = $('#End_DocDate').datebox('getValue');
+            debugger
+            $('#tableid').datagrid('load', { SDate: SDate, EDate: EDate });
+            //            $.ajax({
+            //                type: 'post',
+            //                url: '/Report/GetCZYSZXQKData/',
+            //                data: { SDate: SDate, EDate: EDate },
+            //                success: function (data) {
+            //                    debugger
+            //                    $('#tableid').edatagrid('loadData', data);
+            //                }
+            //            });
+        },
+        saveDoc: function () {
+
+            funSave();
+        }
+    });
+</script>
+<div class="easyui-layout" id="xjbxd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 52px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+     <a href="#" class="easyui-linkbutton" id="xjbxd-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  scope:'xjbxd',
+                   bindmethod:{ 'click': ['select'] },
+                  forbidstatus:[-1]">查询</a>       
+            
+                 <a href="#" class="easyui-linkbutton" id="xjbxd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'xjbxd',forbidstatus:[1,2,3]
+                    ">输出</a>
+
+            <a href="#" class="easyui-linkbutton" id="xjbxd-save"
+               data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/xjbxd/Save','xjbxd-examine']},scope:'xjbxd',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                   
+               
+                   <a href="#" class="easyui-linkbutton"
+                   id="xjbxd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'xjbxd'">退出</a>
+        </div>
+    </div>
+
+    <div data-options="region:'center'">
+     <table border="0" style="height: 40px; padding: 0px; margin: 0">
+                    <tr>
+                        <td style="width: 80px">
+                            起始日期：
+                        </td>
+                        <td>
+                           <input class="easyui-datebox" style="width:100px" id="State_DocDate"></input>
+                        </td>
+                        <td style="width: 80px">
+                            截止日期：
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" style="width:100px" id="End_DocDate"></input>
+                        </td>
+                        
+                    </tr>
+                </table>
+        <div class="headerText"></div>
+        <div style="text-align: right;display: block;float: right;font-size:12px; font-weight: bold;padding-bottom:8px;margin-top: -20px;margin-right: 120px;">单位：万元</div>
+         <table id="tableid" class="table" style="width: 100%;" />
+    </div>
+</div>

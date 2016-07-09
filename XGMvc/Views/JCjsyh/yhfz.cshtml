@@ -1,0 +1,115 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "用户分组";
+}
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<div class="easyui-layout" id="yhfz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+
+                    <a href="#" class="easyui-linkbutton" id="yhfz-quanxuan" 
+                    data-options="plain:'true',iconCls:'icon-quanxuan', 
+                    scope:'yhfz',
+                    gridId:['yhfz-SS_Operator'],
+                    quanxuan:true,
+                    bindmethod:{ 'click': ['TreeChecked'] 
+                    }">全选</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="yhfz-cancel" 
+                    data-options="plain:'true',iconCls:'icon-quanxiao', 
+                    scope:'yhfz',
+                    gridId:['yhfz-SS_Operator'],
+                    bindmethod:{ 'click': ['TreeChecked'] }">全消</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="yhfz-save" 
+                    data-options="plain:'true',iconCls:'icon-baocun',
+                    JCDA:true,
+                    treeId:['yhfz-tree-ren'],
+                    gridId:['yhfz-SS_Operator'],
+                    NewIdStatus:'1',
+                    saveStatus:'1',
+                    bindmethod:{ 'click': ['saveDoc'] },
+                    bindparms:{'saveDoc':['/JCjsyh/Saveyhfz']},
+                    scope:'yhfz',status:'4',forbidstatus:[4]
+                    ">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="yhfz-close" 
+                    data-options="plain:'true',iconCls:'icon-tuichu',
+                    bindmethod:{ 'click': ['closeTab'] },
+                    scope:'yhfz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="角色">
+                <ul class="easyui-tree" id="yhfz-tree-ren" data-options="
+                msg:'角色',
+                m:'SS_Role',
+                  gridassociate:{
+                      'gridId':'yhfz-SS_Operator',
+                      'associateId':'yhfz-SS_Operator-GUID',           
+                      'map': {
+                            'yhfz-SS_Operator-GUID':['GUID_Operator'],
+                            'yhfz-SS_Role-GUID':['GUID']
+                        }
+                  },
+                  associate:{
+                     'yhfz-SS_Operator-GUID':['GUID_Operator'],
+                     'yhfz-SS_Role-GUID':['GUID']
+                  },
+                  bindmethod: { 'onClick': ['setAsso'] },
+                  url:'/Tree/GetJCRoleTree',
+                  scope:'yhfz',
+                  customBindFirst:true,
+                  retStatus:'2',
+                  forbidstatus:[3],
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true">
+        <table border="0" style="width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td>
+                         <table class="easyui-edatagrid" id="yhfz-SS_Operator" data-options="
+                                        scope:'yhfz',
+                                        singleSelect:false,
+                                        method:'get',
+                                        height:500,
+                                        width:169
+                                        ">
+                                        <thead>
+                                            <tr>
+                                                <th field="b-sel" data-options="width:60, checkbox:'true'">
+                                                </th>
+                                                <th field="yhfz-SS_Operator-GUID" hidden="true">
+                                                </th>
+                                                <th field="yhfz-SS_Role-GUID" hidden="true">
+                                                </th>
+                                                <th field="GUID" hidden="true"></th>
+
+                                                <th field="yhfz-SS_Operator-OperatorName" title="操作员" width="120px;" align="left"
+                                                    sortable="false">
+                                                    操作员
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="yhfz-SS_Operator-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="yhfz-SS_Role-GUID" type="hidden" keyattr="1"></input>
+</div>
+<label id="yhfz-extendregion" style="display: none">
+    <input id="yhfz-status" type="text"></input>
+    <input id="initscope" type="text" value="yhfz"></input>
+    <input id="initstatus" type="text" value="2"></input>
+    <input id="initController" type="text" value="JCjsyh"></input>
+    <input id="initguid" type="text" value="yhfz-SS_Operator"></input>
+    <div id="yhfz-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

@@ -1,0 +1,114 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "工资项数据加载方式设置";
+}
+<script src="../../Scripts/kj/itemdataset.js" type="text/javascript"></script>
+<div class="easyui-layout" id="gzxsj-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                  
+                   <a href="#" class="easyui-linkbutton" id="gzxsj-queding" data-options="
+                    plain:'true',iconCls:'icon-queding', scope:'gzxsj',forbidstatus:[1,2,3]
+                    ">确定</a>
+
+                    <a href="#" class="easyui-linkbutton" id="gzxsj-quxiao" data-options="plain:'true',iconCls:'icon-tuichu',
+                   @* bindmethod:{ 'click': ['cancelDetail'] },
+                    window:'b-window',*@
+                    scope:'gzxsj',status:'0'">退出</a>
+        </div>
+    </div>
+  
+    <div data-options="region:'center'" style="width: 400px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+         
+            <tr>
+                <td style="width: 100px">
+                    <label for="field1" id="lbl-DocNum">
+                        工资计划编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gzxsj-SA_Plan-PlanKey" data-options="width:176,forbidstatus:[-1]"  ></input>
+                </td>
+                <td style="width: 100px">
+                    <label for="field1" id="lbl-DocDate">
+                        工资计划名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="gzxsj-SA_Plan-PlanName" data-options="width:176,forbidstatus:[-1],required:false "></input>
+                </td>
+                <td style="width: 60px">
+                    
+                </td>
+                
+            </tr>          
+         
+            <tr>
+                <td colspan="5">
+                    <table class="easyui-edatagrid" id="gzxsj-SA_PlanItemSetupModel" style="overflow:auto"  data-options="                    
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:780,
+                    width:530,
+                    rownumbers:true,
+                    scope:'gzxsj',
+                    formatters:{'gzxsj-SA_PlanItemSetupModel-IsStart':'boolbox'},
+                    single:false
+                    ">
+                        <thead>
+                            <tr>
+                                <th field="gzxsj-SA_PlanItemSetupModel-GUID" hidden="true"></th>   
+                                <th field="gzxsj-SA_PlanItemSetupModel-GUID_Item" hidden="true"></th> 
+                                 <th field="gzxsj-SA_PlanItemSetupModel-SetUpKey" hidden="true"></th>                              
+                                <th field="gzxsj-SA_PlanItemSetupModel-ItemName" title="工资项">工资项</th>
+                                <th field="gzxsj-SA_PlanItemSetupModel-ItemType" title="工资项类型">工资项类型</th>
+                                <th field="gzxsj-SA_PlanItemSetupModel-GUID_SetUP" title="工资数据加载类型" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:220,  
+                                      width:220,
+                                      remoteUrl:'/Combogrid/SA_SetUp',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'SetUpName',
+                                      filterField:'SetUpKey,SetUpName',
+                                      formatters:{'gzxsj-SA_PlanItemSetupModel-IsStart':'boolbox'},
+                                      map:{
+                                        'gzxsj-SA_PlanItemSetupModel-SetUpKey':['SetUpKey']
+                                      },
+                                      bindmethod: { 'onSelect': ['setAssociate'] }, 
+                                      columns:[[
+                                          {field:'GUID',title:'名称',width:'60',hidden:true}, 
+                                          {field:'SetUpKey',title:'Key',width:'60',hidden:true},                                           
+                                          {field:'SetUpName',title:'工资项数据加载方式名称',width:'250'}                                         
+                                        ]]
+                                      }
+                                    }">
+                                    工资数据加载类型
+                                </th>
+                                
+                                <th field="gzxsj-SA_PlanItemSetupModel-IsStart" title="是否启用" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否启用
+                                </th>
+
+
+
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr> 
+            
+        </table>
+    </div>
+    <div>
+         <input class="easyui-validatebox" id="gzxsj-SA_Plan-GUID"  type="hidden"></input>
+    </div>
+</div>
+
+<iframe id="printIframe" style="display: none"></iframe>

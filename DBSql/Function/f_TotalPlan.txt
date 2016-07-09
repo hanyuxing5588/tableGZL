@@ -1,0 +1,111 @@
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[f_TotalPlan]') and xtype in (N'FN', N'IF', N'TF'))
+drop function [dbo].[f_TotalPlan]
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+
+
+/*
+//名称：f_TotalPlan
+//创建日期：
+//修改人：sxb
+//修改日期：2014-1-2
+//修改描述：
+//功能描述：统计预算中的预算金额
+*/
+CREATE    function f_TotalPlan
+(
+@dwid uniqueidentifier,
+@depid uniqueidentifier,
+@projectid uniqueidentifier,
+@bgcodeid uniqueidentifier,
+@bgresourid uniqueidentifier,
+@year int
+) --@guid uniqueidentifier
+returns @temp table
+(
+	GUID_DW uniqueidentifier,
+	DWKey nvarchar(50),
+	DWName nvarchar(50),
+	GUID_BGCode uniqueidentifier,
+	BGCodeKey nvarchar(50),
+        BGCodeName nvarchar(50),
+        GUID_Project uniqueidentifier,
+        ProjectKey nvarchar(50),
+        ProjectName nvarchar(50), 
+	GUID_Department uniqueidentifier,                      
+        DepartmentName nvarchar(50),
+	TotalPlan float,	
+	GUID_BGResource uniqueidentifier,
+	BGSourceName  nvarchar(50)
+)
+as
+begin	
+	
+	insert into @temp(
+	GUID_DW ,
+	DWKey,
+	DWName,
+	GUID_BGCode ,
+	BGCodeKey ,
+        BGCodeName ,
+        GUID_Project,
+        ProjectKey ,
+        ProjectName , 
+	GUID_Department,                      
+        DepartmentName ,
+	TotalPlan ,	
+	GUID_BGResource ,
+	BGSourceName
+	)
+	select 
+		m.GUID_DW,
+		m.DWKey,
+		m.DWName,
+		d.GUID_BGCode,
+		d.BGCodeKey,
+                d.BGCodeName,
+                m.GUID_Project,
+                m.ProjectKey,
+                m.ProjectName, 
+		m.GUID_Department,                       
+                m.DepartmentName,
+		sum(m.Total_BG_CurYear) TotalPlan,		
+		GUID_BGResource='cbd2c2c1-3e17-4140-91df-6dcaf26b6908',
+		BGSourceName=''
+		
+	from BG_MainView m 
+	join BG_DetailView d on m.GUID=d.GUID_BG_Main 
+	where m.GUID_DW=@dwid and m.GUID_Department=@depid 
+	--and m.GUID_Project=@projectid and d.GUID_BGCode=@bgcodeid --要加预算来源条件
+	and d.BGYear=@year
+	group by m.GUID_DW,
+		m.DWKey,
+		m.DWName,
+		d.GUID_BGCode,
+		d.BGCodeKey,
+                d.BGCodeName,
+                m.GUID_Project,
+                m.ProjectKey,
+                m.ProjectName, 
+		m.GUID_Department,                       
+                m.DepartmentName
+
+
+	return 
+end
+
+
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

@@ -1,0 +1,810 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "财政收入";
+}
+<div class="easyui-layout" id="czsr-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="czsr-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'czsr',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/czsr',['czsr-SR_Main-moneychinese','czsr-SR_Main-moneyunmber']]}">打印</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'czsr',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="czsr-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'czsr',status:'1',
+                   bindparms:{'newDoc':['/czsr/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="czsr-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'czsr-SR_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'czsr',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="czsr-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'czsr-SR_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'czsr',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="czsr-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['czsr-SR_Detail']},
+                   scope:'czsr',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['czsr-SR_Detail']},scope:'czsr',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['czsr-SR_Detail']},scope:'czsr',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="czsr-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/czsr','czsr-SR_Detail','parti']},scope:'czsr',forbidstatus:[3]">明细</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="czsr-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'czsr-SR_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['czsr-SR_Main-DocState','9']},scope:'czsr',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'czsr-SR_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['czsr-SR_Main-DocState','6']},scope:'czsr',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'czsr-SR_Main-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'datagrid':['czsr-SR_Detail'],
+                            'validatebox':['czsr-SR_Main-DocMemo','czsr-SR_Main-moneyunmber'],
+                            'datebox':['czsr-SR_Main-DocDate'],
+                            'combogrid':['czsr-SR_Main-GUID_Person','czsr-SR_Main-GUID_DW','czsr-SR_Main-GUID_Department']
+                        },
+                    'bubbleExamine':
+                        {
+                          'numberbox':['czsr-SR_Main-BillCount']
+                        }
+                    },
+                   scope:'czsr',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'czsr',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="czsr-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/czsr/Save','czsr-examine']},scope:'czsr',status:'4',
+                   forbidstatus:[4]">保存</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'czsr-SR_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/czsr/CommitFlow']},scope:'czsr',
+                   forbidstatus:[1,2,3]">提交</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="czsr-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'czsr-SR_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'czsr',
+                   forbidstatus:[1,2,3]">退回</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="czsr-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/czsr','history-SR_Main','history']},
+                    window:'b-window',scope:'czsr'">历史</a> 
+
+                    <a href="#" class="easyui-linkbutton"
+                   id="czsr-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/czsr','/Process/process','czsr-process','process']},
+                   window:'b-window',scope:'czsr',
+                   forbidstatus:[1,2,3]">流程</a>
+
+                   <a href="#" class="easyui-linkbutton" id="czsr-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'czsr',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="czsr-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'czsr'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="czsr-tree-per" data-options="associate:{
+                    'czsr-SR_Main-GUID_Person':['GUID','PersonName'],
+                    'czsr-SR_Main-GUID_DW':['GUID_DW','DWName'],
+                    'czsr-SR_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  gridassociate:{
+                    'gridId':'czsr-SR_Detail',
+                    'map':{
+                        'czsr-SR_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                        }
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="czsr-tree-dep" data-options="associate:{
+                    'czsr-SR_Main-GUID_DW':['GUID_DW','DWName'],
+                    'czsr-SR_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                    'gridId':'czsr-SR_Detail',
+                    'map':{
+                        'czsr-SR_Detail-GUID_Department':['GUID','DepartmentName']
+                        }
+                  },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="czsr-tree-dw" data-options="associate:{
+                    'czsr-SR_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="czsr-tree-code" data-options="gridassociate:{
+                      'gridId':'czsr-SR_Detail',
+                      'map': {
+                        'czsr-SR_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                        'czsr-SR_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                        'czsr-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'czsr-CN_PaymentNumber-PaymentNumber':['clear']
+                      },
+                      'append':'true'
+                  },
+                 
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="czsr-tree-project" data-options="gridassociate:{
+                    'gridId':'czsr-SR_Detail',
+                    'map':{
+                        'czsr-SR_Detail-GUID_ProjectKey':['GUID','ProjectName'],
+                        'czsr-SR_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                        'czsr-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                        'czsr-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                        @*'czsr-CN_PaymentNumber-PaymentNumber':['clear']*@
+                        'czsr-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                        'czsr-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0;">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="czsr-abandonedStatus" statusControlID="czsr-SR_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        财政授权支付额度</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                         <font color="red">*</font>单据编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="czsr-SR_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>单据日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="czsr-SR_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>人员名称</label>
+                </td>
+                <td>
+                   <select class="easyui-combogrid" id="czsr-SR_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                            ]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        associate:
+                            {
+                                'czsr-SR_Main-GUID_DW':['GUID_DW'],
+                                'czsr-SR_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="czsr-SR_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'200'}
+                            ]],
+                        width:180,
+                        panelWidth:400,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="czsr-SR_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:true,width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'130'}]],
+                        width:180,
+                        panelWidth:430,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'czsr-SR_Main-GUID_DW':['DWName']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="czsr-SR_Main-DocMemo"  style="width: 500px;" maxlength="200"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                        附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="czsr-SR_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="czsr-SR_Detail" style="overflow:auto"  data-options="
+                    orderNum:'czsr-SR_Detail-OrderNum',
+                    requireCol:[
+                        'czsr-SR_Detail-GUID_BGCode',
+                        'czsr-SR_Detail-Total_SR',
+                        'czsr-SR_Detail-ActionMemo',
+                        'czsr-SR_Detail-GUID_SRType',
+                        'czsr-SR_Detail-GUID_SettleType',
+                        'czsr-SR_Detail-GUID_Department',
+                        'czsr-CN_PaymentNumber-IsGuoKu'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:335,
+                    width:920,
+                    rownumbers:true,
+                    scope:'czsr',
+                    single:false,
+                    formatters:{'czsr-CN_PaymentNumber-IsGuoKu':'boolbox','czsr-SR_Detail-Total_SR':'numberbox'},
+                    disableColMap:{
+                            'czsr-CN_PaymentNumber-IsGuoKu':['czsr-CN_PaymentNumber-GUID_FunctionClass','czsr-SR_Detail-GUID_ProjectKey']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['czsr','czsr-SR_Detail','czsr-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'czsr-SR_Detail-GUID_SettleType',
+                        'czsr-SR_Detail-GUID_Department',
+                        'czsr-CN_PaymentNumber-IsGuoKu',
+                        'czsr-CN_PaymentNumber-IsProject',
+                        'czsr-SR_Detail-ProjectKey',
+                        'czsr-SR_Detail-GUID_ProjectKey',
+                        'czsr-SR_Detail-GUID_BGType',
+                        'czsr-CN_PaymentNumber-GUID_FunctionClass',
+                        'czsr-CN_PaymentNumber-GUID_BGResource',
+                        'czsr-SR_Detail-GUID_Person'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'czsr-SR_Detail-Total_SR',target:['czsr-SR_Main-moneyunmber','czsr-SR_Main-moneychinese']},
+                        {name:'cconcat',field:'czsr-SR_Detail-ActionMemo',target:['czsr-SR_Main-DocMemo']}
+                    ]">
+                        <thead>
+                            <tr>
+                               @*扩展码 来源项目 功能分类 经济分类 支出类型 预算类型 预算类型*@
+                                <th field="czsr-CN_PaymentNumber-ExtraCode" hidden="true"></th> @*附加码*@
+                                <th field="czsr-CN_PaymentNumber-FinanceCode" hidden="true"></th> @*财政码*@
+                                <th field="czsr-CN_PaymentNumber-EconomyClassKey" hidden="true"></th> @*经济分类码*@
+                                <th field="czsr-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>@*支出类型码*@
+                                <th field="czsr-CN_PaymentNumber-BGSourceKey" hidden="true"></th>@*预算类型码*@
+                                <th field="czsr-CN_PaymentNumber-BGType" hidden="true"></th>@*是否是项目*@
+
+                                <th field="czsr-SR_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="czsr-SR_Detail-GUID_Person" hidden="true">
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                </th>
+                                <th field="czsr-SR_Detail-GUID_BGType" hidden="true">
+                                </th>
+                                <th field="czsr-SR_Detail-ActionDate" hidden="true">
+                                </th>
+                                 <th field="czsr-SR_Detail-BGCodeKey" title="科目编码" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'czsr-SR_Detail',
+                                     map:{
+                                        'czsr-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'czsr-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'czsr-SR_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                                        'czsr-CN_PaymentNumber-PaymentNumber':['clear']
+                                        }
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                      panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'BGCodeKey',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeKey',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'150'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                                <th field="czsr-SR_Detail-GUID_BGCode" title="科目名称" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'czsr-SR_Detail',
+                                     map:{
+                                        'czsr-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'czsr-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'czsr-SR_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                                        'czsr-CN_PaymentNumber-PaymentNumber':['clear']
+                                        }
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:230,
+                                      panelWidth:255,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'150'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+                                <th field="czsr-SR_Detail-Total_SR" title="金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    金额
+                                </th>
+                                <th field="czsr-SR_Detail-ProjectKey" width="110" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:300,
+                                        panelHeight:255,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        gridassociate:{
+                                                gridId:'czsr-SR_Detail',
+                                        map:{
+                                            'czsr-SR_Detail-GUID_ProjectKey':['GUID','ProjectName'],
+                                            'czsr-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'czsr-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'czsr-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            @*'czsr-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                            'czsr-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'czsr-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'ExtraCode',hidden:'true'},
+                                            {field:'FinanceCode',hidden:'true'},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'90'},
+                                            {field:'ProjectName',title:'项目名称',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="czsr-SR_Detail-GUID_ProjectKey" title="项目名称" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:415,
+                                      Width:390,
+                                      remoteUrl:'/Combogrid/ProjectView',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      gridassociate:{
+                                            gridId:'czsr-SR_Detail',
+                                      map:{
+                                            'czsr-SR_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                            'czsr-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'czsr-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            @*'czsr-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                            'czsr-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'czsr-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'IsFinance',hidden:true},
+                                          {field:'IsProject',hidden:true},
+                                          {field:'ExtraCode',hidden:'true'},
+                                          {field:'FinanceCode',hidden:'true'},
+                                          {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                          {field:'ProjectKey',title:'项目编码',width:'90'},
+                                          {field:'ProjectName',title:'项目名称',width:'300'}
+                                      ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="czsr-SR_Detail-ActionMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        customValue:true,
+                                        panelWidth:320,
+                                        panelHeight:300,
+                                        remoteUrl:'/Combogrid/BGCodeMemo',
+                                        method:'get',
+                                        idField:'ActionMemo',
+                                        textField:'ActionMemo',
+                                        filterField:'ActionMemo',
+                                        associateControl:{
+                                                gridId:'czsr-SR_Detail',map:['czsr-SR_Detail-GUID_BGCode']
+                                            },
+                                        isLoad:false,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'GUID_BGCode',title:'GUID_BGCode',hidden:true},
+                                            {field:'ActionMemo',title:'摘要',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    摘要
+                                </th>
+                               <th  field="czsr-SR_Detail-GUID_SRType" title="收入类型" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{ 
+                                     width:255,
+                                     panelWidth:255,
+                                     remoteUrl:'/Combogrid/SRType',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'SRTypeKey,SRTypeName',
+                                     textField:'SRTypeName',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'SRTypeKey',title:'收入类型编号',width:'100'},
+                                            {field:'SRTypeName',title:'收入类型名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    收入类型
+                                </th>
+                               <th field="czsr-SR_Detail-GUID_SettleType" title="结算方式" sortable="false" align="center"
+                                    width="100" editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        panelWidth:180,
+                                        width:520,
+                                        remoteUrl:'/Combogrid/SettleType',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'SettleTypeName',
+                                        filterField:'SettleTypeKey,SettleTypeName',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'SettleTypeKey',title:'结算方式编码',width:'60'},
+                                          {field:'SettleTypeName',title:'结算方式名称',width:'100'}
+                                        ]]
+                                      }
+                                  }">
+                                    结算方式
+                                </th>
+                                <th field="czsr-SR_Detail-GUID_Department" title="部门名称" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:435,  
+                                      width:410,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      columns:[[
+                                        {field:'GUID',title:'名称',width:'60',hidden:true},
+                                        {field:'DepartmentKey',title:'部门编码',width:'80'},
+                                        {field:'DepartmentName',title:'部门名称',width:'200'},
+                                        {field:'DWName',title:'所属单位名称',width:'130'}
+                                    ]]
+                                  }
+                                }">
+                                    部门名称
+                                </th>
+                                <th field="czsr-SR_Detail-GUID_Customer" title="客户名称" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:315,  
+                                      width:290,
+                                      remoteUrl:'/Combogrid/Customer',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'CustomerName',
+                                      filterField:'CustomerKey,CustomerName',
+                                      columns:[[
+                                        {field:'GUID',width:'60',hidden:true},
+                                        {field:'CustomerKey',title:'客户编码',width:'90'},
+                                        {field:'CustomerName',title:'客户名称',width:'200'}
+                                    ]]
+                                  }
+                                }">
+                                    客户名称
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="czsr-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="
+                                    {
+                                        type:'searchbox',
+                                        options:{
+                                        'particulars':['/particulars/czsr','czsr-SR_Detail','parti'],
+                                        'window':'b-window'
+                                    }
+                              }">
+                                    财政支付令
+
+                             </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="czsr-SR_Main-moneychinese" style="width: 495px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="czsr-SR_Main-moneyunmber"  style="width: 176px"
+                        data-options="setNotValue:true,forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="czsr-SR_Main-GUID_Maker"
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="czsr-SR_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="czsr-SR_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="czsr-SR_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="czsr-SR_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="czsr-SR_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="czsr-SR_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="czsr-SR_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="czsr-SR_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="czsr-SR_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="czsr-SR_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="czsr-extendregion" style="display: none">
+    <input id="czsr-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="czsr-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="czsr-SR_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

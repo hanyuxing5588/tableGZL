@@ -1,0 +1,756 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "出纳付款单";
+}
+<div class="easyui-layout" id="cnfkd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'cnfkd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/cnfkd',['cnfkd-CN_Main-moneychinese','cnfkd-CN_Main-moneyunmber']]}">打印</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'cnfkd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="cnfkd-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'cnfkd',status:'1',
+                   bindparms:{'newDoc':['/cnfkd/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="cnfkd-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'cnfkd-CN_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'cnfkd',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="cnfkd-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'cnfkd-CN_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'cnfkd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="cnfkd-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['cnfkd-CN_Detail']},
+                   scope:'cnfkd',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['cnfkd-CN_Detail']},scope:'cnfkd',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['cnfkd-CN_Detail']},scope:'cnfkd',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="cnfkd-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/cnfkd','cnfkd-CN_Detail','parti']},
+                   scope:'cnfkd', 
+                   forbidstatus:[3]">明细</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'cnfkd-CN_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['cnfkd-CN_Main-DocState','9']},
+                   scope:'cnfkd',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'cnfkd-CN_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['cnfkd-CN_Main-DocState','6']},
+                   scope:'cnfkd',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'datagrid':['cnfkd-CN_Detail'],
+                            'validatebox':['cnfkd-CN_Main-DocMemo'],
+                            'datebox':['cnfkd-CN_Main-DocDate'],
+                            'combogrid':['cnfkd-CN_Main-GUID_Person','cnfkd-CN_Main-GUID_DW','cnfkd-CN_Main-GUID_Department']
+                        },
+                    'bubbleExamine':
+                        {
+                          'numberbox':['cnfkd-CN_Main-BillCount']
+                        }
+                    },
+                   scope:'cnfkd',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'cnfkd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/cnfkd/Save','cnfkd-examine']},scope:'cnfkd',status:'4',
+                   forbidstatus:[4]">保存</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'cnfkd-CN_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/cnfkd/CommitFlow']},scope:'cnfkd',
+                   forbidstatus:[1,2,3]">提交</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'cnfkd-CN_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'cnfkd',
+                   forbidstatus:[1,2,3]">退回</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="cnfkd-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/cnfkd','history-CN_Main','history']},
+                    window:'b-window',scope:'cnfkd'">历史</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="cnfkd-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'cnfkd',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="cnfkd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'cnfkd'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员" data-options="selected:true">
+                <ul class="easyui-tree" id="cnfkd-tree-per" data-options="associate:{
+                    'cnfkd-CN_Main-GUID_Person':['GUID','PersonName'],
+                    'cnfkd-CN_Main-GUID_DW':['GUID_DW','DWName'],
+                    'cnfkd-CN_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                      'gridId':'cnfkd-CN_Detail',
+                      'map': {
+                        'cnfkd-CN_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'cnfkd-CN_Detail',
+                        'defaultdatamap': {
+                            'GUID_Department':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID_Department':'GUID_Department'
+                            }
+                    },
+                  
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="cnfkd-tree-dep" data-options="associate:{
+                    'cnfkd-CN_Main-GUID_DW':['GUID_DW','DWName'],
+                    'cnfkd-CN_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                      'gridId':'cnfkd-CN_Detail',
+                      'map': {
+                        'cnfkd-CN_Detail-GUID_Department':['GUID','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'cnfkd-CN_Detail',
+                        'defaultdatamap': {
+                            'GUID':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID':'GUID_Department'
+                            }
+                    },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="cnfkd-tree-dw" data-options="associate:{
+                    'cnfkd-CN_Main-GUID_DW':['GUID','DWName']
+                  },
+                  gridassociate:{
+                    'gridId':'cnfkd-CN_Detail',
+                    'map':{
+                        'cnfkd-CN_Detail-GUID_DW':['GUID','DWName']
+                        }
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="cnfkd-tree-project" data-options="gridassociate:{
+                    'gridId':'cnfkd-CN_Detail',
+                    'map':{
+                    'cnfkd-CN_Detail-GUID_Project':['GUID','ProjectName'],
+                    'cnfkd-CN_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                    'cnfkd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                    'cnfkd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                   @* 'cnfkd-CN_PaymentNumber-PaymentNumber':['clear'] *@
+                   'cnfkd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                   'cnfkd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0;">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="cnfkd-abandonedStatus" statusControlID="cnfkd-CN_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        出纳付款单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>报销单号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="cnfkd-CN_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>报销日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="cnfkd-CN_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>领款人</label>
+                </td>
+                <td>
+                   <select class="easyui-combogrid" id="cnfkd-CN_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        griddefaultassociate:{
+                            'gridId':'cnfkd-CN_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department'
+                             }
+                        },
+                        associate:
+                            {
+                                'cnfkd-CN_Main-GUID_DW':['GUID_DW'],
+                                'cnfkd-CN_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>领款单位</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="cnfkd-CN_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'200'}]],
+                        width:180,
+                        panelWidth:305,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>领款部门</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="cnfkd-CN_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:true,width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'130'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        sortName:'DepartmentKey',
+                        griddefaultassociate:{
+                            'gridId':'cnfkd-CN_Detail',
+                            'defaultdatamap': {
+                                'GUID':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID':'GUID_Department'
+                             }
+                        },
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'cnfkd-CN_Main-GUID_DW':['GUID_DW']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="cnfkd-CN_Main-DocMemo"  style="width: 500px;" maxlength="200"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                        &nbsp;附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="cnfkd-CN_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="cnfkd-CN_Detail" style="overflow:auto"  data-options="
+                    orderNum:'cnfkd-CN_Detail-OrderNum',
+                    requireCol:[
+                        'cnfkd-CN_Detail-Total_CN',
+                        'cnfkd-CN_Detail-GUID_SettleType',
+                        'cnfkd-CN_Detail-DetailMemo',
+                        'cnfkd-CN_Detail-GUID_BankAccount',
+                        'cnfkd-CN_Detail-BankAccountNo',
+                        'cnfkd-CN_PaymentNumber-IsGuoKu'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:260,
+                    width:920,
+                    rownumbers:true,
+                    scope:'cnfkd',
+                    single:false,
+                    formatters:{'cnfkd-CN_PaymentNumber-IsGuoKu':'boolbox','cnfkd-CN_Detail-Total_CN':'numberbox'},
+                    disableColMap:{
+                            'cnfkd-CN_PaymentNumber-IsGuoKu':['cnfkd-CN_PaymentNumber-GUID_FunctionClass','cnfkd-CN_Detail-GUID_Project']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['cnfkd','cnfkd-CN_Detail','cnfkd-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'cnfkd-CN_Detail-GUID_SettleType',
+                        'cnfkd-CN_PaymentNumber-IsGuoKu',
+                        'cnfkd-CN_Detail-GUID_Department',
+                        'cnfkd-CN_Detail-ProjectKey',
+                        'cnfkd-CN_Detail-GUID_Project'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'cnfkd-CN_Detail-Total_CN',target:['cnfkd-CN_Main-moneyunmber','cnfkd-CN_Main-moneychinese']},
+                        {name:'cconcat',field:'cnfkd-CN_Detail-DetailMemo',target:['cnfkd-CN_Main-DocMemo']}
+                    ]">
+                        <thead>
+                            <tr>
+                                <th field="cnfkd-CN_PaymentNumber-ExtraCode" hidden="true"></th> @*附加码*@
+                                <th field="cnfkd-CN_PaymentNumber-FinanceCode" hidden="true"></th> @*财政码*@
+                                <th field="cnfkd-CN_PaymentNumber-EconomyClassKey" hidden="true"></th> @*经济分类码*@
+                                <th field="cnfkd-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>@*支出类型码*@
+                                <th field="cnfkd-CN_PaymentNumber-BGSourceKey" hidden="true"></th>@*预算来源码*@
+                                <th field="cnfkd-CN_PaymentNumber-BGType" hidden="true"></th>@*预算类型码*@
+
+                                <th field="cnfkd-CN_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_Detail-GUID_Person" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                </th>
+                                <th field="cnfkd-CN_Detail-Total_CN" title="付款金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    付款金额
+                                </th>
+                                <th field="cnfkd-CN_Detail-GUID_SettleType" title="结算方式" sortable="false" align="center"
+                                    width="90" editor="{
+                                type:'combogrid',
+                                options:{
+                                        panelWidth:170,width:165,
+                                        remoteUrl:'/Combogrid/SettleType',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'SettleTypeName',
+                                        filterField:'SettleTypeKey,SettleTypeName',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'SettleTypeKey',title:'结算方式编码',width:'60'},
+                                          {field:'SettleTypeName',title:'结算方式名称',width:'100'}
+                                        ]]
+                                      }
+                                  }">
+                                    结算方式
+                                </th>
+                                <th field="cnfkd-CN_Detail-DetailMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="text">
+                                    摘要
+                                </th>
+                               <th  field="cnfkd-CN_Detail-GUID_BankAccount" title="银行账户名称" width="120" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'cnfkd-CN_Detail',
+                                     map:{
+                                        'cnfkd-CN_Detail-BankAccountNo':['BankAccountNo','BankAccountNo']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:255,
+                                     panelWidth:260,
+                                     remoteUrl:'/Combogrid/BankAccount',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'BankAccountNo,BankAccountName',
+                                     textField:'BankAccountName',
+                                     sortName:'BankAccountNo',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'BankAccountNo',title:'银行账户',width:'150'},
+                                            {field:'BankAccountName',title:'银行账户名称',width:'100'}
+                                      ]]
+                                    }
+                                }">
+                                    银行账户名称
+                                </th>
+                               <th field="cnfkd-CN_Detail-BankAccountNo" title="银行账号" width="110" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'cnfkd-CN_Detail',
+                                     map:{
+                                        'cnfkd-CN_Detail-GUID_BankAccount':['GUID','BankAccountName']}
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:255,
+                                      panelWidth:260,
+                                     remoteUrl:'/Combogrid/BankAccount',
+                                     method:'get',
+                                     idField:'BankAccountNo',
+                                     delay:1500,
+                                     filterField:'BankAccountNo,BankAccountName',
+                                     textField:'BankAccountNo',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'BankAccountNo',title:'银行账户',width:'150'},
+                                            {field:'BankAccountName',title:'银行账户名称',width:'100'}
+                                      ]]
+                                    }
+                                }">
+                                    银行账号
+                                </th>
+                                <th field="cnfkd-CN_Detail-ProjectKey" width="100" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:413,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        sortName:'ProjectKey',
+                                        gridassociate:{
+                                                gridId:'cnfkd-CN_Detail',
+                                        map:{
+                                            'cnfkd-CN_Detail-GUID_Project':['GUID','ProjectName'],
+                                            'cnfkd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'cnfkd-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'cnfkd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'cnfkd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'cnfkd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'ExtraCode',hidden:'true'},
+                                            {field:'FinanceCode',hidden:'true'},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'90'},
+                                            {field:'ProjectName',title:'项目名称',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="cnfkd-CN_Detail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="230" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:413,
+                                      remoteUrl:'/Combogrid/ProjectView',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      sortName:'ProjectKey',
+                                      gridassociate:{
+                                            gridId:'cnfkd-CN_Detail',
+                                      map:{
+                                            'cnfkd-CN_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                            'cnfkd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'cnfkd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'cnfkd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'cnfkd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'IsFinance',hidden:true},
+                                          {field:'IsProject',hidden:true},
+                                          {field:'ExtraCode',hidden:'true'},
+                                          {field:'FinanceCode',hidden:'true'},
+                                          {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                          {field:'ProjectKey',title:'项目编码',width:'90'},
+                                          {field:'ProjectName',title:'项目名称',width:'300'}
+                                      ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="cnfkd-CN_Detail-GUID_Department" title="部门名称" sortable="false" align="center"
+                                    width="150" editor="{
+                                  type:'combogrid',
+                                  options:{
+                                      panelWidth:420,  
+                                      width:520,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      sortName:'DepartmentKey',
+                                      columns:[[
+                                        {field:'GUID',title:'GUID',hidden:true},
+                                        {field:'DepartmentKey',title:'部门编码',width:'60'},
+                                        {field:'DepartmentName',title:'部门名称',width:'200'},
+                                        {field:'DWName',title:'所属单位名称',width:'130'}
+                                    ]]
+                                  }
+                                }">
+                                    部门名称
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="cnfkd-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="
+                                    {
+                                        type:'searchbox',
+                                        options:{
+                                        'particulars':['/particulars/cnfkd','cnfkd-CN_Detail','parti'],
+                                        'window':'b-window'
+                                    }
+                              }">
+                                    财政支付令
+
+                             </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="cnfkd-CN_Main-moneychinese" style="width: 495px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="cnfkd-CN_Main-moneyunmber"  style="width: 176px"
+                        data-options="setNotValue:true,forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="cnfkd-CN_Main-GUID_Maker"
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="cnfkd-CN_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="cnfkd-CN_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="cnfkd-CN_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="cnfkd-CN_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="cnfkd-CN_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="cnfkd-CN_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="cnfkd-CN_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="cnfkd-CN_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="cnfkd-CN_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="cnfkd-CN_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="cnfkd-extendregion" style="display: none">
+    <input id="cnfkd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="cnfkd-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="cnfkd-CN_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

@@ -1,0 +1,421 @@
+﻿
+
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<script src="../../Content/commonjs/setControlWidth.js" type="text/javascript"></script>
+
+<div class="easyui-layout" id="yskmzb-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        @*<div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   <a href="#" class="easyui-linkbutton" id="yskmzb-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'yskmzb',forbidstatus:[1,2,3],
+                   window:'yskmzb-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/yskmzb']}">打印</a> *@
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="yskmzb-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{'click':['newStatus']},scope:'yskmzb',status:'1',                        
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yskmzb-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   treeId:['yskmzb-tree-code'],
+                   bindmethod:{'click':['setStatusexamine']},scope:'yskmzb',status:'2',                       
+                   forbidstatus:[1,2,3]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="yskmzb-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   treeId:['yskmzb-tree-code'],
+                   bindmethod:{ 'click': ['setStatusexamine'] },scope:'yskmzb',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="yskmzb-tingyong"
+                  data-options="plain:'true',iconCls:'icon-tingyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['yskmzb-SS_BGCode-IsStop','1','yskmzb-tree-code']},
+                  forbidstatus:[1,2,3]">停用</a>
+
+                  <a href="#" class="easyui-linkbutton" id="yskmzb-qiyong"
+                  data-options="plain:'true',iconCls:'icon-qiyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['yskmzb-SS_BGCode-IsStop','0','yskmzb-tree-code']},
+                  forbidstatus:[1,2,3]">启用</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="yskmzb-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   JCDA:true,
+                   treeId:['yskmzb-tree-code'],
+                   NewIdStatus:'1',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCkmsz/Saveyskmzb']},
+                   scope:'yskmzb',status:'4',forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="yskmzb-cancel" data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'yskmzb',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   @*<a href="#" class="easyui-linkbutton"
+                       id="xjbxd-chaxun" data-options="plain:'true',iconCls:'icon-chaxun', 
+                   scope:'yskmzb',forbidstatus:[4],
+                   bindmethod:{ 'click': [''] }">定位</a> *@
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="yskmzb-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'yskmzb'">退出</a>
+        </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="预算科目">
+                <ul class="easyui-tree" id="yskmzb-tree-code" data-options="
+                  msg:'预算科目',
+                  m:'SS_BGCode',
+                  associate:{
+                                'yskmzb-SS_BGCode-PKey':['PKey','PKey'],
+                                'yskmzb-SS_BGCode-PGUID':['PName'],
+                                'yskmzb-SS_BGCode-BGCodeKey':['BGCodeKey','BGCodeKey'],
+                                'yskmzb-SS_BGCode-BGCodeName':['BGCodeName'],
+                                'yskmzb-SS_BGCode-GUID':['GUID'],
+                                'yskmzb-SS_BGCode-BeginYear':['BeginYear'],
+                                'yskmzb-SS_BGCode-StopYear':['StopYear'],
+                                'yskmzb-SS_BGCode-IsStop':['IsStop'],
+                                'yskmzb-SS_BGCode-GUID_EconomyClass':['GUID_EconomyClass','EconomyClassName']
+                        
+                  },
+                  associateEX:{
+                                'yskmzb-SS_BGCode-PKey':['PKey','PKey'],
+                                'yskmzb-SS_BGCode-PGUID':['PName']
+                  },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  url:'/Tree/GetJCBgCodeTree',
+                  forbidstatus:[3],
+                  method:'post',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  IsDocStatusAssociate:true,
+                  scope:'yskmzb'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table id="table" border="0" style="width:100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="4" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        预&nbsp;算&nbsp;科&nbsp;目</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BGCodeKey">
+                        <font color="red">*</font>科&nbsp;目&nbsp;&nbsp;编&nbsp;号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="yskmzb-SS_BGCode-BGCodeKey" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BGCodeName">
+                        <font color="red">*</font>科&nbsp;目&nbsp;&nbsp;名&nbsp;称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="yskmzb-SS_BGCode-BGCodeName" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PKey">
+                        &nbsp;上级科目编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="yskmzb-SS_BGCode-PKey" data-options="                           
+                           method:'post',
+                           panelWidth:'255',
+                           filterField:'BGCodeKey,BGCodeKey',
+                           remoteUrl:'/Combogrid/BGCodeView',
+                           idField:'GUID',
+                           textField:'BGCodeKey',
+                           sortName:'BGCodeKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'PGUID',hidden:'true'},
+                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                            {field:'BGCodeName',title:'科目名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'yskmzb-SS_BGCode-PGUID':['GUID','BGCodeName']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PGUID">
+                        &nbsp;上级科目名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="yskmzb-SS_BGCode-PGUID" data-options="
+                           panelWidth:'255',                          
+                           method:'post',
+                           filterField:'BGCodeKey,BGCodeName',
+                           remoteUrl:'/Combogrid/BGCodeView',
+                           idField:'GUID',
+                           textField:'BGCodeName',
+                           sortName:'BGCodeKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'PGUID',hidden:'true'},
+                                {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                {field:'BGCodeName',title:'科目名称',width:'150'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'yskmzb-SS_BGCode-PKey':['BGCodeKey','BGCodeKey']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-BeginYear">
+                        <font color="red">*</font>开&nbsp;始&nbsp;&nbsp;年&nbsp;度</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select id="yskmzb-SS_BGCode-BeginYear" class="easyui-combobox"  data-options="forbidstatus:[4,3], editable:false,tempValue:new Date().getFullYear()">  
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                        <option value="2005">2005</option>
+                        <option value="2006">2006</option>
+                        <option value="2007">2007</option>
+                        <option value="2008">2008</option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+                    </select>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-StopYear">
+                        &nbsp;结&nbsp;束&nbsp;&nbsp;年&nbsp;度</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select id="yskmzb-SS_BGCode-StopYear" class="easyui-combobox"  data-options="forbidstatus:[4,3], editable:false">  
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                        <option value="2005">2005</option>
+                        <option value="2006">2006</option>
+                        <option value="2007">2007</option>
+                        <option value="2008">2008</option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+        </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-GUID_EconomyClass">
+                        <font color="red">*</font>经济分类</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="yskmzb-SS_BGCode-GUID_EconomyClass" data-options="
+                           panelWidth:'255',                         
+                           method:'post',
+                           filterField:'EconomyClassKey,EconomyClassName',
+                           remoteUrl:'/Combogrid/EconomyClass',
+                           idField:'GUID',
+                           textField:'EconomyClassName',
+                           sortName:'EconomyClassKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'EconomyClassKey',title:'经济分类编码',width:'80'},
+                                {field:'EconomyClassName',title:'经济分类名称',width:'150'}
+                           ]],
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+                <td class="tdTextTr2"  style=" text-align: right;">
+                    <input type="checkbox" class="easyui-checkbox" id="yskmzb-SS_BGCode-IsStop" data-options="forbidstatus:[4,3]"></input>&nbsp;
+                </td>
+                <td class="tdValueTr2">
+                    是否停用
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table class="easyui-edatagrid" id="yskmzb-SS_BGCode" data-options="
+                    fitColumns:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:390,                   
+                    scope:'yskmzb',
+                    pagination:true,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true,
+                    formatters:{'yskmzb-SS_BGCode-IsStop':'boolbox'},
+                    forbidstatus:[-1]
+                       ">
+                        <thead>
+                            <tr>
+                                <th field="yskmzb-SS_BGCode-GUID" hidden="true">
+                                </th>
+                                <th field="yskmzb-SS_BGCode-PGUID" hidden="true">
+                                </th>
+                                <th field="yskmzb-SS_BGCode-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="yskmzb-SS_BGCode-BGCodeKey" title="科目编码" width="110"  sortable="false"
+                                    align="left">
+                                    科目编码
+                                </th>
+                                <th field="yskmzb-SS_BGCode-BGCodeName" title="科目名称" sortable="false" align="left"
+                                    width="180">
+                                    科目名称
+                                </th>
+                                <th field="yskmzb-SS_BGCode-PKey" title="上级科目编码" sortable="false" align="left"
+                                    width="110">
+                                    上级科目编码
+                                </th>
+                                <th field="yskmzb-SS_BGCode-PName" title="上级科目名称" sortable="false" align="left"
+                                    width="180">
+                                    上级科目名称
+                                </th>
+                                <th field="yskmzb-SS_BGCode-BeginYear" title="开始年度" sortable="false" align="left" width="100">
+                                    开始年度
+                                </th>
+                                <th field="yskmzb-SS_BGCode-StopYear" title="结束年度" sortable="false" align="left" width="100">
+                                    结束年度
+                                </th>
+                                <th field="yskmzb-SS_BGCode-EconomyClassName" title="经济分类" sortable="false" align="left" width="120">
+                                    经济分类
+                                </th>
+                                <th field="yskmzb-SS_BGCode-IsStop" title="是否停用" sortable="false" align="left"
+                                    width="80" editor="{type:'booleanbox',forbidstatus:[-1]}">
+                                    是否停用
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="yskmzb-SS_BGCode-GUID" type="hidden" keyattr="1"></input>
+</div>
+<label id="yskmzb-extendregion" style="display: none">
+    <input id="yskmzb-status" type="text"></input>
+    <input id="initscope" type="text" value="yskmzb"></input>
+    <input id="initController" type="text" value="JCkmsz"></input>
+    <input id="initstatus" type="text" value="4"></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="yskmzb-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+    //dataGrid 先设置
+    (function () {
+        var datagridId = "yskmzb-SS_BGCode";
+        var tableId = "table";
+        $.setDataGridControlWidth(tableId,datagridId);
+    })();
+
+    $(document).ready(function () {
+        var datagridId = "yskmzb-SS_BGCode";
+        var rowColCount = 4; //一行的列数
+        $.setControl("divWest", datagridId, rowColCount);
+    });
+</script>

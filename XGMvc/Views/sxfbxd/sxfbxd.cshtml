@@ -1,0 +1,882 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "手续费报销单";
+}
+<div class="easyui-layout" id="sxfbxd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'sxfbxd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/sxfbxd',['sxfbxd-BX_Main-moneychinese','sxfbxd-BX_Main-moneyunmber']]}">打印</a>
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'sxfbxd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/sxfbxd',['sxfbxd-BX_Main-moneychinese','sxfbxd-BX_Main-moneyunmber']]}">打印预览</a>
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'sxfbxd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+                  
+                   <a href="#" class="easyui-linkbutton" 
+                   id="sxfbxd-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'sxfbxd',status:'1',
+                   bindparms:{'newDoc':['/sxfbxd/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                  <a href="#" class="easyui-linkbutton"
+                   id="sxfbxd-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'sxfbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'sxfbxd',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="sxfbxd-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'sxfbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'sxfbxd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="sxfbxd-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['sxfbxd-BX_Detail']},
+                   scope:'sxfbxd',forbidstatus:[3,4,5,6]">增行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['sxfbxd-BX_Detail']},scope:'sxfbxd',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['sxfbxd-BX_Detail']},scope:'sxfbxd',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="sxfbxd-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/sxfbxd','sxfbxd-BX_Detail','parti']},scope:'sxfbxd',forbidstatus:[3]">明细</a>
+
+                    <a href="#" class="easyui-linkbutton" id="sxfbxd-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/sxfbxd','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'sxfbxd'">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="sxfbxd-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                      columnMap:{
+                        'sxfbxd-BX_Detail-GUID':'GUID',
+                        'sxfbxd-BX_Detail-GUID_BGCode':'GUID_BGCode',  
+                        'sxfbxd-BX_Detail-BGCodeKey':'BGCodeKey',                     
+                        'sxfbxd-BX_Detail-GUID_Project':'GUID_Project',
+                        'sxfbxd-BX_Detail-ProjectKey':'ProjectKey',
+                        'sxfbxd-BX_Detail-GUID_Department':'GUID_Department',
+                        'sxfbxd-BX_Detail-Total_Real':'ThisTimeTotal'                        
+                     },
+                     columnMapText:{
+                        'sxfbxd-BX_Detail-GUID_BGCode':'BGCodeName', 
+                        'sxfbxd-BX_Detail-GUID_Project':'ProjectName', 
+                        'sxfbxd-BX_Detail-GUID_Department':'DepartmentName',
+                        'sxfbxd-CN_PaymentNumber-GUID_BGResource':'GUID_BGResource',
+                        'sxfbxd-CN_PaymentNumber-BGSourceName':'BGSourceName',
+                        'sxfbxd-BX_Detail-GUID_BGType':'BGTypeName'
+                     },
+                     configBudget:{
+                        'sxfbxd-BX_Main-DWKey':'validatebox',
+                        'sxfbxd-BX_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{
+                        'BudgetStatistics':[
+                            '/BudgetStatistics/sxfbxd',
+                            '/BudgetStatistics/BudgetStatistics',
+                            'BudgetStatistics-BG_Main',
+                            'sxfbxd-BX_Main-DocDate',
+                            'sxfbxd-BX_Detail',
+                            'BudgetStatistics',
+                            '02' @*报销管理*@
+                     ]},
+                      window:'b-window',
+                     scope:'sxfbxd'">预算</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'sxfbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['sxfbxd-BX_Main-DocState','9']},scope:'sxfbxd',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'sxfbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['sxfbxd-BX_Main-DocState','6']},scope:'sxfbxd',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'datagrid':['sxfbxd-BX_Detail'],
+                            'validatebox':['sxfbxd-BX_Main-DocMemo'],
+                            'datebox':['sxfbxd-BX_Main-DocDate'],
+                            'combogrid':['sxfbxd-BX_Main-GUID_Person','sxfbxd-BX_Main-GUID_DW','sxfbxd-BX_Main-GUID_Department'],
+                        },
+                    'bubbleExamine':
+                        {
+                          'numberbox':['sxfbxd-BX_Main-BillCount']
+                        }
+                    },
+                   scope:'sxfbxd',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'sxfbxd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/sxfbxd/Save','sxfbxd-examine']},scope:'sxfbxd',status:'4',
+                   forbidstatus:[4]">保存</a>
+                    
+                  <a href="#" class="easyui-linkbutton" id="sxfbxd-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'sxfbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/sxfbxd/CommitFlow']},scope:'sxfbxd',
+                   forbidstatus:[1,2,3]">提交</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'sxfbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'sxfbxd',
+                   forbidstatus:[1,2,3]">退回</a> 
+                   
+                    <a href="#" class="easyui-linkbutton"
+                   id="sxfbxd-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/sxfbxd','history-BX_Main','history']},
+                   window:'b-window',scope:'sxfbxd'">历史</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="sxfbxd-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/sxfbxd','/Process/process','sxfbxd-process','process']},
+                   window:'b-window',scope:'sxfbxd',
+                   forbidstatus:[1,2,3]">流程</a>
+
+                   <a href="#" class="easyui-linkbutton" id="sxfbxd-app" data-options="
+                    plain:'true',iconCls:'icon-shenpidan', scope:'sxfbxd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['app'] }">审批单</a>
+
+                    <a href="#" class="easyui-linkbutton" id="sxfbxd-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'sxfbxd',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                 
+                   <a href="#" class="easyui-linkbutton"
+                   id="sxfbxd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'sxfbxd'">退出</a>
+        </div>
+    </div>
+  <div data-options="region:'west',split:'true'" style="width: 265px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="sxfbxd-tree-per" data-options="associate:{
+                    'sxfbxd-BX_Main-GUID_Person':['GUID','PersonName'],
+                    'sxfbxd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'sxfbxd-BX_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  gridassociate:{
+                      'gridId':'sxfbxd-BX_Detail',
+                      'map': {
+                        'sxfbxd-BX_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'sxfbxd-BX_Detail',
+                        'defaultdatamap': {
+                            'GUID_Department':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID_Department':'GUID_Department'
+                            }
+                    },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="sxfbxd-tree-dep" data-options="associate:{
+                    'sxfbxd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'sxfbxd-BX_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  gridassociate:{
+                      'gridId':'sxfbxd-BX_Detail',
+                      'map': {
+                        'sxfbxd-BX_Detail-GUID_Department':['GUID','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'sxfbxd-BX_Detail',
+                        'defaultdatamap': {
+                            'GUID':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID':'GUID_Department'
+                            }
+                    },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="sxfbxd-tree-dw" data-options="associate:{
+                    'sxfbxd-BX_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+             <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="sxfbxd-tree-code" data-options="gridassociate:{
+                      'gridId':'sxfbxd-BX_Detail',
+                      'map': {
+                        'sxfbxd-BX_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                        'sxfbxd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'sxfbxd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                        'sxfbxd-CN_PaymentNumber-PaymentNumber':['clear'],
+                        'sxfbxd-BX_Detail-BGCodeKey':['BGCodeKey','BGCodeKey']
+                      },
+                      'append':'true'
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="sxfbxd-tree-project" data-options="gridassociate:{
+                    'gridId':'sxfbxd-BX_Detail',
+                    'map':{
+                        'sxfbxd-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                        'sxfbxd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                        'sxfbxd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                        'sxfbxd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                        @*'sxfbxd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                        'sxfbxd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                        'sxfbxd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="sxfbxd-abandonedStatus" statusControlID="sxfbxd-BX_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        手续费报销单</div>
+                </td>
+            </tr>
+           <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>报销单号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="sxfbxd-BX_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>报销日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="sxfbxd-BX_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>报销人</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="sxfbxd-BX_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'145'}
+                            ]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        griddefaultassociate:{
+                            'gridId':'sxfbxd-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department'
+                             }
+                        },
+                        associate:
+                            {
+                            'sxfbxd-BX_Main-GUID_DW':['GUID_DW'],
+                            'sxfbxd-BX_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="sxfbxd-BX_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},                                       
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'220'}]],
+                        width:180,
+                        panelWidth:400,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="sxfbxd-BX_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:'true',width:'125'},
+                            {field:'DWName',title:'所属单位名称',width:'175'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        griddefaultassociate:{
+                            'gridId':'zpsld-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID':'GUID_Department'
+                             }
+                        },
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'sxfbxd-BX_Main-GUID_DW':['GUID_DW']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="sxfbxd-BX_Main-DocMemo"  style="width: 515px" maxlength="200"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                        &nbsp;附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="sxfbxd-BX_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="sxfbxd-BX_Detail" data-options="
+                    orderNum:'sxfbxd-BX_Detail-OrderNum',
+                    requireCol:[
+                        'sxfbxd-BX_Detail-GUID_BGCode',
+                        'sxfbxd-BX_Detail-Total_Real',
+                        'sxfbxd-BX_Detail-FeeMemo',
+                        'sxfbxd-CN_PaymentNumber-IsGuoKu',
+                        'sxfbxd-BX_Detail-GUID_Department',
+                        'sxfbxd-BX_Detail-GUID_SettleType',
+                        'sxfbxd-BX_Detail-GUID_BGType'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:350,
+                    width:930,
+                    rownumbers:true,
+                    scope:'sxfbxd',
+                    single:false,
+                    formatters:{'sxfbxd-CN_PaymentNumber-IsGuoKu':'boolbox','sxfbxd-BX_Detail-Total_Real':'numberbox'},
+                    disableColMap:{
+                            'sxfbxd-CN_PaymentNumber-IsGuoKu':['sxfbxd-CN_PaymentNumber-GUID_FunctionClass','sxfbxd-BX_Detail-GUID_Project']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['sxfbxd','sxfbxd-BX_Detail','sxfbxd-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'sxfbxd-BX_Detail-ProjectKey',
+                        'sxfbxd-BX_Detail-GUID_Project',
+                        'sxfbxd-BX_Detail-GUID_SettleType',
+                        'sxfbxd-CN_PaymentNumber-IsGuoKu',
+                        'sxfbxd-CN_PaymentNumber-IsProject',
+                        'sxfbxd-BX_Detail-GUID_Person',
+                        'sxfbxd-BX_Detail-GUID_Department',
+                        'sxfbxd-BX_Detail-GUID_BGType',
+                        'sxfbxd-CN_PaymentNumber-GUID_FunctionClass',
+                        'sxfbxd-CN_PaymentNumber-GUID_BGResource',
+                        'sxfbxd-BX_Detail-GUID_Person'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'sxfbxd-BX_Detail-Total_Real',target:['sxfbxd-BX_Main-moneyunmber','sxfbxd-BX_Main-moneychinese']},
+                        {name:'cconcat',field:'sxfbxd-BX_Detail-FeeMemo',target:['sxfbxd-BX_Main-DocMemo']}
+                    ]">
+                       <thead>
+                            <tr>
+                              <th field="xjbxd-CN_PaymentNumber-GUID_ProjectEx" hidden="true"></th> @*附加项目*@
+                                <th field="xjbxd-CN_PaymentNumber-ExtraCodeEx" hidden="true"></th> @*附加项目码*@
+                                <th field="sxfbxd-CN_PaymentNumber-ExtraCode" hidden="true"></th> @*附加码*@
+                                <th field="sxfbxd-CN_PaymentNumber-FinanceCode" hidden="true"></th> @*财政码*@
+                                <th field="sxfbxd-CN_PaymentNumber-EconomyClassKey" hidden="true"></th> @*经济分类码*@
+                                <th field="sxfbxd-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>@*支出类型码*@
+                                <th field="sxfbxd-CN_PaymentNumber-BGSourceKey" hidden="true"></th>@*预算来源码*@
+                                <th field="sxfbxd-CN_PaymentNumber-BGType" hidden="true"></th>@*预算类型码*@
+
+                                <th field="sxfbxd-BX_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="sxfbxd-BX_Detail-GUID_Person" hidden="true">
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-GUID_BGResource" hidden="true"> 
+                                 <th field="sxfbxd-CN_PaymentNumber-BGSourceName" hidden="true">
+                                <th  field="sxfbxd-BX_Detail-BGCodeKey" title="科目编码" hidden="true" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'sxfbxd-BX_Detail',
+                                     map:{
+                                        'sxfbxd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'sxfbxd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'sxfbxd-BX_Detail-GUID_BGCode':['GUID','BGCodeName']
+                                         @*'sxfbxd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'BGCodeKey',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeKey',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                               <th field="sxfbxd-BX_Detail-GUID_BGCode" title="科目名称" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'sxfbxd-BX_Detail',
+                                     map:{
+                                        'sxfbxd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'sxfbxd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'sxfbxd-BX_Detail-BGCodeKey':['BGCodeKey','BGCodeKey']}
+                                        @* 'sxfbxd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+                                <th field="sxfbxd-BX_Detail-Total_Real" title="金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    金额
+                                </th>
+                                 <th field="sxfbxd-BX_Detail-FeeMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        customValue:true,
+                                        panelWidth:320,
+                                        panelHeight:300,
+                                        remoteUrl:'/Combogrid/BGCodeMemo',
+                                        method:'get',
+                                        idField:'FeeMemo',
+                                        textField:'FeeMemo',
+                                        filterField:'FeeMemo',
+                                        associateControl:{
+                                                gridId:'sxfbxd-BX_Detail',map:['sxfbxd-BX_Detail-GUID_BGCode']
+                                            },
+                                        isLoad:false,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'GUID_BGCode',title:'GUID_BGCode',hidden:true},
+                                            {field:'FeeMemo',title:'摘要',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    摘要
+                                </th>
+                                <th field="sxfbxd-BX_Detail-ProjectKey" width="100" title="项目编号" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:350,
+                                        panelHeight:255,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        gridassociate:{
+                                                gridId:'sxfbxd-BX_Detail',
+                                        map:{
+                                            'sxfbxd-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                                            'sxfbxd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'sxfbxd-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'sxfbxd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                           @* 'sxfbxd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                            'sxfbxd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'sxfbxd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'ExtraCode',hidden:'true'},
+                                            {field:'FinanceCode',hidden:'true'},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'110'},
+                                            {field:'ProjectName',title:'项目名称',width:'215'}
+                                        ]]
+                                    }
+                                }">
+                                    项目编号
+                                </th>
+                                <th field="sxfbxd-BX_Detail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="230" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:350,
+                                      panelHeight:255,
+                                      remoteUrl:'/Combogrid/Project',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      gridassociate:{
+                                            gridId:'sxfbxd-BX_Detail',
+                                      map:{
+                                            'sxfbxd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                            'sxfbxd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'sxfbxd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            @*'sxfbxd-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                            'sxfbxd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'sxfbxd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'IsFinance',hidden:true},
+                                          {field:'IsProject',hidden:true},
+                                          {field:'ExtraCode',hidden:'true'},
+                                          {field:'FinanceCode',hidden:'true'},
+                                          {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                          {field:'ProjectKey',title:'项目编号',width:'110'},
+                                          {field:'ProjectName',title:'项目名称',width:'215'}
+                                        ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="sxfbxd-BX_Detail-GUID_Department" title="部门" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:420,  width:520,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      columns:[[
+                                          {field:'GUID',title:'名称',width:'60',hidden:true},
+                                          {field:'DepartmentKey',title:'部门编号',width:'160'},
+                                          {field:'DepartmentName',title:'部门名称',width:'300'},
+                                          {field:'DWName',title:'所属单位名称',width:'130'}
+                                        ]]
+                                      }
+                                      }">
+                                    部门
+                                </th>
+                                <th field="sxfbxd-BX_Detail-GUID_BGType" title="预算类型" sortable="false" align="center"
+                                    width="130" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:300,width:520,
+                                      remoteUrl:'/Combogrid/BGType',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'BGTypeName',
+                                      filterField:'BGTypeKey,BGTypeName',
+                                        columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'BGTypeKey',title:'预算类型编码',width:'160'},
+                                              {field:'BGTypeName',title:'预算类型名称',width:'300'}
+                                             ]]
+                                         }
+                                      }">
+                                    预算类型
+                                </th>
+                                <th field="sxfbxd-BX_Detail-GUID_SettleType" title="结算方式" sortable="false" align="center"
+                                    width="90" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:300,
+                                      width:520,
+                                      remoteUrl:'/Combogrid/SettleType',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'SettleTypeName',
+                                      filterField:'SettleTypeKey,SettleTypeName',
+                                        columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'SettleTypeKey',title:'结算方式编码',width:'160'},
+                                              {field:'SettleTypeName',title:'结算方式名称',width:'300'}
+                                        ]]
+                                     }
+                              }">
+                                    结算方式
+                                </th>
+                                <th field="sxfbxd-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="{                                        
+                                    type:'searchbox',
+                                    options:{
+                                    'particulars':['/particulars/sxfbxd','sxfbxd-BX_Detail','parti'],
+                                    'window':'b-window'
+                                    }
+                                    }">
+                                    财政支付令
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="sxfbxd-BX_Main-moneychinese" style="width: 515px"
+                        data-options="forbidstatus:[-1],chinese:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="sxfbxd-BX_Main-moneyunmber" style="width: 176px"
+                        data-options="setNotValue:true,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                 <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Maker">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="sxfbxd-BX_Main-GUID_Maker" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Modifier">
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="sxfbxd-BX_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="sxfbxd-BX_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="sxfbxd-BX_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="sxfbxd-BX_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="sxfbxd-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="sxfbxd-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="sxfbxd-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="sxfbxd-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="sxfbxd-BX_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="sxfbxd-BX_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="sxfbxd-extendregion" style="display: none">
+    <input id="sxfbxd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="sxfbxd-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="sxfbxd-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

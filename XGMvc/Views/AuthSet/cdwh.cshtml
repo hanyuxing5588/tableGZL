@@ -1,0 +1,313 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "菜单维护";
+}
+<script src="../../Scripts/jc/jcCommon.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#cdwh-SS_Menu-IsOrNot').bind('click', function () {
+            
+            var flag = $('#cdwh-SS_Menu-IsOrNot').is(":Checked");
+            if (flag) {
+                $('#cdwh-SS_DocTypeUrl-GUID_DocType').combogrid('alterStatus', '1');
+            } else {
+                $('#cdwh-SS_DocTypeUrl-GUID_DocType').combogrid('alterStatus', '4');
+            }
+        });
+    });
+    $.extend($.fn.linkbutton.methods, {
+        setStatusAfter: function (jq, status) {
+            $('#cdwh-SS_DocTypeUrl-GUID_DocType').combogrid('alterStatus', '4');
+        },
+        AfterNew: function (status) {
+            $('#cdwh-SS_DocTypeUrl-GUID_DocType').combogrid('alterStatus', '4');
+        }
+    });
+    $.search = function (jq) {
+        
+        var condition = $(jq).searchbox('getValue');
+        $.ajax({
+            url: '/AuthSet/GetMenuRelFunList',
+            data: { condition: condition },
+            cache: false,
+            async: true,
+            type: 'post',
+            datatype: 'json',
+            success: function (data) {
+                if (data) {
+                    $('#grid').datagrid('loadData', eval("(" + data + ")"));
+                }
+            }
+        });
+    }
+    $(document).ready(function () {
+        $('.searchbox input').removeAttr("readonly");
+    });
+</script>
+<div class="easyui-layout" id="cdwh-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   <a href="#" class="easyui-linkbutton" 
+                   id="cdwh-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newlyAdd'] },scope:'cdwh',status:'1',
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="cdwh-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'cdwh-SS_Menu-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'cdwh',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="cdwh-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'cdwh-SS_Menu-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'cdwh',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" id="cdwh-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'cdwh',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="cdwh-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   treeId:'cdwh-tree-Menu',comboId:'cdwh-SS_DocTypeUrl-GUID_DocType',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/AuthSet/Save']},scope:'cdwh',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                 
+                   <a href="#" class="easyui-linkbutton"
+                   id="cdwh-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'cdwh'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="菜单项">
+                <ul class="easyui-tree" id="cdwh-tree-Menu" 
+                 data-options="associate:{
+                    'cdwh-SS_Menu-MenuKey':['MenuKey'],
+                    'cdwh-SS_Menu-MenuName':['MenuName'],
+                    'cdwh-SS_Menu-scope':['scope'],
+                    'cdwh-SS_Menu-PGUID':['PGUID','PKey'],
+                    'cdwh-SS_Menu-PName':['PGUID','PName'],
+                    'cdwh-SS_Menu-GUID_MenuClass':['GUID_MenuClass'],
+                    'cdwh-SS_Menu-GUID':['GUID']
+                  },
+                  associateEx:{
+                    'cdwh-SS_Menu-PGUID':['GUID','MenuKey'],
+                    'cdwh-SS_Menu-PName':['GUID','MenuName']
+                  },
+                  IsDocStatusAssociate:true,
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  url:'/Tree/GetBaseMenuTree',
+                  customBindFirst:true,
+                  findParent:true,
+                  scope:'cdwh',
+                  retStatus:'4',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table id="table" border="0" style="height:auto; width:100%;">
+            <tr>
+                <td colspan="4" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        菜&nbsp;单&nbsp;维&nbsp;护</div>
+                </td>
+            </tr>
+            <tr >
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-MenuKey">
+                        菜单编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="cdwh-SS_Menu-MenuKey" data-options="forbidstatus:[4]"/>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-MenuName">
+                        菜单名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="cdwh-SS_Menu-MenuName" data-options="forbidstatus:[4]"/>
+                </td>
+            </tr>
+            <tr >
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PKey">
+                        上级菜单编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="cdwh-SS_Menu-PGUID" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'MenuKey',title:'菜单编号',width:'100'},
+                            {field:'MenuName',title:'菜单名称',width:'150'}
+                            ]],                       
+                        panelWidth:300,
+                        method:'post',
+                        remoteUrl:'/Combogrid/BaseMenu',
+                        idField:'GUID',
+                        textField:'MenuKey',
+                        filterField:'MenuKey,MenuName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        forbidstatus:[4],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        rownumbers:true,
+                        associate:
+                            {
+                                'cdwh-SS_Menu-PName':['GUID','MenuName']
+                            }">
+                    </select>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PName">
+                        上级菜单名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="cdwh-SS_Menu-PName" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'MenuKey',title:'菜单编号',width:'100'},
+                            {field:'MenuName',title:'菜单名称',width:'150'}
+                            ]],                       
+                        panelWidth:300,
+                        method:'post',
+                        remoteUrl:'/Combogrid/BaseMenu',
+                        idField:'GUID',
+                        textField:'MenuName',
+                        filterField:'MenuKey,MenuName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        forbidstatus:[4],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        rownumbers:true,
+                        associate:
+                            {
+                                'cdwh-SS_Menu-PGUID':['GUID','MenuKey']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr >
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-GUID_MenuClass">
+                        菜单分类</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="cdwh-SS_Menu-GUID_MenuClass" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'MenuClassKey',title:'菜单分类编号',width:'100'},
+                            {field:'MenuClassName',title:'菜单分类名称',width:'150'}
+                            ]],                       
+                        panelWidth:300,
+                        method:'post',
+                        remoteUrl:'/Combogrid/BaseClassMenu',
+                        idField:'GUID',
+                        textField:'MenuClassName',
+                        filterField:'MenuClassKey,MenuClassName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        forbidstatus:[4],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        rownumbers:true">
+                    </select>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-scope">
+                        作用域</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="cdwh-SS_Menu-scope" data-options="forbidstatus:[4]"/>
+                </td>
+            </tr>
+            <tr >
+                <td  colspan="2">
+                    <input id="cdwh-SS_Menu-IsOrNot"  type="checkbox" class="easyui-checkbox">&nbsp;是否同步到单据配置表</input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-docType">
+                        单据类型</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="cdwh-SS_DocTypeUrl-GUID_DocType" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DocTypeKey',title:'单据编号',width:'100'},
+                            {field:'DocTypeName',title:'单据名称',width:'150'},
+                            {field:'DocTypeUrl',title:'单据作用域',width:'80'}
+                            ]],                       
+                        panelWidth:350,
+                        method:'post',
+                       @* remoteUrl:'/Combogrid/BaseDocType',*@
+                        url:'/Combogrid/BaseDocType',
+                        idField:'GUID',
+                        textField:'DocTypeName',
+                        filterField:'DocTypeKey,DocTypeName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        forbidstatus:[4],
+                        required:false,
+                        singleSelect:true,
+                        editable:true">
+                    </select>
+                </td>
+            </tr>
+            <tr style="height:30px;">
+                <td  colspan="2">
+                    <input id="ss" class="easyui-searchbox" style="width:240px;" data-options="searcher:function(){$.search(this)}"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table class="easyui-datagrid" id="grid" 
+                        data-options="
+                            height:300,                            
+                            idField:'GUID',
+                            nowrap:false,
+                            striped:true,
+                            remoteSort:false,
+                            url:'/AuthSet/GetMenuRelFunList'
+                            ">
+                        <thead>
+                            <tr>
+                                <th data-options="field:'GUID',hidden:'true'"  ></th>
+                                <th data-options="field:'MenuKey', title:'菜单编号',halign:'center', align:'left', width:'80'"></th>
+                                <th data-options="field:'MenuName', title:'菜单名称',halign:'center', align:'left', width:'150'"></th>
+                                <th data-options="field:'Scope', title:'(菜单&功能)关联关系',halign:'center', align:'left', width:'150'"></th>
+                            </tr>
+                                            
+                        </thead>   
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="cdwh-SS_Menu-GUID" type="hidden"></input>
+</div>
+<label id="cdwh-extendregion" style="display: none">
+    <input id="cdwh-status" type="text"/>
+    <input id="initscope" type="text" value='cdwh'/>
+    <input id="initstatus" type="text" value='4'/>
+    <input id="initguid" type="text" value=''/>
+</label>
+<div id="b-window" line="true"></div>
+<script type="text/javascript">
+    (function () {
+        var datagridId = "grid";
+        var rowColCount = 4;
+        $.setControl("divWest",datagridId, rowColCount);
+    })();
+</script>

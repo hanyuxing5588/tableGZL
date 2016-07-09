@@ -1,0 +1,856 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "应收单填制";
+}
+<div class="easyui-layout" id="ysdtz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'ysdtz',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/ysdtz',['ysdtz-WL_Main-moneychinese','ysdtz-WL_Main-moneyunmber']]}">打印</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'ysdtz',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/ysdtz',['ysdtz-WL_Main-moneychinese','ysdtz-WL_Main-moneyunmber']]}">预览</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'ysdtz',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="ysdtz-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'ysdtz',status:'1',
+                   bindparms:{'newDoc':['/ysdtz/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="ysdtz-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'ysdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'ysdtz',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="ysdtz-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'ysdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'ysdtz',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="ysdtz-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['ysdtz-WL_Detail']},
+                   scope:'ysdtz',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['ysdtz-WL_Detail']},scope:'ysdtz',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['ysdtz-WL_Detail']},scope:'ysdtz',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="ysdtz-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/ysdtz','ysdtz-WL_Detail','parti']},scope:'ysdtz', forbidstatus:[3]">明细</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/ysdtz','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'ysdtz'">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="ysdtz-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                     configUrl:{
+                            'ysdtz-WL_Main-GUID_DW':'combogrid',
+                            'ysdtz-WL_Main-GUID_Department':'combogrid',
+                            'ysdtz-WL_Main-DocDate':'datebox'
+                      },
+                     configShowData:{
+                        'ysdtz-WL_Main-DWKey':'validatebox',
+                        'ysdtz-WL_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{
+                        'BudgetStatistics':[
+                            '/BudgetStatistics/ysdtz',
+                            '/BudgetStatistics/BudgetStatistics',
+                            'BudgetStatistics-BG_Main',
+                            'BudgetStatistics'
+                     ]},
+                     window:'b-window',
+                     scope:'ysdtz'">预算</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'ysdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['ysdtz-WL_Main-DocState','9']},scope:'ysdtz',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'ysdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['ysdtz-WL_Main-DocState','6']},scope:'ysdtz',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'ysdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'datagrid':['ysdtz-WL_Detail'],
+                            'validatebox':['ysdtz-WL_Main-DocMemo'],
+                            'datebox':['ysdtz-WL_Main-DocDate'],
+                            'combogrid':['ysdtz-WL_Main-GUID_Person','ysdtz-WL_Main-GUID_DW','ysdtz-WL_Main-GUID_Department']
+                        },
+                    'bubbleExamine':
+                        {
+                          'numberbox':['ysdtz-WL_Main-BillCount']
+                        }
+                    },
+                   scope:'ysdtz',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'ysdtz',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/ysdtz/Save','ysdtz-examine']},scope:'ysdtz',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="ysdtz-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'ysdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/ysdtz/CommitFlow']},scope:'ysdtz',
+                   forbidstatus:[1,2,3]">提交</a>
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'ysdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'ysdtz',
+                   forbidstatus:[1,2,3]">退回</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="ysdtz-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/ysdtz','history-WL_Main','history']},
+                    window:'b-window',scope:'ysdtz'">历史</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="ysdtz-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/ysdtz','/Process/process','ysdtz-process','process']},
+                   window:'b-window',scope:'ysdtz',
+                   forbidstatus:[1,2,3]">流程</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="ysdtz-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'ysdtz',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="ysdtz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'ysdtz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="ysdtz-tree-per" data-options="associate:{
+                    'ysdtz-WL_Main-GUID_Person':['GUID','PersonName'],
+                    'ysdtz-WL_Main-GUID_DW':['GUID_DW','DWName'],
+                    'ysdtz-WL_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  gridassociate:{
+                      'gridId':'ysdtz-WL_Detail',
+                      'map': {
+                       'ysdtz-WL_Detail-GUID_Person':['GUID','PersonName'],
+                       'ysdtz-WL_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'ysdtz-WL_Detail',
+                        'defaultdatamap': {
+                            'GUID_Department':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID_Department':'GUID_Department'
+                            }
+                    },
+                  
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="ysdtz-tree-dep" data-options="associate:{
+                    'ysdtz-WL_Main-GUID_DW':['GUID_DW','DWName'],
+                    'ysdtz-WL_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                      'gridId':'ysdtz-WL_Detail',
+                      'map': {
+                       'ysdtz-WL_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'ysdtz-WL_Detail',
+                        'defaultdatamap': {
+                            'GUID':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID':'GUID_Department'
+                            }
+                    },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="ysdtz-tree-dw" data-options="associate:{
+                    'ysdtz-WL_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="ysdtz-tree-code" data-options="gridassociate:{
+                      'gridId':'ysdtz-WL_Detail',
+                      'map': {
+                        'ysdtz-WL_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                        'ysdtz-WL_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                        'ysdtz-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'ysdtz-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                        'ysdtz-CN_PaymentNumber-PaymentNumber':['clear']
+                      },
+                      'append':'true'
+                  },
+                 
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="ysdtz-tree-project" data-options="gridassociate:{
+                    'gridId':'ysdtz-WL_Detail',
+                    'map':{
+                        'ysdtz-WL_Detail-GUID_ProjectKey':['GUID','ProjectName'],
+                        'ysdtz-WL_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                        'ysdtz-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                        'ysdtz-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                        @*'ysdtz-CN_PaymentNumber-PaymentNumber':['clear']*@
+                         'ysdtz-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                         'ysdtz-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="ysdtz-abandonedStatus" statusControlID="ysdtz-WL_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        应收单据</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>单据编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="ysdtz-WL_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>单据日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysdtz-WL_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>人员名称</label>
+                </td>
+                <td>
+                   <select class="easyui-combogrid" id="ysdtz-WL_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                            ]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        griddefaultassociate:{
+                            'gridId':'ysdtz-WL_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department',
+                                'GUID':'GUID_Person'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department',
+                                   'PersonName':'GUID_Person'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department',
+                                  'GUID':'GUID_Person'
+                             }
+                        },
+                        associate:
+                            {
+                                'ysdtz-WL_Main-GUID_DW':['GUID_DW'],
+                                'ysdtz-WL_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="ysdtz-WL_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'200'}]],
+                        width:180,
+                        panelWidth:400,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="ysdtz-WL_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:true,width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'130'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        griddefaultassociate:{
+                            'gridId':'ysdtz-WL_Detail',
+                            'defaultdatamap': {
+                                'GUID':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID':'GUID_Department'
+                             }
+                        },
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'ysdtz-WL_Main-GUID_DW':['GUID_DW']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="ysdtz-WL_Main-DocMemo"  style="width: 500px;" maxlength="200"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                        附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="ysdtz-WL_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="ysdtz-WL_Detail" style="overflow:auto"  data-options="
+                    orderNum:'ysdtz-WL_Detail-OrderNum',
+                    requireCol:[
+                        'ysdtz-WL_Detail-BGCodeKey',
+                        'ysdtz-WL_Detail-GUID_BGCode',
+                        'ysdtz-WL_Detail-Total_WL',
+                        'ysdtz-WL_Detail-ActionMemo',
+                        'ysdtz-CN_PaymentNumber-IsGuoKu',
+                        'ysdtz-WL_Detail-GUID_WLType',
+                        'ysdtz-WL_Detail-GUID_Cutomer',
+                        'ysdtz-WL_Detail-GUID_Department',
+                        'ysdtz-WL_Detail-GUID_SettleType',
+                        'ysdtz-WL_Detail-GUID_BGType'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:260,
+                    width:900,
+                    rownumbers:true,
+                    scope:'ysdtz',
+                    single:false,
+                    formatters:{'ysdtz-CN_PaymentNumber-IsGuoKu':'boolbox','ysdtz-WL_Detail-Total_WL':'numberbox'},
+                    disableColMap:{
+                            'ysdtz-CN_PaymentNumber-IsGuoKu':['ysdtz-CN_PaymentNumber-GUID_FunctionClass','ysdtz-WL_Detail-GUID_Project']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['ysdtz','ysdtz-WL_Detail','ysdtz-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'ysdtz-WL_Detail-ProjectKey',
+                        'ysdtz-WL_Detail-GUID_ProjectKey',
+                        'ysdtz-WL_Detail-GUID_SettleType',
+                        'ysdtz-CN_PaymentNumber-IsGuoKu',
+                        'ysdtz-CN_PaymentNumber-IsProject',
+                        'ysdtz-WL_Detail-GUID_Department',
+                        'ysdtz-WL_Detail-GUID_BGType',
+                        'ysdtz-CN_PaymentNumber-GUID_FunctionClass',
+                        'ysdtz-CN_PaymentNumber-GUID_BGResource',
+                        'ysdtz-BX_Detail-GUID_Person'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'ysdtz-WL_Detail-Total_WL',target:['ysdtz-WL_Main-moneyunmber','ysdtz-WL_Main-moneychinese']},
+                        {name:'cconcat',field:'ysdtz-WL_Detail-ActionMemo',target:['ysdtz-WL_Main-DocMemo']}
+                    ]">
+                        <thead>
+                            <tr>
+                             @*扩展码 来源项目 功能分类 经济分类 支出类型 预算类型 预算类型*@
+                                <th field="ysdtz-CN_PaymentNumber-GUID_ProjectEx" hidden="true"></th> @*附加项目*@
+                                <th field="ysdtz-CN_PaymentNumber-ExtraCodeEx" hidden="true"></th> @*附加项目码*@
+                                <th field="ysdtz-CN_PaymentNumber-ExtraCode" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-FinanceCode" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-EconomyClassKey" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-BGSourceKey" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-BGType" hidden="true"></th>
+
+                                <th field="ysdtz-WL_Detail-GUID" hidden="true"></th>
+                                <th field="ysdtz-WL_Detail-GUID_Person" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-GUID" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-IsProject" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-GUID_EconomyClass" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-GUID_FunctionClass" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-GUID_ExpendType" hidden="true"></th>
+                                <th field="ysdtz-CN_PaymentNumber-GUID_BGResource" hidden="true"></th>
+                                <th field="ysdtz-WL_Detail-GUID_BGType" hidden="true"></th>
+
+                               <th  field="ysdtz-WL_Detail-BGCodeKey" title="科目编码" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'ysdtz-WL_Detail',
+                                     map:{
+                                        'ysdtz-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'ysdtz-WL_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                                        'ysdtz-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'BGCodeKey',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeKey',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                               <th field="ysdtz-WL_Detail-GUID_BGCode" title="科目名称" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'ysdtz-WL_Detail',
+                                     map:{
+                                        'ysdtz-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'ysdtz-WL_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                                        'ysdtz-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey']
+                                        }
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                      panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+                                <th field="ysdtz-WL_Detail-Total_WL" title="往来金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    往来金额
+                                </th>
+                                <th field="ysdtz-WL_Detail-ActionMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="text">
+                                    摘要
+                                </th>
+                                <th field="ysdtz-WL_Detail-ProjectKey" width="100" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:300,
+                                        panelHeight:255,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        gridassociate:{
+                                                gridId:'ysdtz-WL_Detail',
+                                        map:{
+                                            'ysdtz-WL_Detail-GUID_ProjectKey':['GUID','ProjectName'],
+                                            'ysdtz-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'ysdtz-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'ysdtz-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            @*'ysdtz-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                            'ysdtz-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'ysdtz-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'ExtraCode',hidden:true},
+                                            {field:'FinanceCode',hidden:true},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'80'},
+                                            {field:'ProjectName',title:'项目名称',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="ysdtz-WL_Detail-GUID_ProjectKey" title="项目名称" sortable="false" align="center"
+                                    width="230" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:300,
+                                      panelHeight:255,
+                                      remoteUrl:'/Combogrid/ProjectView',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      gridassociate:{
+                                            gridId:'ysdtz-WL_Detail',
+                                      map:{
+                                            'ysdtz-WL_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                            'ysdtz-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'ysdtz-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                           @* 'ysdtz-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                            'ysdtz-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'ysdtz-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'IsFinance',hidden:true},
+                                          {field:'IsProject',hidden:true},
+                                          {field:'ExtraCode',hidden:true},
+                                          {field:'FinanceCode',hidden:true},
+                                          {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                          {field:'ProjectKey',title:'项目编码',width:'80'},
+                                          {field:'ProjectName',title:'项目名称',width:'300'}
+                                      ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="ysdtz-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="ysdtz-WL_Detail-GUID_SettleType" title="结算方式" sortable="false" align="center"
+                                    width="90" editor="{
+                              type:'combogrid',
+                              options:{
+                                panelWidth:300,width:520,
+                                remoteUrl:'/Combogrid/SettleType',method:'get',idField:'GUID',textField:'SettleTypeName',filterField:'SettleTypeKey,SettleTypeName',
+                                columns:[[
+                                  {field:'GUID',title:'GUID',hidden:true},
+                                  {field:'SettleTypeKey',title:'编码',width:'160'},
+                                  {field:'SettleTypeName',title:'名称',width:'300'}
+                                ]]
+                              }
+                          }">
+                                    结算方式
+                                </th>
+                                <th field="ysdtz-WL_Detail-GUID_WLType" title="往来类型" align="center"
+                                    width="230" editor="{
+                                    type:'combogrid',
+                                      options:{
+                                        panelWidth:255,width:240,
+                                        remoteUrl:'/Combogrid/WLType',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'WLTypeName',
+                                        filterField:'WLTypeKey,WLTypeName',
+                                        sortName:'WLTypeKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'WLTypeKey',title:'往来类型编码',width:'80'},
+                                          {field:'WLTypeName',title:'往来类型名称',width:'150'}
+                                        ]]
+                                      }
+                                  }">
+                                    往来类型
+                                </th>
+                                <th field="ysdtz-WL_Detail-GUID_Cutomer" title="往来客户" align="center"
+                                    width="200" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                        panelWidth:255,width:240,
+                                        remoteUrl:'/Combogrid/Customer',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'CustomerName',
+                                        filterField:'CustomerKey,CustomerName',
+                                        sortName:'CustomerKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'CustomerKey',title:'往来客户编码',width:'80'},
+                                          {field:'CustomerName',title:'往来客户名称',width:'150'}
+                                        ]]
+                                      }
+                                  }">
+                                    往来客户
+                                </th>
+                                <th field="ysdtz-WL_Detail-GUID_Department" title="部门名称" sortable="false" align="center"
+                                    width="150" editor="{
+                              type:'combogrid',
+                              options:{
+                                  panelWidth:420,  width:520,remoteUrl:'/Combogrid/Department',method:'get',idField:'GUID',textField:'DepartmentName',
+                                  filterField:'DepartmentKey,DepartmentName',
+                                  columns:[[
+                                    {field:'GUID',title:'名称',width:'60',hidden:true},
+                                    {field:'DepartmentKey',title:'部门编码',width:'60'},
+                                    {field:'DepartmentName',title:'部门名称',width:'200'},
+                                    {field:'DWName',title:'所属单位名称',width:'130'}
+                                ]]
+                              }
+                            }">
+                                    部门名称
+                                </th>
+                                <th field="ysdtz-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="
+                                        {
+                                        type:'searchbox',
+                                        options:{
+                                        'particulars':['/particulars/ysdtz','ysdtz-WL_Detail','parti'],
+                                        'window':'b-window'
+                                        }
+                                        }">
+                                    财政支付令</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        大写金额</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="ysdtz-WL_Main-moneychinese" style="width: 495px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="ysdtz-WL_Main-moneyunmber"  style="width: 176px"
+                        data-options="setNotValue:true,forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="ysdtz-WL_Main-GUID_Maker"
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="ysdtz-WL_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysdtz-WL_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysdtz-WL_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="ysdtz-WL_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="ysdtz-WL_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="ysdtz-WL_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="ysdtz-WL_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="ysdtz-WL_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="ysdtz-WL_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="ysdtz-WL_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="ysdtz-extendregion" style="display: none">
+    <input id="ysdtz-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="ysdtz-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="ysdtz-WL_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

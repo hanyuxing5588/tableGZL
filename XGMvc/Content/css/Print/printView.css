@@ -1,0 +1,93 @@
+﻿a.l-btn-plain, a.l-btn-plain span.l-btn-left {
+        background: transparent;
+        border: 0;
+        filter: none;
+        }
+        a.l-btn {
+        color: #444;
+        background-image: url('images/linkbutton_bg.png');
+        background-repeat: no-repeat;
+        -moz-border-radius: 5px 5px 5px 5px;
+        -webkit-border-radius: 5px 5px 5px 5px;
+        border-radius: 5px 5px 5px 5px;
+        }
+        a.l-btn-plain {
+        padding-right: 5px;
+        border: 0;
+        padding: 1px 6px 3px 1px;
+        }
+        a.l-btn {
+        background-position: right 0;
+        text-decoration: none;
+        display: inline-block;
+        zoom: 1;
+        height: 40px;
+        padding-right: 18px;
+        cursor: pointer;
+        outline: none;
+        }
+        
+        a.l-btn-plain, a.l-btn-plain span.l-btn-left {
+        background: transparent;
+        border: 0;
+        filter: none;
+        }
+        a.l-btn span.l-btn-left {
+        background-image: url('images/linkbutton_bg.png');
+        background-repeat: no-repeat;
+        }
+        a.l-btn-plain span.l-btn-left {
+        padding-left: 50px;
+        }
+        a.l-btn span.l-btn-left {
+        display: inline-block;
+        background-position: 0 -48px;
+        padding: 4px 0px 4px 18px;
+        line-height: 16px;
+        height: 16px;
+        }
+        a.l-btn {
+        color: #444;
+        }
+        a.l-btn {
+        cursor: pointer;
+        }
+        user agent stylesheeta:-webkit-any-link {
+        color: -webkit-link;
+        cursor: auto;
+        }
+        Inherited from div.panel-body.panel-body-noheader.layout-body
+        .panel-body {
+        color: black;
+        font-size: 12px;
+        }
+        Inherited from div.panel.layout-panel.layout-panel-north
+        .panel {
+        text-align: left;
+        }
+        .icon-quxiao {
+        background: url('/Content/images/quxiao.png') no-repeat center top;
+        }
+        .icon-dayin {
+         background: url('/Content/images/dayin.png') no-repeat center top;
+        }
+        a:hover.l-btn-plain {
+			background: #EFEFEF;
+			color: black;
+			border: 1px solid #B7D2FF;
+			-moz-border-radius: 5px 5px 5px 5px;
+			-webkit-border-radius: 5px 5px 5px 5px;
+			border-radius: 5px 5px 5px 5px;
+		}
+		
+		a:hover.l-btn-disabled {
+		background-position: right 0;
+		}
+		a:hover.l-btn-plain {
+		padding: 0 5px 0 0;
+		}
+		a:hover.l-btn {
+		background-position: right -24px;
+		outline: none;
+		text-decoration: none;
+		}

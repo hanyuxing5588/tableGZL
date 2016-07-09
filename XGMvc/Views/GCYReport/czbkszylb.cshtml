@@ -1,0 +1,519 @@
+﻿<link href="../../Content/commonjs/upload/default.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/fileprogress.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/handlers.js"></script>
+<script>
+    var ExportExcel = function () {
+        var s = $('#State_DocDate').combo('getText');
+        var e = $('#End_DocDate').combo('getText');
+        var ruleQ = $('#comboM').combo('getValue');
+        if (new Date(s) > new Date(e)) {
+            $.messager.alert('系统提示', '起始时间不能大于结束时间！');
+            return;
+        }
+        var l = $('#xmjdylb_grid').datagrid('getRows');
+        if (l <= 1) {
+            $.messager.alert('系统提示', '没有要输出的数据！');
+            return;
+        }
+        window.open('/GCYReport/ExportCZBKReport?startDate=' + s + '&endDate=' + e + '&mType=' + ruleQ);
+    }
+    var loadCombobox = function () {
+        //初始化Combobox
+        $('#comboM').combobox({
+            required: false,
+            editable: false,
+            panelHeight: 80,
+            width: 80,
+            value: '1',
+            valueField: 'value',
+            textField: 'label',
+            data: [{
+                label: '元',
+                value: '1'
+            }, {
+                label: '千元',
+                value: '1000'
+            }, {
+                label: '万元',
+                value: '10000'
+            }],
+            onChange: function (newValue, oldValue) {
+                //获取所有行记录
+                var curData = $('#xmjdylb_grid').datagrid('getRows');
+                if (curData.length == 0) return;
+                var opts = $('#xmjdylb_grid').datagrid('options');
+                $('#xmjdylb_grid').datagrid('loading');
+                opts.dw = newValue;
+                $('#xmjdylb_grid').datagrid('loadData', curData);
+            }
+        });
+    }
+    var statusValue;
+    $.extend($.fn.datagrid.defaults.editors, {
+        numberbox: {
+            init: function (container, options) {
+
+                var input = $("<input type=\"text\"  class=\"datagrid-editable-numberbox\" />").appendTo(container);
+                options = $.extend(options, {});
+                input.numberbox(options);
+                //绑定事件
+                $.view.bind.call($(input), 'numberbox');
+                //加载数据
+                return input;
+            },
+            destroy: function (target) {
+
+                $(target).numberbox('destroy');
+            },
+            getValue: function (target) {
+
+                //                var opts = $(target).numberbox('options');
+                //                if (opts.Is17) {
+                //                    return $(target).numberbox('getValue') * 100 + '%';
+                //                }
+                return $(target).numberbox('getValue');
+            },
+            setValue: function (target, value) {
+
+                //                var opts = $(target).numberbox('options');
+                //                if (opts.Is17) {
+                //                    var value = (value + "").replaceAll('%','').replaceAll(',','');
+                //                    if ($.isNumeric(value)) {
+                //                        value = print(value) / 100;
+                //                    } else { 
+                //                        value=0
+                //                    }
+                //                    return $(target).numberbox('setValue', value);
+                //                }
+
+                statusValue = value;
+                return $(target).numberbox('setValue', value);
+            },
+            resize: function (_5f1, _5f2) {
+                $(_5f1)._outerWidth(_5f2)._outerHeight(22);
+            }
+        }
+    })
+    $(document).ready(function () {
+
+        var formatNum = function (s1) {
+            //            $('#xmjdylb_grid').datagrid('loading');
+            var opts = $('#xmjdylb_grid').datagrid('options');
+            s1 = new Number(s1 / (opts.dw || 1)).toFixed(2);
+            var p = /(\d+)(\d{3})/;
+            while (p.test(s1)) {
+                s1 = s1.replace(p, "$1,$2");
+            }
+            return s1;
+        }
+
+        var cols = [];
+        for (var j = 2; j < 19; j++) {
+            if (j == 17 || j == 6 || j == 7 || j == 9) continue;
+            cols.push("t" + j);
+        }
+        for (var i = 0; i < cols.length; i++) {
+            var col = cols[i];
+            var colConfig = $('#xmjdylb_grid').datagrid('getColumnOption', col);
+            colConfig.formatter = formatNum;
+        }
+        var d = new Date();
+        var s = d.getFullYear(), s1 = s + "-01-01";
+        var m = (d.getMonth() + 1);        // 获取月份。
+
+        m = m.toString().length == 2 ? m : ('0') + m;
+        s = s + "-" + m + "-";
+        var r = d.getDate() // 获取日。
+
+        r = r.toString().length == 2 ? r : ('0') + r;
+        s = s + r;
+        //         alert(s);
+        $('#State_DocDate').datebox('setValue', s1);
+        $('#End_DocDate').datebox('setValue', s);
+        $('#xmjdylb_grid').edatagrid({
+            height: $('body').height() - 180,
+            editBefore: function (p) {
+                field = p.field;
+                return true;
+            },
+            onLoadSuccess: function () {
+                $('#xmjdylb_grid').datagrid('loaded');
+            },
+            onAfterEdit: function (index, row) {
+                var field1 = field; //&& field1 != "t14"
+                if (field1 != "t2" && field1 != "t3" && field1 != "t4"  && field1 != "t16" && field1 != "t17") return;
+                var colSum = function (row1, sum, curRowIndex) {
+                    row1[field] = sum;
+                    $('#xmjdylb_grid').edatagrid('updateRow', {
+                        index: curRowIndex,
+                        row: row1
+                    });
+                    $('#xmjdylb_grid').edatagrid('refreshRow', curRowIndex);
+                }
+                //比本级大的无限汇总
+                var hSum = function (rows, index, iJC) {
+                    var sumvalue = 0, nextIndex = 0, nextIJC;
+                    if (iJC == 5) return;
+                    for (var z1 = index; z1 > -1; z1--) {
+                        var rowNext = rows[z1];
+                        var jcNext = $.isNumeric(rowNext['t22']) ? parseFloat(rowNext['t22']) : 0; ;
+                        if (jcNext > iJC) {
+                            nextIndex = z1;
+                            nextIJC = jcNext;
+                            break;
+                        }
+                        if (jcNext == iJC) {
+                            sumvalue += $.isNumeric(rowNext[field1]) ? parseFloat(rowNext[field1]) : 0;
+                        }
+                    }
+                    for (var zi = index + 1; zi < rows.length; zi++) {
+                        var rowNext1 = rows[zi];
+                        var jcNext1 = $.isNumeric(rowNext1['t22']) ? parseFloat(rowNext1['t22']) : 0; ;
+                        if (jcNext1 > iJC) {
+                            break;
+                        }
+                        if (jcNext1 == iJC) {
+                            sumvalue += $.isNumeric(rowNext1[field1]) ? parseFloat(rowNext1[field1]) : 0;
+                        }
+                    }
+                    colSum(rows[nextIndex], sumvalue, nextIndex);
+                    if (iJC < 5) {
+                        hSum(rows, nextIndex, nextIJC);
+                    }
+                }
+                var iJC = row['t22'];
+                if (iJC == '5') return;
+                var rows = $('#xmjdylb_grid').datagrid('getRows');
+                hSum(rows, index, iJC);
+
+            }
+
+        });
+        $('#czbkszylb-shuchu').bind('click', function () {
+            $('#xmjdylb_grid').edatagrid('saveRow');
+            ExportExcel();
+        });
+        $('#czbkszylb-baocun').bind('click', function () {
+
+            $('#xmjdylb_grid').edatagrid('saveRow');
+            var e = $('#End_DocDate').combo('getText');
+            var ruleQ = $('#comboM').combo('getValue');
+            var rows = $('#xmjdylb_grid').datagrid('getRows');
+            $.ajax({
+                url: '/GCYReport/SaveCZBKData',
+                data: { data: JSON.stringify(rows), endDate: e, mType: ruleQ },
+                dataType: "json",
+                type: "POST",
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                    $('#xmjdylb_grid').datagrid('loaded');
+                    $.messager.alert("错误", '网络超时,请重新登录', 'error');
+
+                },
+                success: function (data) {
+                    if (!data.success) {
+                        $.messager.alert('提示', data.msg);
+                    } else {
+                        $.messager.alert('提示', '保存成功');
+                    }
+                }
+            });
+        });
+        $('#czbkszylb-serch').bind('click', function () {
+            
+            $('#xmjdylb_grid').edatagrid('saveRow');
+            var s = $('#State_DocDate').combo('getText');
+            var e = $('#End_DocDate').combo('getText');
+            if (new Date(s) > new Date(e)) {
+                $.messager.alert('系统提示', '起始时间不能大于结束时间！');
+                return;
+            }
+            var ruleQ = $('#comboM').combo('getValue');
+            $('#xmjdylb_grid').datagrid('loading');
+            $.ajax({
+                url: '/GCYReport/GetLoadCZBKData',
+                data: { startDate: s, endDate: e, mType: ruleQ },
+                dataType: "json",
+                type: "POST",
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                    $('#xmjdylb_grid').datagrid('loaded');
+                    $.messager.alert("错误", '网络超时,请重新登录', 'error');
+
+                },
+                success: function (data) {
+                    if (!data || data.length == 1) {
+                        $('#xmjdylb_grid').datagrid('loaded');
+                        $.messager.alert("系统提示", data[0].msg, 'error');
+                        return;
+                    }
+                    var opts = $('#xmjdylb_grid').datagrid('options');
+                    opts.dw = ruleQ || 1;
+                    $('#xmjdylb_grid').datagrid('loadData', data);
+                }
+            });
+        })
+        $('#czbkszylb-close').bind('click', function () {
+            parent.window.CloseTabs();
+        });
+        $('#czbkszylb-ExcelImport').bind('click', function (e) {
+            ExcelImport(e);
+        });
+        loadCombobox();
+        var field, value;
+        $('#State_DocDate').datebox({
+            onSelect: function (date) {
+
+                var temp = date.getFullYear() + "-12-31";
+                $('#End_DocDate').combo('setValue', temp);
+                $('#End_DocDate').combo('setText', temp)
+            }
+        });
+        setTimeout(function () {
+            $('#xmjdylb_grid').edatagrid('saveRow');
+            var s = $('#State_DocDate').combo('getText');
+            var e = $('#End_DocDate').combo('getText');
+            if (new Date(s) > new Date(e)) {
+                $.messager.alert('系统提示', '起始时间不能大于结束时间！');
+                return;
+            }
+            var ruleQ = $('#comboM').combo('getValue');
+            $('#xmjdylb_grid').datagrid('loading');
+            $.ajax({
+                url: '/GCYReport/GetLoadCZBKData',
+                data: { startDate: s, endDate: e, mType: ruleQ },
+                dataType: "json",
+                type: "POST",
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                    $('#xmjdylb_grid').datagrid('loaded');
+                    $.messager.alert("错误", '网络超时,请重新登录', 'error');
+
+                },
+                success: function (data) {
+                    $('#xmjdylb_grid').datagrid('loading');
+                    if (!data || data.length == 1) {
+                        $('#xmjdylb_grid').datagrid('loaded');
+                        $.messager.alert("系统提示", data[0].msg, 'error');
+                        return;
+                    }
+                    var opts = $('#xmjdylb_grid').datagrid('options');
+                    opts.dw = ruleQ || 1;
+                    $('#xmjdylb_grid').datagrid('loadData', data);
+                }
+            });
+        }, 100);
+
+
+    });
+
+
+    var ExcelImport = function () {
+        $('#b-window').dialog({
+            isCancel: true,
+            resizable: false,
+            title: '导入',
+            width: 600,
+            height: 300,
+            modal: true,
+            draggable: true,
+            resizable: true,
+            minimizable: false,
+            maximizable: false,
+            collapsible: false,
+            href: "/UploadFile/Index",
+            onLoad: function (c) {
+                $.view.setViewEditStatus("excelImport", 4);
+                $("#txtUrl").val("/GCYReport/ImportCZBKReport");
+                $("#txtScope").val("czbkszylb");
+                $("#txtDataGrid").val("xmjdylb_grid");
+                $("#txtEventId").val("czbkszylb-serch");
+            },
+            onClose: function () {
+//                $('#xmjdylb_grid').edatagrid('onClickCell', 52, 't14')
+//                $('#xmjdylb_grid').datagrid('endEdit', 52);
+
+//                 $('#xmjdylb_grid').edatagrid('onClickCell', 58, 't14')
+//                 $('#xmjdylb_grid').datagrid('endEdit', 58);
+
+
+//                 $('#xmjdylb_grid').edatagrid('onClickCell', 44, 't14')
+//                 $('#xmjdylb_grid').datagrid('endEdit', 44);
+
+//                 $('#xmjdylb_grid').datagrid('endEdit', 58);
+////                beginEdit	index	Begin editing a row.
+////                endEdit         
+//                 $("#czbkszylb-baocun").click();
+//                 $('#czbkszylb-serch').click()
+            }
+        });
+    };
+
+     
+ 
+</script>
+<body>
+    <div class="easyui-layout" id="czbkszylb-dataregion" data-options="fit:true" z="1">
+        <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#" class="easyui-linkbutton" id="czbkszylb-serch" data-options="plain:'true',iconCls:'icon-chaxun',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'czbkszylb',
+                  forbidstatus:[-1]">查询</a>
+                   <a href="#" class="easyui-linkbutton" id="czbkszylb-shuchu"
+                      data-options="plain:'true',iconCls:'icon-shuchu',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'czbkszylb',
+                  forbidstatus:[-1]">输出</a> 
+
+                  <a href="#" class="easyui-linkbutton" 
+                   id="czbkszylb-ExcelImport"                  
+
+                   data-options="plain:'true',iconCls:'icon-daoru',
+                  @* bindmethod:{ 'click':['ExcelImport'] },scope:'czbkszylb',status:'1',
+                   bindparms:{'ExcelImport':['/UploadFile/Index','excelImport','czbkszylb/GetUploadData']},*@
+                   forbidstatus:[4]">导入</a> 
+
+                  <a href="#" class="easyui-linkbutton" id="czbkszylb-baocun"
+                      data-options="plain:'true',iconCls:'icon-baocun',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'czbkszylb',
+                  forbidstatus:[-1]">保存</a> 
+                  <a href="#" class="easyui-linkbutton" id="czbkszylb-close"
+                      data-options="plain:'true',iconCls:'icon-tuichu',
+                  bindmethod:{ 'click': ['closeTab'] },
+                  scope:'czbkszylb'">退出</a>
+            </div>
+        </div>
+        <div data-options="region:'center'">
+            <div data-options="region:'north'" style="width: 100%; margin: 0px; padding: 0px;">
+                <table border="0" style="height: 40px; padding: 0px; margin: 0">
+                    <tr>
+                        <td style="width: 80px">
+                            起始日期：
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" style="width:100px" id="State_DocDate"></input>
+                        </td>
+                        <td style="width: 80px">
+                            结束日期：
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" style="width:100px" id="End_DocDate"></input>
+                        </td>
+                        <td>
+                            金额单位
+                            <input id="comboM" />
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div data-options="region:'north'" style="width: 100%;">
+                <table border="0" style="height: 40px; width: 100%; padding: 0px; margin: 0">
+                    <tr>
+                        <td colspan="16" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                            财政拨款收支一览表
+                        </td>
+                    </tr>
+                    <tr>
+                        <td field="" style="text-align: center; width: 180px; height: 18px; float: left;
+                            text-align: left;">
+                            &nbsp;单位：中国工程院
+                        </td>
+                        @* <td style="float: right; width: 130px; height: 18px;">
+                            截止日期：&nbsp;<lable id="lbl-DocDate">显示日期</lable>
+                        </td>*@
+                    </tr>
+                </table>
+            </div>
+           
+            <table class="easyui-edatagrid" id="xmjdylb_grid" data-options="
+                rownumbers:true,
+                fitColumns:false,
+                singleSelect:true,
+                        scope:'czbkszylb'
+                        ">
+                    <thead frozen="true">
+                        <tr>
+                            <th field="t1" halign="center">
+                                项目名称
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead width="1033px">
+                        <tr>
+                            <th field="t2" halign="center" align="right" width="100px" editor="{type:'numberbox',options:{precision:2}}">
+                                上年结转
+                            </th>
+                            <th field="t3" halign="center" align="right" editor="{type:'numberbox',options:{precision:2}}">
+                                使用结余或结转资金
+                            </th>
+                            <th field="t4" halign="center" align="right" editor="{type:'numberbox',options:{precision:2}}">
+                                本年财政拨款
+                            </th>
+                            <th field="t5" halign="center" align="right">
+                                本年安排投资
+                            </th>
+                            <th field="t6" halign="center" align="center">
+                                额度支出执行比率
+                            </th>
+                            <th field="t7" halign="center" align="center">
+                                动态执行比率
+                            </th>
+                            <th field="t8" halign="center" align="right">
+                                账面支出
+                            </th>
+                            <th field="t9" halign="center" align="center">
+                                占本年安排比率
+                            </th>
+                            <th field="t10" halign="center" align="right">
+                                本年安排账面结余
+                            </th>
+                            <th field="t11" halign="center" align="right">
+                                累计结余
+                            </th>
+                            <th field="t12" halign="center" align="right">
+                                其中：应收款
+                            </th>
+                            <th field="t13" halign="center" align="right">
+                                今年可用额度
+                            </th>
+                            <th field="t14" halign="center" align="right" > @*editor="{type:'numberbox',options:{precision:2}}">*@
+                                银行额度支出
+                            </th>
+                            <th field="t15" halign="center" align="right">
+                                当年额度支出
+                            </th>
+                            <th field="t16" halign="center" align="right"  editor="{type:'numberbox',options:{precision:2}}">
+                                用款计划数
+                            </th>
+                            <th field="t17" halign="center" align="center" editor="{type:'numberbox',options:{precision:2,Is17:true}}">
+                                用款计划执行比率
+                            </th>
+                            <th field="t18" halign="center" align="right">
+                                年初恢复
+                            </th>
+                            <th field="t19" halign="center" width="87px">
+                                说明
+                            </th>
+                            <th field="t20" halign="center" align="center">
+                                资金性质
+                            </th>
+                            <th field="t21" halign="center" align="left">
+                                项目编码
+                            </th>
+                            <th field="t22" halign="center" align="center">
+                                级次
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+        </div>
+        <div  style="display:none">
+             <div id="b-window" line="true"></div>
+        </div>
+    </div>
+</body>

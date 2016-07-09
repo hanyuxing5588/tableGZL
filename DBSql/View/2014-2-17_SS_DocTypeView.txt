@@ -1,0 +1,34 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SS_DocTypeView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[SS_DocTypeView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+/*
+//名    称：SS_DocTypeView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-2-14
+//功    能：单据类型视图信息*/
+
+
+CREATE  VIEW dbo.SS_DocTypeView
+AS
+SELECT dbo.SS_DocType.GUID, dbo.SS_DocType.DocTypeKey, 
+      dbo.SS_DocType.DocTypeName, dbo.SS_DocType.GUID_YWType, 
+      dbo.SS_YWType.YWTypeKey, dbo.SS_YWType.YWTypeName, 
+      dbo.SS_DocType.IsStop,dbo.SS_DocTypeUrl.DocTypeUrl
+FROM dbo.SS_DocType LEFT OUTER JOIN
+      dbo.SS_YWType ON dbo.SS_DocType.GUID_YWType = dbo.SS_YWType.GUID
+LEFT JOIN dbo.SS_DocTypeUrl ON dbo.SS_DocType.GUID=dbo.SS_DocTypeUrl.GUID_DocType
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

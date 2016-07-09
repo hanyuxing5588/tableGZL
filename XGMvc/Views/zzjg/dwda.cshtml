@@ -1,0 +1,493 @@
+﻿
+<div class="easyui-layout" id="dwda-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="dwda-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'dwda',forbidstatus:[1,2,3],
+                   window:'dwda-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/dwda',['dwda-BX_Main-moneychinese','dwda-BX_Main-moneyunmber']]}">打印</a>
+
+                   <a href="#" class="easyui-linkbutton" id="dwda-" data-options="
+                   plain:'true',iconCls:'icon-daoru', scope:'dwda',forbidstatus:[1,2,3],
+                   window:'dwda-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/dwda',['dwda-','dwda-']]}">导入</a>
+
+                   <a href="#" class="easyui-linkbutton" id="dwda-" data-options="
+                   plain:'true',iconCls:'icon-daochu', scope:'dwda',forbidstatus:[1,2,3],
+                   window:'dwda-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/dwda',['dwda-','dwda-']]}">导出</a>
+
+                  <a href="#" class="easyui-linkbutton" 
+                  id="dwda-add" 
+                  data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newDoc']},scope:'dwda',status:'1',                        
+                  bindparms:{'newDoc':['/dwda/New']},forbidstatus:[1,2,3]">新增</a> 
+                  
+                  <a href="#" class="easyui-linkbutton"
+                  id="dwda-edit" 
+                  data-options="plain:'true',iconCls:'icon-xiugai',
+                  docState:'dwda-BX_Main-DocState',
+                  bindmethod:{'click':['setStatus']},scope:'dwda',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" 
+                  id="dwda-remove"
+                  data-options="plain:'true',iconCls:'icon-shanchu',
+                  docState:'xjbxd-BX_Main-DocState',
+                  bindmethod:{ 'click': ['setStatus'] },scope:'dwda',status:'3',
+                  forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" 
+                   id="dwda-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/dwda/Save']},
+                   scope:'dwda',status:'4',forbidstatus:[4]">保存</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="xjbxd-cancel" 
+                   data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'dwda',forbidstatus:[4],
+                     bindmethod:{ 'click': ['cancel'] }">取消</a> 
+
+                     <a href="#" class="easyui-linkbutton" 
+                   id="xjbxd-cancel" 
+                   data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'dwda',forbidstatus:[4],
+                     bindmethod:{ 'click': ['cancel'] }">定位</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="dwda-close" 
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'dwda'">退出</a>
+            </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="单位">
+                <ul class="easyui-tree" id="dwda-tree-ren" data-options="
+                  associate:{
+                    'dwda-SS_DW-GUID_DW':['GUID','DWName']
+                    
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 960px; padding-left: 10px;">
+        <table border="0" style="height: 350px; width: 960px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="dwda-abandonedStatus" statusControlID="dwda-BX_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        单位档案</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DWKey">
+                        <font color="blue">*</font>单位编号</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-validatebox" id="dwda-SS_DW_DWKey" 
+                        data-options="
+                            width:180,
+                            method:'post',
+                            filterField:'DWKey',
+                            remoteUrl:'/Combogrid/DW',
+                            idField:'GUID',
+                            textField:'DWKey',
+                            forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DWName">
+                        <font color="blue">*</font>单位名称</label>
+                </td>
+                <td>
+                    <select class="easyui-validatebox" id="dwda-SS_DW_DWName" 
+                        data-options="
+                            width:180,
+                            method:'post',
+                            remoteUrl:'/Combogrid/DW',
+                            idField:'GUID',
+                            textField:'DWName',
+                            filterField:'DWKey',
+                            forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-SS_DW-">
+                        &nbsp;上级单位编号</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="dwda-SS_DW-PGUID-DWKey" data-options="
+                           width:180,
+                           method:'post',
+                           panelWidth:250,
+                           filterField:'ProjectKey',
+                           remoteUrl:'/Combogrid/Project',
+                           idField:'GUID',
+                           textField:'ProjectName',
+                           sortName:'ProjectName',
+                           columns:[[
+                           {field:'GUID',hidden:'true'},
+                            {field:'dwda-SS_DW-PGUID-DWKey',title:'单位编号',width:'100'},
+                            {field:'dwda-SS_DW-PGUID-DWName',title:'单位名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx',['setAssociate']},
+                           assciate:{
+                            'dwda-SS_DW-PGUID-DWName':'['DWName']'
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-ProjectKey">
+                        &nbsp;上级单位名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="dwda-SS_DW-PGUID-DWName" data-options="
+                           panelWidth:250,
+                           width:180,
+                           method:'post',
+                           filterField:'DWKey',
+                           remoteUrl:'/Combogrid/DW',
+                           idField:'GUID',
+                           textField:'DWName',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'DWName',title:'单位名称',width:'128'},
+                                {field:'DWKey',title:'单位编号',width:'100'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'dwda-SS_DW-PGUID-DWKey':['DWKey'],
+                            }, 
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                        <input type="checkbox" id="dwda-SS_DW-IsStop" data-options="forbidstatus:[-1]">是否停用</input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="dwda-Bx_InviteFee" data-options="
+                    fitColumns:'false',
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:260,
+                    width:965,
+                       requireCol:[
+                        'dwda-Bx_InviteFee-GUID_InvitePerson',
+                        'dwda-Bx_InviteFee-CredentialTypeName',
+                        'dwda-Bx_InviteFee-CredentialTypekey',
+                        'dwda-Bx_InviteFee-Total_Real'
+                       ],
+                       scope:'dwda',
+                       forbidstatus:{
+                          'dwda-Bx_InviteFee-GUID_InvitePerson':[4,3],
+                          'dwda-Bx_InviteFee-CredentialTypeName':[4,3],
+                          'dwda-Bx_InviteFee-CredentialTypekey':[4,3],
+                          'dwda-Bx_InviteFee-Total_BX':[-1],
+                          'dwda-Bx_InviteFee-Total_Tax':[-1],                                                                                                                                                                                     
+                          'dwda-Bx_InviteFee-Total_Real':[4,3],
+                          'dwda-Bx_InviteFee-FeeMemo':[4,3]
+                       },
+                       fieldformula:[           
+                          {name:'csum',field:'dwda-Bx_InviteFee-Total_Real',target:['dwda-BX_Detail-Total_Real','dwda-BX_Main-moneychinese','dwda-BX_Main-YingFaheji']}
+                      ]">
+                        <thead>
+                            <tr>
+                                <th field="b-sel" data-options="width:60,checkbox:'true'">
+                                </th>
+                                <th field="dwda-Bx_InviteFee-GUID" hidden="true">
+                                </th>
+                                <th field="dwda-BX_Main-GUID" hidden="true">
+                                </th>
+                                <th field="dwda-BX_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="dwda-Bx_InviteFee-GUID_InvitePerson" title="人员名称" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                        panelWidth:500,
+                                        customValue:true,
+                                        width:368,
+                                        remoteUrl:'/Combogrid/InvitePerson',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'InvitePersonName',
+                                        filterField:'GUID_Person',
+                                        singleSelect:true,
+                                        editable:true,
+                                        pagination:true,
+                                        striped: false,
+                                        pageSize:20,
+                                        pageList:[20,50,100],
+                                        rownumbers:true,
+                                        gridassociate:{gridId:'dwda-Bx_InviteFee',
+                                            map:{
+                                                'dwda-Bx_InviteFee-CredentialTypeName':['CredentialTypeName','CredentialTypeName'],
+                                                'dwda-Bx_InviteFee-CredentialTypekey':['InvitePersonIDCard','InvitePersonIDCard']
+                                                }
+                                        },
+                                        bindmethod:{'onCloseEx':['setAssociate']},
+                                            columns:[[
+                                                {field:'GUID',title:'GUID',hidden:'true'},
+                                                {field:'InvitePersonName',title:'人员名称',width:'70'},
+                                                {field:'CredentialTypekey',title:'证件类型编号',width:'90'},
+                                                {field:'CredentialTypeName',title:'证件类型名称',width:'80'},
+                                                {field:'InvitePersonIDCard',title:'人员证件号码',width:'120'}
+                                            ]]
+                                         }
+                                    }">
+                                    人员名称
+                                </th>
+                                <th field="dwda-Bx_InviteFee-CredentialTypeName" title="证件类型名称" sortable="false"
+                                    align="center" width="100" editor="{
+                                     type:'combogrid',
+                                     options:{
+                                      
+                                        panelWidth:123,width:121,
+                                        remoteUrl:'/Combogrid/CredentialType',
+                                        method:'get',
+                                        idField:'CredentialTypeName',
+                                        textField:'CredentialTypeName',
+                                        filterField:'CredentialTypeKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:'true'},
+                                          {field:'CredentialTypeKey', title:'证件编号', hidden:'true'},
+                                          {field:'CredentialTypeName',title:'证件类型',width:'120'}
+                                        ]]
+                                     }
+                             }">
+                                    证件类型
+                                </th>
+                                <th field="dwda-Bx_InviteFee-CredentialTypekey" title="证件编号" sortable="false" align="center"
+                                    width="120" editor="{
+                                     type:'combogrid',
+                                     options:{
+                                        customValue:true,
+                                        panelWidth:276,width:275,
+                                        remoteUrl:'/Combogrid/InvitePerson',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'InvitePersonIDCard',
+                                        filterField:'CredentialTypeKey',
+                                        gridassociate:{gridId:'dwda-Bx_InviteFee',
+                                            map:{
+                                                'dwda-Bx_InviteFee-CredentialTypeName':['CredentialTypeName','CredentialTypeName'],
+                                                'dwda-Bx_InviteFee-GUID_InvitePerson':['GUID','InvitePersonName']
+                                        }},
+                                        bindmethod: { 'onCloseEx': ['setAssociate'] },     
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:'true'},
+                                          {field:'InvitePersonIDCard',title:'人员证件号码',width:'120'},
+                                          {field:'InvitePersonName',title:'人员名',width:'70'},
+                                          {field:'CredentialTypeName',title:'证件类型名称',width:'80'}
+                                        ]]
+                                     }
+                             }">
+                                    证件编号
+                                </th>
+                                <th field="dwda-Bx_InviteFee-Total_BX" width="100" title="应发金额" sortable="false"
+                                    align="center" editor="{type:'numberbox',precision:2}">
+                                    应发金额
+                                </th>
+                                <th field="dwda-Bx_InviteFee-Total_Tax" title="代扣税额" sortable="false" align="center"
+                                    width="100" editor="{type:'numberbox',precision:2}">
+                                    代扣税额
+                                </th>
+                                <th field="dwda-Bx_InviteFee-Total_Real" title="实领金额" sortable="false" align="center"
+                                    width="80" editor="{type:'numberbox',options:{
+                                    @*formatter:'formatNumber',*@
+                                    gridassociate:{
+                                            gridId:'dwda-Bx_InviteFee',
+                                            map:{
+                                                'col':['dwda-Bx_InviteFee-Total_BX']
+                                        }},
+                                    bindmethod: { 'onChange': ['setAssociate'] },   
+                                    precision:2
+                                    }}"
+                                    >
+                                    实领金额
+                                </th>
+
+                                <th field="dwda-Bx_InviteFee-FeeMemo" title="备注" sortable="false" align="center"
+                                    width="305" editor="text">
+                                    备注
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额（大写）</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="dwda-BX_Main-moneychinese" style="width: 600px"
+                        data-options="forbidstatus:[-1],chinese:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="dwda-BX_Detail-Total_Real" style="width: 176px"
+                        data-options="forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        代收税额</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="dwda-BX_Main-DaiShoushuie" style="width: 176px"
+                        data-options="forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        应发合计</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="dwda-BX_Main-YingFaheji" style="width: 176px"
+                        data-options="forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_BGCode">
+                        <font color="red">*</font>预算科目</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                    id="dwda-BX_Detail-GUID_BGCode"
+                    data-options="
+                    columns:[[
+                        {field:'GUID',hidden:'true'},
+                        {field:'GUID_EconomyClass',hidden:'true'},
+                        {field:'BGCodeKey',title:'预算科目编号',hidden:'true'},   
+                        {field:'BGCodeName',title:'预算科目名称',width:'140'}
+                    ]],
+                     associate:
+                            {
+                               'dwda-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass']
+                            },
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        panelWidth:160,
+                        width:180,
+                        method:'post',
+                        idField:'GUID',
+                        textField:'BGCodeName',
+                        filterField:'BGCodeKey',
+                        remoteUrl:'/Combogrid/BGCode',
+                        forbidstatus:[4,3]
+                    ">     
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_SettleType">
+                        <font color="red">*</font>结算方式</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                    id="dwda-BX_Detail-GUID_SettleType"
+                    data-options="
+                    columns:[[
+                        {field:'GUID',title:'GUID',hidden:'true'},
+                        {field:'SettleTypeKey',title:'编号',hidden:'true'},
+                        {field:'SettleTypeName',title:'名称',width:'160'}
+                    ]],
+                        panelWidth:160,
+                        width:180,
+                        method:'post',
+                        idField:'GUID',
+                        textField:'SettleTypeName',
+                        filterField:'SettleTypeKey',
+                        remoteUrl:'/Combogrid/SettleType',
+                        forbidstatus:[4,3]
+                    ">     
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        财政支付令</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="dwda-CN_PaymentNumber-PaymentNumber" style="width: 176px" data-options="forbidstatus:[-1]"></input>
+                </td>
+                <td colspan="2" style="width: 60px">
+                    <input type="checkbox" id="dwda-CN_PaymentNumber-IsGuoKu" data-options="forbidstatus:[-1]">国库</input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="dwda-BX_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="dwda-BX_Main-GUID_Maker" 
+                        style="width: 180px"
+                        data-options="remoteUrl:'/Combo/Operator',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="dwda-BX_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Detail-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="dwda-extendregion" style="display: none">
+    <input id="dwda-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="dwda-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

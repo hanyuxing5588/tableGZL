@@ -1,0 +1,144 @@
+﻿
+
+<body>
+
+
+<script type="text/javascript">
+    var swfu;
+    (function () {
+        var uploadSuccess1 = function (file, serverData) {
+            var obj = eval('(' + serverData + ')');
+            //            var IDS = obj.fileIds.split(',');
+            //            var progress = new FileProgress(file, this.customSettings.progressTarget);
+            //            progress.setComplete();
+            //            progress.setStatus("完成");
+            //            progress.toggleCancel(false);
+            if (obj.msg == "") {
+                var path = obj.filepath;
+                AjaxSubmit(file, path);
+            }
+            else {
+                $.messager.alert("提示", obj.msg, "error");
+            }
+
+
+        }
+        var AjaxSubmit = function (file, filePath) {
+
+            var indata = $.view.retrieveData("gzd", "dataregion");
+            $.ajax({
+                url: "/gzd/GetUploadData",
+                data: { "filepath": filePath, "m": JSON.stringify(indata.m), "d": JSON.stringify(indata.d) },
+                dataType: "json",
+                type: "POST",
+                success: function (data) {                   
+                    if (data.result == "error") {
+                        $.messager.alert("提示", data.s.m, data.s.i);
+                        return;
+                    }
+                    else {
+                        $.view.loadData("gzd", data);
+                        $("#b-window").dialog('close');
+                    }
+                },
+                error: function (msg) {
+                    $.messager.alert("提示", "导入文件失败！", "error");
+                }
+
+            });
+        }
+        var settings = {    //定义参数配置对象
+            flash_url: "../../Content/commonjs/upload/swfupload.swf",
+            flash9_url: "../../Content/commonjs/upload/swfupload_fp9.swf",
+            upload_url: "/UploadFile/UploadOneFile", //UploadFile", //"/gzd/UploadFile", 
+            post_params: { "PHPSESSID": "" },
+            file_size_limit: "100 MB",  //文件大小，单位MB
+            file_types: "*.xls",
+            file_types_description: "All Files", //文件类型描述
+            file_upload_limit: 100,  //限定用户 一次性最多上传多少个文件
+            file_queue_limit: 10,
+            custom_settings: {  //自定义设置
+                progressTarget: "fsUploadProgress",
+                cancelButtonId: "btnCancel"
+            },
+            debug: false,
+
+            // Button settings
+            button_image_url: "../../Content/images/XPButtonNoText_160x22.png",
+            button_width: "140",
+            button_height: "29",
+            //            button_disabled:"true",    //改变按钮状态
+            //          buttom_disabled:loadSettings.button_disabled,
+            button_placeholder_id: "spanButtonPlaceHolder",
+            button_text: '<span class="theFont" >导入文件</span>',
+            button_text_style: ".theFont { font-size: 16px;background-color: #C0C0C0; }",
+            button_text_left_padding: 12,
+            button_text_top_padding: 3,
+
+            // The event handler functions are defined in handlers.js
+            swfupload_preload_handler: preLoad,
+            swfupload_load_failed_handler: loadFailed,
+            file_queued_handler: fileQueued,
+            file_queue_error_handler: fileQueueError,
+            file_dialog_complete_handler: fileDialogComplete,
+            upload_start_handler: uploadStart,
+            upload_progress_handler: uploadProgress,
+            upload_error_handler: uploadError,
+            upload_success_handler: uploadSuccess1,
+            upload_complete_handler: uploadComplete,
+            queue_complete_handler: queueComplete	// Queue plugin event
+        },
+        //实例化一个SWFUpload，传入参数配置对象
+        swfu = new SWFUpload(settings);
+    })();
+</script>
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+<div b-type="1" data-options="region:'center'" style="padding:10" >
+
+<table>
+<tr>    
+    <td>
+   <div class="fieldset flash" id="fsUploadProgress">
+		<span class="legend"></span>
+	</div>
+	<div id="divStatus" style="display:none">0 上传完的文件</div>
+	<div>
+		<span id="spanButtonPlaceHolder" style="width:160px;height:40px"></span>
+        
+        <input id="btnCancel1" type="button" value="清空" onclick="swfu.cancelUpload();" disabled="disabled" style="margin-left: 2px; font-size: 16px; height: 29px; display:none;" />
+        <input id="btnCancel" type="button" value="取消" onclick="swfu.cancelQueue();" disabled="disabled" style="margin-left: 2px; font-size: 16px; height: 29px; display:none;" />
+	</div>
+
+   @* <form id="filePost" action="/gzd/UploadFile" method="post" enctype="multipart/form-data">
+     <input  type="file" value="上传文件" name="file" onchange="save()"/>
+     <input  type="submit" id="upload" value="导入"/>
+    </form>
+    </td>    *@
+
+</tr>
+</table>
+</div>
+<div b-type="1" data-options="region:'south'" style="height:58px">
+<div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;border:1px solid #ccc; text-align:center">                  
+
+
+                  @* <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="excelImport-haffirm" b-action="haffirm" gridId="excelImport-bxdetail" 
+                   data-options="plain:'true',                                    
+                   window:'b-window',
+                   scope:'excelImport',
+                   iconCls:'icon-daoru'">导入</a>*@
+                  
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="excelImport-hexit"   b-action="hexit"      
+                    data-options="plain:'true',   
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    window:'b-window',                
+                    scope:'excelImport', 
+                    window:'b-window',         
+                    iconCls:'icon-tuichu'">退出</a>
+</div>
+</div>
+
+</div>
+</body>

@@ -1,0 +1,2 @@
+﻿--在ss_menuclass表中增加语句sql
+insert into ss_menuclass values(newid(),'00','常用')

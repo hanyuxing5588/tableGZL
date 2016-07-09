@@ -1,0 +1,473 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "单据列表";
+}
+<script src="../../Scripts/bx/djlb.js?r=12" type="text/javascript"></script>
+@*<script src="../../Content/commonjs/setControlWidth.js" type="text/javascript"></script>
+<script src="../../Scripts/bx/lwflkd.js" type="text/javascript"></script>*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ywId = "djlb-list-YWType", docId = "djlb-list-DocType";
+        $('#' + ywId).combobox({
+            onSelect: function (rec) {
+                
+                var ywKey = rec.YWTypeKey, allValue = '00';
+                if (ywKey == allValue) {
+                    var opts = $('#' + docId).combobox('options');
+                    var remoteData = opts.remoteData;
+                    if (remoteData.length > 0) {
+                        $('#' + docId).combobox('loadData', remoteData);
+                        $('#' + docId).combobox('setValue', remoteData[0].GUID);
+                    }
+                    return;
+                }
+                var rowData = [];
+                var opts = $('#' + docId).combobox('options');
+                var remoteData = opts.remoteData;
+                for (var i = 0, j = remoteData.length; i < j; i++) {
+                    var row = remoteData[i];
+                    //往来要特殊处理
+                    if (ywKey == '05') {
+                        if (row.YWTypeKey.substr(0, 2) == ywKey || row.DocTypeKey == allValue) {
+                            rowData.push(row);
+                        } 
+                    } else {
+                        if (ywKey == row.YWTypeKey || row.DocTypeKey == allValue) {
+                            rowData.push(row);
+                        } 
+                    }
+                }
+                $('#' + docId).combobox('loadData', rowData);
+                $('#' + docId).combobox('setValue', rowData[0].GUID);
+            }
+        });
+        $('#' + docId).combobox({
+            onLoadSuccess: function (parm) {
+
+                var opts = $('#' + docId).combobox('options');
+                if ((opts.remoteData || []).length != 0) return;
+                opts.remoteData = parm;
+                if (!opts.remoteData) return;
+                $('#' + docId).combobox('select', opts.remoteData[0].GUID);
+            }
+        });
+    });
+    $.extend($.fn.numberbox.defaults, {
+        parser: function (s) {
+            s = s + "";
+            var _25 = $(this).numberbox("options");
+            if (s) {
+                s = s.replace(/\s/g, "");
+            }
+            var val = s;
+            if (isNaN(val)) {
+                val = "";
+            } else {
+                if (typeof (_25.min) == "number" && val < _25.min) {
+                    val = _25.min.toFixed(_25.precision);
+                } else {
+                    if (typeof (_25.max) == "number" && val > _25.max) {
+                        val = _25.max.toFixed(_25.precision);
+                    }
+                }
+            }
+            return val;
+        }
+    });
+</script>
+<div class="easyui-layout" id="djlb-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                  <a href="#" style="display: none" class="easyui-linkbutton" id="djlb-add" 
+                  data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newDoc']},scope:'djlb',status:'1',                        
+                  forbidstatus:[1,2,3]">新增</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="djlb-print"
+                  data-options="plain:'true',iconCls:'icon-dayin', 
+                  scope:'djlb',
+                  window:'b-window',
+                  bindmethod:{ 'click': ['print'] },
+                  bindparms:{'print':['/Print/djlb',['djlb-list-moneychinese','djlb-list-moneyunmber']]}">
+                  打印</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="djlb-export" 
+                  data-options="
+                  plain:'true',iconCls:'icon-shuchu', scope:'djlb',
+                    bindparms:{'djlbSearch':['/djlb/History','djlb-list','djlb','djlbdatafilter']},
+                  bindmethod:{ 'click': ['export'] }">输出</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="djlb-edit" 
+                  data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'djlb-list-DocState',
+                   bindmethod:{ 'click': ['djlbUpdate'] },
+                   window:'b-ChildWindow',
+                   scope:'djlb',status:'2'">修改</a>
+                   
+                    <a href="#" class="easyui-linkbutton" id="djlb-borrow" 
+                    data-options="plain:'true',iconCls:'icon-queren',
+                   docState:'djlb-list-DocState',
+                   bindmethod:{ 'click': ['djlbUpdate'] },
+                   window:'b-ChildWindow',
+                   scope:'djlb',status:'4'">浏览</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="djlb-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'djlb-list-DocState',
+                   bindmethod:{ 'click': ['deleteRow'] },scope:'djlb',status:'3'">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" b-type="1" id="djlb-hselect" b-action="hselect"
+                    data-options=" 
+                   bindmethod:{ 'click': ['djlbSearch'] },
+                   bindparms:{'djlbSearch':['/djlb/History','djlb-list','djlb','djlbdatafilter']},
+                   scope:'djlb',
+                   plain:'true',iconCls:'icon-chaxun'">查询</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="djlb-guolv" data-options="plain:'true',iconCls:'icon-guolv',
+                   bindmethod:{ 'click': ['filter'] },
+                   bindparms:{'filter':['/djlb/filter','filter-list','filter']},
+                    window:'b-window',scope:'djlb'">过滤</a>
+                    
+                     <a href="#" class="easyui-linkbutton" id="djlb-fanhexiao"
+             data-options="plain:'true',iconCls:'icon-fanhexiao',
+                   docState:'djlb-list-DocState',
+                   bindmethod:{ 'click': ['djlbFHX'] },scope:'djlb',status:''">反核销</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="djlb-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'djlb',
+                    bindmethod:{ 'click': ['help'] }">帮助</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="djlb-close"
+                        data-options="plain:'true',iconCls:'icon-tuichu',
+                   closeWin:true,
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'djlb'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="djlb-tree-per" data-options="associate:{
+                    'djlb-list-GUID_Person':['GUID','PersonName'],
+                    'djlb-list-GUID_DW':['GUID_DW','DWName'],
+                    'djlb-list-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/djlb/History','djlb-list','djlb','djlbdatafilter']},
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="djlb-tree-dep" data-options="associate:{
+                    'djlb-list-GUID_DW':['GUID_DW','DWName'],
+                    'djlb-list-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/djlb/History','djlb-list','djlb','djlbdatafilter']},
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="djlb-tree-dw" data-options="associate:{
+                    'djlb-list-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/djlb/History','djlb-list','djlb','djlbdatafilter']},
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="djlb-tree-code" data-options="gridassociate:{
+                      'gridId':'djlb-BX_Detail',
+                      'map': {
+                        'djlb-BX_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                        'djlb-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'djlb-BX_Detail-BGCodeKey':['GUID','BGCodeKey']
+                      },
+                      'append':'true'
+                  },                 
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/djlb/History','djlb-list','djlb','djlbdatafilter']},
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="djlb-tree-project" data-options="gridassociate:{
+                    'gridId':'djlb-BX_Detail',
+                    'map':{
+                    'djlb-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                    'djlb-BX_Detail-ProjectKey':['ProjectKey']}
+                  },
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/djlb/History','djlb-list','djlb','djlbdatafilter']},
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <div b-type="1" id="djlb-djlbdatafilter" data-options="region:'north'" style="height: 110px">
+            <table border="0" style="width: 100%;">
+                <tr>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            业务类型</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="djlb-list-YWType" class="easyui-combobox" url="/Combo/YWType" data-options="
+                editable:false,
+                valueField:'YWTypeKey',
+                textField:'YWTypeName',
+                filterField:'YWTypeKey,YWTypeName',
+                onLoadSuccess: function (parm) {
+                   $('#djlb-list-YWType').combobox('select', parm[0].YWTypeKey);
+                }" style="width: 150px;">
+                        </select>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            单据类型</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="djlb-list-DocType" class="easyui-combobox" url="/Combo/DocType" data-options="
+                editable:false,
+                valueField:'GUID',
+                textField:'DocTypeName',
+                filterField:'DocTypeKey,DocTypeName'" style="width: 150px;">
+                        </select>
+                    </td>
+                    <td style="width: 10%;">
+                        <input type="checkbox" class="easyui-checkbox" id="djlb-list-IsShowDetail">显示明细</input>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            审批状态</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="djlb-list-ApproveStatus" class="easyui-combobox" data-options="editable:false,tempValue:0"
+                            style="width: 150px;">
+                            <option value="0">全部</option>
+                            <option value="1">未审核</option>
+                            <option value="2">已审核</option>
+                            <option value="3">审核中</option>
+                        </select>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            支票状态</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="djlb-list-CheckStatus" class="easyui-combobox" data-options="editable:false,tempValue:0"
+                            style="width: 150px;">
+                            <option value="0">全部</option>
+                            <option value="1">未领取</option>
+                            <option value="2">已领取</option>
+                        </select>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            提现状态</label>
+                    </td>
+                    <td style="width: 30%;">
+                        <select id="djlb-list-WithdrawStatus" class="easyui-combobox" data-options="editable:false,tempValue:0"
+                            style="width: 150px;">
+                            <option value="0">全部</option>
+                            <option value="1">未提现</option>
+                            <option value="2">已提现</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            付款状态</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="djlb-list-PayStatus" class="easyui-combobox" data-options="editable:false,tempValue:0"
+                            style="width: 150px;">
+                            <option value="0">全部</option>
+                            <option value="1">未付款</option>
+                            <option value="2">已付款</option>
+                        </select>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            凭证状态</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <select id="djlb-list-CertificateStatus" class="easyui-combobox" data-options="editable:false,tempValue:0"
+                            style="width: 150px;">
+                            <option value="0">全部</option>
+                            <option value="1">未生成凭证</option>
+                            <option value="2">已生成凭证</option>
+                        </select>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            作废状态</label>
+                    </td>
+                    <td style="width: 30%;">
+                        <select id="djlb-list-CancelStatus" class="easyui-combobox" data-options="editable:false,tempValue:1"
+                            style="width: 150px;">
+                            <option value="0">全部</option>
+                            <option value="1">未作废</option>
+                            <option value="2">已作废</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            开始日期</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <input class="easyui-datebox" id="djlb-list-StartDate" 
+                            validType="TimeCheck['djlb-list-EndDate',true]" 
+                            invalidMessage="开始日期不能大于结束日期"
+                            data-options="width:150,required:false,value:'@ViewData["startDate"]',
+                            bindmethod: { 'onSelect': ['setAssociate'] }"> </input>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            结束日期</label>
+                    </td>
+                    <td style="width: 20%;">
+                        <input class="easyui-datebox" id="djlb-list-EndDate" 
+                            validType="TimeCheck['djlb-list-StartDate',false]"
+                            data-options="width:150,required:false,value:'@ViewData["currentDate"]',
+                            bindmethod: { 'onSelect': ['setAssociate'] }"> </input>
+                    </td>
+                    <td style="width: 10%;">
+                        <label for="field1">
+                            单据号</label>
+                    </td>
+                    <td style="width: 30%;">
+                        <input class="easyui-numberbox" id="djlb-list-DocNum" maxlength="10" style="width: 150px"
+                            data-options="min:0,max:9999999999"></input>
+                        <input id="djlb-list-ModelUrl" class="easyui-validatebox" type="hidden" name="ModelUrl" value="@ViewData["ModelUrl"]"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div b-type="1" data-options="region:'center',fit:true">
+            <table style="height: 480px; padding: 5px" class="easyui-datagrid" id="djlb-list"
+                b-type="1" data-options="
+                    fitColumns:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    pagination:true,
+                    formatters:{'Total':'numberbox'},
+                    striped: false,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true
+                    ">
+                <thead>
+                    <tr>
+                        <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+                        <th field="GUID" hidden="true">
+                        </th>
+                        <th field="DocTypeKey" align="left" width="90" hidden="true">
+                            单据类型
+                        </th>
+                        <th field="YWTypeName" align="left" width="80">
+                            业务类型
+                        </th>
+                        <th field="DocTypeName" align="left" width="90">
+                            单据类型
+                        </th>
+                        <th field="DocNum" align="left" width="80">
+                            单据编号
+                        </th>
+                        <th field="DocDate" align="center" width="80">
+                            报销日期
+                        </th>
+                        <th field="DepartmentName" align="left" width="80">
+                            部门名称
+                        </th>
+                        <th field="Maker" align="left" width="80">
+                            制单人
+                        </th>
+                        <th field="Total" align="right" width="80">
+                            报销金额
+                        </th>
+                        <th field="DocMemo" align="left" width="200">
+                            摘要
+                        </th>
+                        <th field="ApproveStatus" align="left" width="80">
+                            审批状态
+                        </th>
+                        <th field="CheckStatus" align="left" width="80">
+                            支票状态
+
+                        </th>
+                        <th field="WithdrawStatus" align="left" width="80">
+                            提现状态
+
+                        </th>
+                        <th field="PayStatus" align="left" width="80">
+                            付款状态
+
+                        </th>
+                        <th field="CertificateStatus" align="left" width="80">
+                            凭证状态
+
+                        </th>
+                        <th field="CancelStatus" align="left" width="80">
+                            作废状态
+
+                        </th>
+                        <th field="BGCodeName" align="left" hidden="true" width="100">
+                            科目名称
+                        </th>
+                        <th field="BGCodeKey" align="left" hidden="true" width="80">
+                            科目编码
+                        </th>
+                        <th field="SubmitNotApprove" align="left" hidden="true" width="80">
+                            已提交未审批
+                        </th>
+                        <th field="ModelName" hidden="true">
+                        </th>
+                        <th field="DocTypeUrl" hidden="true">
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <input class="easyui-validatebox" id="djlb-list-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="djlb-list-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="djlb-list-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="djlb-list-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="djlb-list-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="djlb-list-OAOTS" type="hidden"></input>
+</div>
+<label id="djlb-extendregion" style="display: none">
+    <input id="djlb-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    <div id="b-ChildWindow" line="true">
+    </div>
+</label>
+<div b-type="1" id="djlb-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="djlb-list-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

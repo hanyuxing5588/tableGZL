@@ -1,0 +1,245 @@
+﻿@{
+    Layout = null;
+    }
+<head>
+    <title>报销单</title>
+    <style type="text/css">
+        body
+        {
+            font-size: 12px;
+            margin: auto auto;
+            padding: 0px;
+        }
+        .Layout
+        {
+            margin: auto auto;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+        .xj
+        {
+            width: 789px;
+            height: 55px;
+            text-align: center;
+            margin: 0px;
+        }
+        .xj .xj_pos
+        {
+            margin-left: 200px;
+            width: 383px;
+            font-family: 华文细黑;
+            font-size: 22px;
+            font-weight: bold;
+            line-height: 43px;
+        }
+        .dh
+        {
+            width: 203px;
+            line-height: 43px;
+            height: 43px;
+            float: left;
+            margin-top: -40px;
+            text-align: left;
+            font-family: 宋体; /*font-weight: bold;*/
+            padding-left: 5px;
+        }
+        .xj_bg
+        {
+            width: 589px;
+            font-family: 华文楷体;
+            font-size: 14px;
+            padding: 0px;
+            margin: 0px;
+            float: left;
+            line-height: 25px;
+        }
+        .xj_bg_div1
+        {
+            float: left;
+            padding: 3px;
+            font-weight: bold;
+        }
+       
+        .jine div
+        {
+            height: 46px;
+            line-height: 46px;
+            float: left;
+            text-align: center;
+        }
+        
+        table
+        {
+            border-collapse: collapse; /*边框合并属性*/
+            margin-top: 2px;
+            font-family: 华文楷体;
+            font-size: 14px;
+            width: 789px;
+            height:222px;
+            float: left;
+            table-layout: fixed;
+        }
+        th
+        {
+            border: 1px solid #000000;
+            height: 45px;
+            text-align: center;
+            line-height: 25px;
+        }
+       td
+        {
+            border: 1px solid #000000;
+            height: 45px;
+            text-align: center;
+            word-wrap: break-word;
+            line-height: 20px;
+        }
+          .tab_foot
+        {
+            width: 789px;
+            height: 50px;
+            margin: 0px auto;
+            font-family: 华文楷体;
+            font-size: 16px;
+            vertical-align: bottom;
+            float: left;
+        }
+        .tabfoot_div
+        {
+            line-height: 50px;
+            text-align: left;
+            float: left;
+            padding-left: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div id="print" style="position: relative; height: 100%; line-height: 100%;" options="{'extendcontent':{'BX_InviteFee':{'gist':'rowcount','model':'page','target':'content'}}}">
+        <div id="content" class="Layout">
+            <div class="xj">
+                <div class="xj_pos">
+                    <span id="BX_Main-DocMemo"></span>&nbsp;报&nbsp;销&nbsp;单
+                </div>
+                <div style="width: 300px; height: 5px; margin-left: 240px; border-top: 1px solid black;
+                    border-bottom: 1px solid black;">
+                </div>
+                <div class="dh">
+                 <img style="width:150px; height:50px" src="../../Content/images/barcode.gif" />
+                 @*   <span>单号：</span>&nbsp;<span id="BX_Main-DocNum"></span>*@
+                </div>
+            </div>
+            <div style="width:100%;">
+                <div class="xj_bg">
+                    <div class="xj_bg_div1">
+                        单位：<span id="BX_Main-DWName"></span></div>
+                </div>
+                <div style="width: 789px; font-size: 14px; height: 31px; line-height: 31px; text-align: right;">
+                    <span id="BX_Main-DocDate"></span></div>
+            </div>
+            <div>
+                <table id="BX_InviteFee" rowcount=20>
+                    <thead>
+                        <tr>
+                            <th field="colindex" style="width: 45px;">
+                                序号
+                            </th>
+                            <th field="BX_InviteFee-InvitePersonName" style="width: 80px;">
+                                姓名
+                            </th>
+                            <th field="BX_InviteFee-InvitePersonIDCard" style="width: 110px;">
+                                证件号码
+                            </th>
+                            <th field="BX_InviteFee-Total_BX" isDemical="true" style="width: 80px;">
+                                应付金额
+                            </th>
+                            <th field="BX_InviteFee-Total_Tax" isDemical="true" style="width: 70px;">
+                                代扣个税
+                            </th>
+                            <th field="BX_InviteFee-Total_Real" isDemical="true" style="width: 80px;">
+                                实付金额
+                            </th>
+                            <th field="" style="width: 138px;">@*BX_InviteFee-InvitePersonName*@
+                                签收人
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                         <tr><td></td> <td field=""></td><td field="">  </td> <td style="text-align:right" field=""> </td><td style="text-align:right" field=""></td><td style="text-align:right" field=""></td> <td field="">&nbsp</td></tr>
+                        <tr>
+                            <td>
+                            </td>
+                            <td field="">
+                                合计
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                               <div id="BX_Main-YingFaheji">
+                                </div>
+                                                        </td>
+                            <td field="">
+                                   <div id="BX_Main-DaiShoushuie1">
+                                </div>
+                            </td>
+                            <td field="">
+                            <div id="BX_Detail-Total_Real">
+                                </div>
+                            </td>
+                            <th field="">
+                            </th>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="7">
+                                <div class="jine">
+                                    <div style="width: 150px;">
+                                        应付金额 人民币(大写)
+                                    </div>
+                                    <div style="width: 421px; text-align: left; font-weight:bold;">
+                                        <span id="BX_Main-moneychinese">大写金额</span>
+                                    </div>
+                                    <div style="width: 205px; text-align: center;">
+                                        <div style="width: 140px; padding-right: 8px; line-height: 45px;
+                                            text-align: right; border-bottom: 1px solid #000000; float: right; height: 36px; font-weight:bold;">
+                                            ￥<span id="BX_Main-YingFaheji">小写金额</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+           <div class="tab_foot">
+            <div class="tabfoot_div" style="width:146px; float:left;"><span id=""></span></div>
+               <div class="tabfoot_div" style="width:146px; float:left;">财务负责人：<span id=""></span></div>
+                <div class="tabfoot_div" style="width:146px; float:left;">项目负责人：<span id=""></span></div>
+                <div class="tabfoot_div" style="width:146px; float:left;">部门负责人：<span id=""></span></div>
+                <div class="tabfoot_div" style="width:156px; float:left;">处室负责人：<span id=""></span></div>
+                <div class="tabfoot_div" style="width:130px; float:right;">经手：<span id=""></span></div>
+                      
+            </div>
+        </div>
+    </div>
+</body>
+</html>

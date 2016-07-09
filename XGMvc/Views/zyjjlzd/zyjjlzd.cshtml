@@ -1,0 +1,625 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "专用基金列支单";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Total_JJ = '#zyjjlzd-JJ_Detail-Total_JJ',
+            Total_Plan = '#zyjjlzd-JJ_Detail-Total_Plan',
+            moneychinese = '#zyjjlzd-JJ_Main-moneychinese';
+        //给金额小写绑定change事件
+        $(Total_JJ).bind('change', function (v, c, d, e) {
+
+            var tempVal = $(Total_JJ).val();
+            var maxVal = $(Total_JJ).numberbox('options').max;
+            if (tempVal >= parseFloat(maxVal)) {
+                tempVal = parseFloat(maxVal);
+            }
+
+            $(moneychinese).validatebox('setText', tempVal || 0.00);
+        });
+        //给金额小写绑定blur和focus事件
+        $(Total_JJ).bind('blur', function (v, c, d, e) {
+
+            var val = $(Total_JJ).numberbox('getValue') || 0.00;
+            if (val == 0) {
+                $(Total_JJ).numberbox('setText', '0.00');
+            } else {
+                $(Total_JJ).numberbox('setText', val);
+            }
+        }).bind('focus', function (v, c, d, e) {
+
+            var val = $(Total_JJ).numberbox('getValue') || 0.00;
+            if (val == 0) {
+                $(Total_JJ).numberbox('setText', '');
+            }
+        });
+
+        //给限额绑定blur和focus事件
+        $(Total_Plan).bind('blur', function (v, c, d, e) {
+
+            var val = $(Total_Plan).numberbox('getValue') || 0.00;
+            if (val == 0) {
+                $(Total_Plan).numberbox('setText', '0.00');
+            } else {
+                $(Total_Plan).numberbox('setText', val);
+            }
+        }).bind('focus', function (v, c, d, e) {
+
+            var val = $(Total_Plan).numberbox('getValue') || 0.00;
+            if (val == 0) {
+                $(Total_Plan).numberbox('setText', '');
+            }
+        });
+    })
+    $.extend($.fn.numberbox.methods, {
+        setData: function (jq, hs) {
+            return jq.each(function () {
+
+                var idAttr = $(this).attr('id').split('-');
+
+                if (!idAttr) return;
+                if (hs) {
+                    var a = hs[idAttr[1]], b = hs[idAttr[1]], c, d;
+                    if (a && a.hasOwnProperty(idAttr[2])) {
+                        c = a[idAttr[2]];
+                        if (!c) c = 0.00;
+                        $(this).numberbox('setValue', c);
+
+                        if (idAttr[2] == "Total_JJ") {
+                            $('#zyjjlzd-JJ_Main-moneychinese').validatebox('setText', c);
+                        }
+                        return;
+                    }
+                    return;
+                }
+                $(this).numberbox('setValue', 0.00);
+            })
+        }
+    });
+    $.extend($.fn.linkbutton.methods, {
+        examine: function (isSave) {
+            var opts = $(this).linkbutton('options');
+            
+            var singleExamineId = opts.singleExamineId;
+            if (!singleExamineId) return;
+            var val = $('#' + singleExamineId).numberbox('getValue');
+            if (val == 0) {
+                $.messager.alert('提示', '(小写)金额不能为0！');
+                return;
+            }
+            //获取单据类型
+            var scope = opts.scope;
+            //获取当前单据状态值
+
+
+            var pageState = $.view.getStatus(scope);
+            if (!(pageState == "1" || pageState == "2")) return true;
+            var parms = $(this).linkbutton('getParms', 'windowExamine');
+            if (parms) {
+                for (var colType in parms) {
+                    var control = parms[colType];
+                    var msgtemp = $.fn[colType].methods['verifyData'].call($('#' + control.source));
+                    if (msgtemp) {
+                        $('#' + control.target).click();
+                        return;
+                    }
+                }
+            }
+            var parms = $(this).linkbutton('getParms', 'examine');
+            if (parms) {
+                var msgError = "";
+                for (var colType in parms) {
+                    var controls = parms[colType];
+                    for (var i = 0, j = controls.length; i < j; i++) {
+                        var id = "#" + controls[i];
+                        var fn = $.fn[colType].methods['verifyData'];
+                        if (!fn) continue;
+                        var msgtemp = fn.call($(id));
+                        if (msgtemp)
+
+                            msgError += msgtemp + "</br>";
+                    }
+                }
+            }
+            if (msgError.length != 0) {
+                $.messager.alert('提示', msgError);
+                return false;
+            }
+            if (isSave != true) {
+                $.messager.alert('提示', "校验成功！");
+                return;
+            }
+            //串联提示
+
+            var stateArrs = [1, 2];
+            if (!stateArrs.exist($.view.curPageState)) return true;
+            var parms = $(this).linkbutton('getParms', 'bubbleExamine');
+            if (parms) {
+                var msgError = "";
+                for (var colType in parms) {
+                    var controls = parms[colType];
+                    for (var i = 0, j = controls.length; i < j; i++) {
+                        var id = "#" + controls[i];
+                        var fn = $.fn[colType].methods['verifyData'];
+                        if (!fn) continue;
+                        var msgtemp = fn.call($(id));
+                        if (msgtemp.length > 0) {
+                            msgError += msgtemp + "</br>";
+                        }
+                    }
+                }
+                if (msgError.length != 0) {
+                    return msgError;
+                }
+            }
+
+            return true;
+        }
+    });
+</script>
+<div class="easyui-layout" id="zyjjlzd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="zyjjlzd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'zyjjlzd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/zyjjlzd',['zyjjlzd-JJ_Main-moneychinese','zyjjlzd-JJ_Detail-Total_JJ']]}">
+                打印</a> 
+                <a href="#" class="easyui-linkbutton" id="zyjjlzd-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'zyjjlzd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/zyjjlzd',['zyjjlzd-JJ_Main-moneychinese','zyjjlzd-JJ_Detail-Total_JJ']]}">
+                预览</a> 
+
+                <a href="#" class="easyui-linkbutton" id="zyjjlzd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'zyjjlzd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a> <a href="#" class="easyui-linkbutton"
+                        id="zyjjlzd-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'zyjjlzd',status:'1',
+                   bindparms:{'newDoc':['/zyjjlzd/New']},
+                   forbidstatus:[1,2,3]">新增</a> <a href="#" class="easyui-linkbutton" id="zyjjlzd-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'zyjjlzd-JJ_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zyjjlzd',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> <a href="#" class="easyui-linkbutton" id="zyjjlzd-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'zyjjlzd-JJ_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zyjjlzd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" 
+                   id="zyjjlzd-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                    sourceBody:true,
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/zyjjlzd','zyjjlzd-JJ_Detail','parti']},scope:'zyjjlzd', forbidstatus:[3]">明细</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="zyjjlzd-abandoned"
+                       data-options="plain:'true',iconCls:'icon-zuofei',docState:'zyjjlzd-JJ_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['zyjjlzd-JJ_Main-DocState','9']},scope:'zyjjlzd',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> <a href="#" class="easyui-linkbutton" id="zyjjlzd-recover"
+                       data-options="plain:'true',iconCls:'icon-huifu',
+                   docState:'zyjjlzd-JJ_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['zyjjlzd-JJ_Main-DocState','6']},scope:'zyjjlzd',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a> <a href="#" class="easyui-linkbutton" id="zyjjlzd-examine"
+                       data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },singleExamineId:'zyjjlzd-JJ_Detail-Total_JJ',
+                   bindparms:{
+                    'examine':{
+                            'validatebox':['zyjjlzd-JJ_Main-DocMemo'],
+                            'datebox':['zyjjlzd-JJ_Main-DocDate'],
+                            'combogrid':[
+                                    'zyjjlzd-JJ_Main-GUID_Person',
+                                    'zyjjlzd-JJ_Main-GUID_DW',
+                                    'zyjjlzd-JJ_Main-GUID_Department',
+                                    'zyjjlzd-JJ_Detail-GUID_JJType',
+                                    'zyjjlzd-JJ_Detail-GUID_SettleType'
+                                ]
+                        },
+                    'bubbleExamine':
+                        {
+                          'numberbox':['zyjjlzd-JJ_Main-BillCount']
+                        }
+                    },
+                   scope:'zyjjlzd',
+                   forbidstatus:[4]">校验</a> <a href="#" class="easyui-linkbutton" id="zyjjlzd-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'zyjjlzd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> <a href="#" class="easyui-linkbutton"
+                        id="zyjjlzd-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/zyjjlzd/Save','zyjjlzd-examine']},scope:'zyjjlzd',status:'4',
+                   forbidstatus:[4]">保存</a> <a href="#" class="easyui-linkbutton" id="zyjjlzd-submitProcess"
+                       data-options="plain:'true',iconCls:'icon-tijiao',docState:'zyjjlzd-JJ_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/zyjjlzd/CommitFlow']},scope:'zyjjlzd',
+                   forbidstatus:[1,2,3]">提交</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="zyjjlzd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'zyjjlzd-JJ_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'zyjjlzd',
+                   forbidstatus:[1,2,3]">退回</a>
+                   
+                    <a href="#" class="easyui-linkbutton" id="zyjjlzd-histroy"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/zyjjlzd','history-JJ_Main','history']},
+                    window:'b-window',scope:'zyjjlzd'">历史</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="zyjjlzd-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/zyjjlzd','/Process/process','zyjjlzd-process','process']},
+                   window:'b-window',scope:'zyjjlzd',
+                   forbidstatus:[1,2,3]">流程</a>
+                    
+                    <a href="#" class="easyui-linkbutton" id="zyjjlzd-help"
+                        data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'zyjjlzd',
+                    bindmethod:{ 'click': ['help'] }">帮助</a> <a href="#" class="easyui-linkbutton" id="zyjjlzd-close"
+                        data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'zyjjlzd'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="单位">
+                <ul class="easyui-tree" id="zyjjlzd-tree-dw" data-options="associate:{
+                    'zyjjlzd-JJ_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  sortName:'DWKey',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="zyjjlzd-tree-dep" data-options="associate:{
+                    'zyjjlzd-JJ_Main-GUID_DW':['GUID_DW','DWName'],
+                    'zyjjlzd-JJ_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="人员" data-options="selected:true">
+                <ul class="easyui-tree" id="zyjjlzd-tree-per" data-options="associate:{
+                    'zyjjlzd-JJ_Main-GUID_Person':['GUID','PersonName'],
+                    'zyjjlzd-JJ_Main-GUID_DW':['GUID_DW','DWName'],
+                    'zyjjlzd-JJ_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="zyjjlzd-abandonedStatus" statuscontrolid="zyjjlzd-JJ_Main-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        专用基金列支单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 90px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>单据编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 90px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>单据日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="zyjjlzd-JJ_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }
+                    "></input>
+                </td>
+                <td style="width: 90px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>经办人</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="zyjjlzd-JJ_Main-GUID_Person" data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        sortName:'PersonKey',
+                        bindmethod: { 'onSelect': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        associate:
+                            {
+                                'zyjjlzd-JJ_Main-GUID_DW':['GUID_DW'],
+                                'zyjjlzd-JJ_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 90px">
+                    <label id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="zyjjlzd-JJ_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'150'},
+                            {field:'DWName',title:'单位名称',width:'345'}
+                            ]],
+                        panelWidth:500,
+                        width:516,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 90px"">
+                    <label id="lbl-GUID_Department">
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="zyjjlzd-JJ_Main-GUID_Department" data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'150'},
+                            {field:'DWName',title:'所属单位名称',width:'150'}
+                            ]],
+                        width:180,
+                        panelWidth:425,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        sortName:'DepartmentKey',
+                        bindmethod: { 'onSelect': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'zyjjlzd-JJ_Main-GUID_DW':['GUID_DW']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 90px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘&nbsp;&nbsp;要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-DocMemo" style="width: 512px"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                 <td style="width: 90px">
+                    <label id="lbl-BillCount">
+                        &nbsp;附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="zyjjlzd-JJ_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 90px">
+                    <label id="lbl-GUID_JJType">
+                        <font color="red">*</font>专用基金类型</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="zyjjlzd-JJ_Detail-GUID_JJType" data-options="
+                        columns:[[
+                            {field:'GUID',title:'GUID',hidden:'true'},
+                            {field:'JJTypeKey',title:'专用基金编码',width:'150'},
+                            {field:'JJTypeName',title:'专用基金名称',width:'345'}
+                            ]],
+                        width:516,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/JJType',
+                        idField:'GUID',
+                        textField:'JJTypeName',
+                        filterField:'JJTypeKey,JJTypeName',
+                        sortName:'JJTypeKey',
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                 
+                <td style="width: 90px" id="lbl-GUID_SettleType">
+                    <label>
+                        <font color="red">*</font>结算方式</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="zyjjlzd-JJ_Detail-GUID_SettleType"
+                    data-options="
+                    columns:[[
+                        {field:'GUID',title:'GUID',hidden:'true'},
+                        {field:'SettleTypeKey',title:'结算方式编码',hidden:'true'},
+                        {field:'SettleTypeName',title:'结算方式名称',width:'155'}
+                    ]],
+                        panelWidth:160,
+                        width:180,
+                        method:'post',
+                        idField:'GUID',
+                        textField:'SettleTypeName',
+                        filterField:'SettleTypeKey,SettleTypeName',
+                        sortName:'SettleTypeKey',
+                        remoteUrl:'/Combogrid/SettleType',
+                        forbidstatus:[4,3]
+                    ">     
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                 <td style="width: 90px">
+                    <label id="lbl-CheckNumber">
+                        &nbsp;支票号</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="zyjjlzd-CN_Check-CheckNumber" style="width: 512px"
+                        data-options="forbidstatus:[-1],required:false"></input>
+                </td>
+                 <td style="width: 90px">
+                    <label id="lbl-Total_Plan">
+                        &nbsp;限&nbsp;&nbsp;&nbsp;额</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="zyjjlzd-JJ_Detail-Total_Plan" style="width: 176px" 
+                        data-options="precision:2,forbidstatus:[4,3],max:99999999.99,groupSeparator:','">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                 <td style="width: 90px">
+                    <label id="lbl-PaymentNumber">
+                        &nbsp;财政支付令</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-searchbox" id="zyjjlzd-CN_PaymentNumber-PaymentNumber" style="width: 512px"
+                        data-options="
+                            config:{
+                                'window':'b-window',
+                                'particulars':['/particulars/zyjjlzd','zyjjlzd-JJ_Detail','parti']
+                            },
+                            searcher: function (value, name) {
+                                var d = $('#zyjjlzd-CN_PaymentNumber-PaymentNumber').searchbox('options').config;
+                                var parms = d.particulars;
+                                var fun = $.fn.linkbutton.methods['particularsDetail1']
+                                if (fun) {
+                                    fun(parms, d.window);
+                                }
+                            }
+
+                        "></input>
+                </td>
+                <td colspan="2" style="width: 90px">
+                    <input type="checkbox" class="easyui-checkbox"  id="zyjjlzd-CN_PaymentNumber-IsGuoKu" data-options="forbidstatus:[4,3]">是否国库</input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 90px">
+                    <label>
+                        &nbsp;金额（大写）</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-moneychinese" style="width: 512px;"
+                        data-options="forbidstatus:[-1],chinese:true,setNotValue:true"> </input>
+                </td>
+                <td style="width: 90px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="zyjjlzd-JJ_Detail-Total_JJ" style="width: 176px" data-options="
+                        changeColor:true,precision:2,forbidstatus:[4,3],max:99999999.99,groupSeparator:','">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 90px">
+                    <label for="field1">
+                        &nbsp;制单人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" id="zyjjlzd-JJ_Main-GUID_Maker" data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]"> </input>
+                </td>
+                <td style="width: 90px">
+                    <label for="field1">
+                        &nbsp;制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="zyjjlzd-JJ_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 90px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="zyjjlzd-JJ_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Main-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-CN_PaymentNumber-GUID" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-CN_PaymentNumber-IsProject" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-CN_PaymentNumber-GUID_EconomyClass" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-CN_PaymentNumber-GUID_FunctionClass" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-CN_PaymentNumber-GUID_ExpendType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-CN_PaymentNumber-GUID_BGResource" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Detail-GUID_Project" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Detail-ProjectKey" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Detail-GUID_Department" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Detail-GUID_BGCode" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Detail-GUID_BGType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zyjjlzd-JJ_Detail-GUID_BGType" type="hidden"></input>
+</div>
+<label id="zyjjlzd-extendregion" style="display: none">
+    <input id="zyjjlzd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="zyjjlzd-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="zyjjlzd-JJ_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

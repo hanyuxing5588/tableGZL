@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<formula>
+  <sqlformula>
+    <ccol key="t6" descript="额度支出执行率" Type="1" value="0">
+      <crow key="2060199" descript="科学事业费" value="
+            select sum(iTotal) from (
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2 in('1-2060199','2-2060199')
+            union all
+            select sum(cast(replace(t2,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('2060199当年直接支付额度')
+            ) a
+            "/>
+      <crow key="2060199001" descript="正常经费" value="
+            select sum(iTotal) from (
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2='1-2060199'
+            union all
+            select sum(cast(replace(t2,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1='2060199当年直接支付额度'
+            ) a
+            "/>
+      <crow key="2060199002" descript="专项经费" value="
+            select sum(iTotal) from (
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2='2-2060199'
+            union all
+            select sum(cast(replace(t2,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1='2060199当年直接支付额度'
+            ) a
+            "/>
+      <crow key="2020401" descript="国际组织会费" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2='2-2020401'
+            "/>
+      <crow key="h2" descript="社会公益研究" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2='2-2060302'
+            "/>
+      <crow key="h3" descript="科技三项费用" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2='2-2060403'
+            "/>
+      <crow key="h4" descript="住房改革支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2 in ('1-2210201','1-2210202','1-2210203')
+            "/>
+      <crow key="h2" descript="住房公积金支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2 in ('1-2210201')
+            "/>
+      <crow key="h3" descript="提租补贴支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2 in ('1-2210202')
+            "/>
+      <crow key="h4" descript="住房补贴支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算') and t2 in ('1-2210203')
+            "/>
+    </ccol>
+    <ccol key="t8" descript="账面支出" value="
+          select sum(md) from @ufdatabase..gl_accvouch where ccode like '5001%' and citem_id='@prokey' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+    ">
+      <crow key="206019900101" descript="人员经费" value="
+            select sum(md) from @ufdatabase..gl_accvouch where (ccode like '500101010101%' or ccode like'50010101010201%' or ccode like '500102010101%' or ccode like '50010201010201%' or ccode like '500103010101%' or ccode like '50010301010201%') and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="206019900102" descript="公用经费" value="
+            select sum(md) from @ufdatabase..gl_accvouch where (ccode like '5001010102%' or ccode like'5001020102%' or ccode like '5001030102%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h2" descript="住房公积金支出" value="
+            select sum(md) from @ufdatabase..gl_accvouch where (ccode like '50010101010202%' or ccode like'50010201010202%' or ccode like '50010301010202%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h3" descript="提租补贴支出" value="
+            select sum(md) from @ufdatabase..gl_accvouch where (ccode like '50010101010203%' or ccode like'50010201010203%' or ccode like '50010301010203%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h4" descript="住房补贴支出" value="
+            select sum(md) from @ufdatabase..gl_accvouch where (ccode like '50010101010204%' or ccode like'50010201010204%' or ccode like '50010301010204%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h5" descript="其中：2014院士科技咨询经费" value="
+            select sum(md) from @ufdatabase..gl_accvouch where ccode like '5001%' and citem_id in  (select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3')  and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="186120000803" descript="2013院士科技咨询经费" value="
+            select sum(md) from @ufdatabase..gl_accvouch where ccode like '5001%' and citem_id in  (select 
+            citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2010 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) )  and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="1861000006" descript="2012院士科技咨询经费" value="
+            select sum(md) from @ufdatabase..gl_accvouch where ccode like '5001%' and citem_id in  (select 
+            citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2011 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) )  and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h6" descript="以前年度支出" value="
+            select sum(md) from @ufdatabase..gl_accvouch where ccode like '5001%' and citem_id   in  (SELECT t1 FROM  CZZXJDMain WHERE Year(docDate)=2014 and t1 NOT IN 
+(select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3'))  and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+    </ccol>
+    <ccol key="t12" descript="应收款" value="
+          select sum(a) from (
+          select sum(mb) as a from @ufdatabase..gl_accmultiass where  iperiod = @period and citem_id='@prokey' and (ccode like '12150201%' or ccode like '12150304%'  or ccode like '12150401%' or ccode like '12150203%' ) group by mb
+          union all
+          select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch  where  citem_id='@prokey' and  (ccode like '12150201%' or ccode like '12150304%'  or ccode like '12150401%' or ccode like '12150203%') and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+          ) k
+          ">
+      <crow key="206019900101" descript="人员经费" Type="1" value="0"/>
+      <crow key="206019900102" descript="公用经费" value="
+            select sum(a) from (
+            select sum(mb) as a from @ufdatabase..gl_accsum where iperiod=@period and( ccode like '12150303%' or ccode like '12150402' or ccode like '12150202')group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where (ccode like '12150303%' or ccode like '12150402' or ccode like '12150202') and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            ) k
+            "/>
+      <crow key="h1" descript="住房公积金支出" Type="1" value="0"/>
+      <crow key="h2" descript="提租补贴支出" Type="1" value="0"/>
+      <crow key="h3" descript="住房补贴支出" Type="1" value="0"/>
+      <crow key="h5" descript="其中：2014院士科技咨询经费" value="
+           select sum(a) from( select sum(mb) as a from @ufdatabase..gl_accmultiass 
+            where      iperiod=@period
+                   and citem_id in (select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3') 
+and (ccode like '121502%' or ccode like '121504%')
+            Union All 
+         select (SUM(MD)-SUM(MC)) as a from @ufdatabase..gl_accvouch  
+            where 
+citem_id in (select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3') 
+
+
+ and (ccode like '121504%' or ccode like '121502%')    and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate') b
+            
+            "/>
+      <crow key="186120000803" descript="2013院士科技咨询经费" value="
+            select sum(a) from (
+            select sum(mb) as a from @ufdatabase..gl_accmultiass where iperiod = @period and citem_id in (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from 
+            @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2009 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) ) and (ccode like '12150201%' or ccode like '12150304%'  or ccode like '12150401%' ) group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch  where citem_id in  (select citemcode from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where 
+            citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2009 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) ) and  (ccode like '12150201%' or ccode like '12150304%'  or ccode like '12150401%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            ) k
+            "/>
+      <crow key="1861000006" descript="2012院士科技咨询经费" value="
+            select sum(a) from (
+            select sum(mb) as a from @ufdatabase..gl_accmultiass where iperiod = @period and citem_id in (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from 
+            @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2010 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) ) and (ccode like '12150201%' or ccode like '12150304%'  or ccode like '12150401%' ) group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch  where citem_id in  (select citemcode from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where 
+            citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2010 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) ) and  (ccode like '12150201%' or ccode like '12150304%'  or ccode like '12150401%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            ) k
+            "/>
+      <crow key="h6" descript="以前年度支出" value="
+            select sum(a) from (
+            select sum(mb) as a from @ufdatabase..gl_accmultiass where iperiod = @period and citem_id  in (SELECT t1 FROM  CZZXJDMain WHERE Year(docDate)=2014 and t1 NOT IN 
+(select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3')) and (ccode like '12150304%') group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch  where citem_id   in  (SELECT t1 FROM  CZZXJDMain WHERE Year(docDate)=2014 and t1 NOT IN 
+(select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3') ) and  (ccode like '12150304%') and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            ) k
+            "/>
+    </ccol>
+    <ccol key="t15" descript="当年额度支出" value="
+          select sum(a) from (
+          select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id ='@prokey' and ccode like '500101%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+          union all
+          select sum(mb) as a from @ufdatabase..gl_accmultiass where  iperiod = @period and citem_id='@prokey' and ccode like '12150201%'  group by mb
+          union all
+          select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id='@prokey' and ccode like '12150201%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+          union all
+          select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id='@prokey' and ccode like '12150203%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+          ) c
+          ">
+      <crow key="206019900101" descript="人员经费" value="
+            select (sum(md)-sum(mc)) from @ufdatabase..gl_accvouch where (ccode like '500101010101%' or ccode like'50010101010201%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="206019900102" descript="公用经费" value="
+		SELECT sum(t1) FROM (
+            select (sum(md)-sum(mc)) as t1 from @ufdatabase..gl_accvouch where (ccode like '5001010102%' or ccode like'12150202%' ) and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+         UNION all
+
+SELECT Sum(mb) AS t1 FROM @ufdatabase..GL_accsum  WHERE iperiod=1 AND 
+
+
+(ccode like '5001010102%' or ccode like'12150202%')
+
+)t
+	"/>
+      <crow key="h2" descript="住房公积金支出" value="
+            select sum(md) from @ufdatabase..gl_accvouch where ccode like '50010101010202%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h3" descript="提租补贴支出" value="
+            select sum(md) from @ufdatabase..gl_accvouch where ccode like '50010101010203%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h4" descript="住房补贴支出" value="
+            select sum(md) from @ufdatabase..gl_accvouch where ccode like '50010101010204%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            "/>
+      <crow key="h5" descript="其中：2014院士科技咨询经费" value="
+            select isnull(sum(a),0) from (
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id in (select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3')  and ccode like '5001%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            union all
+            select sum(mb) as a from @ufdatabase..gl_accmultiass where  iperiod=@period and citem_id in  (select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3')and ccode like '12150201%'  group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id in ( select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3')  and ccode like '12150201%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            ) k
+            "/>
+      <crow key="186120000803" descript="2013院士科技咨询经费" value="
+            select isnull(sum(a),0) from (
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id in  (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2010 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) )  and ccode like '500101%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            union all
+            select sum(mb) as a from @ufdatabase..gl_accmultiass where  iperiod=@period and citem_id in  (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2010 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) ) and ccode like '12150201%'  group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id in  (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2010 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) )  and ccode like '12150201%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            ) k
+            "/>
+      <crow key="1861000006" descript="2012院士科技咨询经费" value="
+            select isnull(sum(a),0) from (
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id in  (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2011 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) )  and ccode like '500101%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            union all
+            select sum(mb) as a from @ufdatabase..gl_accmultiass where  iperiod=@period and citem_id in  (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2011 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) ) and ccode like '12150201%'  group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id in  (select citemcode  from @ufdatabase..fitemss97sub where  citemcode  in (select citemcode from @ufdatabase..fitemss97 where citemccode like (select top 1 cast('0' as nvarchar(50)) + cast(@year-2011 as nvarchar(50)) + cast('%' as nvarchar(50)) from ss_project)) )  and ccode like '12150201%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            ) k
+            "/>
+      <crow key="h6" descript="以前年度支出" value="
+            select isnull(sum(a),0) from (
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id  in  (SELECT t1 FROM  CZZXJDMain WHERE Year(docDate)=2014 and t1 NOT IN 
+(select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3'))  and ccode like '500101%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+            union all
+            select sum(mb) as a from @ufdatabase..gl_accmultiass where  iperiod=@period and citem_id  in  (SELECT t1 FROM  CZZXJDMain WHERE Year(docDate)=2014 and t1 NOT IN 
+(select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3')) and ccode like '12150201%'  group by mb
+            union all
+            select (sum(md)-sum(mc)) as a from @ufdatabase..gl_accvouch where citem_id   in  (SELECT t1 FROM  CZZXJDMain WHERE Year(docDate)=2014 and t1 NOT IN 
+(select t1 from [baoth_newp].dbo.czzxjdmain where SubString(t1,0,5)='2014' or t1='2012xz1-3') )  and ccode like '12150201%' and dbill_date &gt;= '@sdate' and dbill_date &lt;= '@edate'
+                     ) k
+            "/>
+    </ccol>
+    <ccol key="t14" descript="银行额度支出" Type="1" value="0">
+      <crow key="2060199" descript="科学事业费" value="
+            select sum(iTotal) from (
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2 in('1-2060199','2-2060199')
+            union all
+            select sum(cast(replace(t2,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('2060199当年直接支付额度')
+            ) a
+            "/>
+      <crow key="2060199001" descript="正常经费" value="
+            select sum(iTotal) from (
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2='1-2060199'
+            union all
+            select sum(cast(replace(t2,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1='2060199当年直接支付额度'
+            ) a
+            "/>
+      <crow key="2060199002" descript="专项经费" value="
+            select sum(iTotal) from (
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2='2-2060199'
+            union all
+            select sum(cast(replace(t2,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1='2060199当年直接支付额度'
+            ) a
+            "/>
+      <crow key="2020401" descript="国际组织会费" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2='2-2020401'
+            "/>
+      <crow key="2060302" descript="社会公益研究" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2='2-2060302'
+            "/>
+      <crow key="2060403" descript="科技三项费用" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2='2-2060403'
+            "/>
+      <crow key="h1" descript="住房改革支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2 in ('1-2210201','1-2210202','1-2210203')
+            "/>
+      <crow key="h2" descript="住房公积金支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2 in ('1-2210201')
+            "/>
+      <crow key="h3" descript="提租补贴支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2 in ('1-2210202')
+            "/>
+      <crow key="h4" descript="住房补贴支出" value="
+            select sum(cast(replace(t9,',', '') as float)) as iTotal from YHHZDZDB where year(docdate)=@year and month(docdate)=@emonth and t1 in('当年预算','上年结余') and t2 in ('1-2210203')
+            "/>
+    </ccol>
+  </sqlformula>
+  <colformula>
+    <ccol key="t5" descript="本年安排投资" value="@t3+@t4"/>
+    <ccol key="t6" descript="额度支出执行率" value="@t14/@t4"/>
+    <ccol key="t7" descript="动态执行比率" value="@t15/@t4"/>
+    <ccol key="t9" descript="占本年安排比例" value="@t8/@t5"/>
+    <ccol key="t10" descript="本年安排账面结余" value="@t5-@t8"/>
+    <ccol key="t11" descript="累计结余" value="@t2+@t4-@t8"/>
+    <ccol key="t13" descript="今年可用额度" value="@t5-@t15"/>
+    <ccol key="t17" descript="用款计划执行比率" value="@t16/@t5"/>
+  </colformula>
+  <skiprowsum>
+    <skipitem colkey="t2" coldescript="上年结转" rowkey="*"/>
+    <skipitem colkey="t6" coldescript="额度支出执行率" rowkey="*"/>
+    <!--<skipitem colkey="t14" coldescript="银行额度支出" rowkey="*"/>-->
+    <skipitem colkey="t17" coldescript="用款计划执行比率" rowkey="*"/>
+  </skiprowsum>
+  <projectset>
+    <crow index="01" key="2060199" zjxz="01" level="5"/>
+    <crow index="02" key="2060199001" zjxz="01" level="4"/>
+    <crow index="03" key="206019900101" zjxz="01" level="3"/>
+    <crow index="04" key="206019900102" zjxz="01" level="3"/>
+    <crow index="05" key="2060199002" zjxz="01" level="4"/>
+    <crow index="06" key="1861000004" zjxz="01" level="3"/>
+    <crow index="07" key="1861000009" zjxz="01" level="3"/>
+    <crow index="08" key="1861000008" zjxz="01" level="3"/>
+    <crow index="09" key="1861200007" zjxz="01" level="3"/>
+    <crow index="10" key="186120000701" zjxz="01" level="2"/>
+    <crow index="11" key="186120000702" zjxz="01" level="2"/>
+    <crow index="12" key="186120000703" zjxz="01" level="2"/>
+    <crow index="13" key="186120000704" zjxz="01" level="2"/>
+    <crow index="14" key="186120000705" zjxz="01" level="2"/>
+    <crow index="15" key="186120000706" zjxz="01" level="2"/>
+    <crow index="16" key="1861200008" zjxz="01" level="3"/>
+    <crow index="17" key="h5" zjxz="" level="2"/>
+    <crow index="18" key="h6" zjxz="" level="2"/>
+    <crow index="19" key="186120002" zjxz="01" level="3"/>
+    <crow index="20" key="186120002001" zjxz="01" level="2"/>
+    <crow index="21" key="186120002002" zjxz="01" level="2"/>
+    <crow index="22" key="186120002003" zjxz="01" level="2"/>
+    <crow index="23" key="186120002004" zjxz="01" level="2"/>
+    <crow index="24" key="186120002005" zjxz="01" level="2"/>
+    <crow index="25" key="186120002007" zjxz="01" level="2"/>
+    <crow index="26" key="186120002009" zjxz="01" level="2"/>
+    <crow index="27" key="186120002010" zjxz="01" level="2"/>
+    <crow index="28" key="186120002011" zjxz="01" level="2"/>
+    <crow index="29" key="186120002012" zjxz="01" level="2"/>
+    <crow index="30" key="186120002013" zjxz="01" level="2"/>
+    <crow index="31" key="186120002008" zjxz="01" level="2"/>
+    <crow index="32" key="186120002014" zjxz="01" level="2"/>
+    <crow index="33" key="186120002015" zjxz="01" level="2"/>
+    <crow index="34" key="186120002016" zjxz="01" level="2"/>
+    <crow index="35" key="1861200014" zjxz="01" level="3"/>
+    <crow index="36" key="1861000012" zjxz="01" level="3"/>
+    <crow index="37" key="1861000014" zjxz="01" level="3"/>
+    <crow index="38" key="1861100026" zjxz="01" level="3"/>
+    <crow index="39" key="206019901" zjxz="01" level="3"/>
+    <crow index="40" key="1861000015" zjxz="01" level="3"/>
+    <crow index="41" key="1861000007" zjxz="01" level="3"/>
+    <crow index="42" key="1861200022" zjxz="01" level="3"/>
+    <crow index="43" key="1861400023" zjxz="01" level="3"/>
+    <crow index="44" key="1861200099" zjxz="01" level="3"/>
+    <crow index="45" key="2060199003" zjxz="01" level="4"/>
+    <crow index="46" key="2020401" zjxz="02" level="5"/>
+    <crow index="47" key="1861200001" zjxz="02" level="4"/>
+    <crow index="48" key="1861200002" zjxz="02" level="4"/>
+    <crow index="49" key="2060302" zjxz="07" level="5"/>
+    <crow index="50" key="206030208" zjxz="07" level="4"/>
+    <crow index="51" key="2020503" zjxz="07" level="5"/>
+    <crow index="52" key="1861400024" zjxz="01" level="4"/>
+    <crow index="53" key="206040302" zjxz="07" level="4"/>
+    <crow index="54" key="2012sc" zjxz="07" level="5"/>
+    <crow index="55" key="h1" zjxz="" level="5"/>
+    <crow index="56" key="h2" zjxz="" level="4"/>
+    <crow index="57" key="h3" zjxz="" level="4"/>
+    <crow index="58" key="h4" zjxz="" level="4"/>
+    <crow index="59" key="Total_ZJ" zjxz="" level="6"/>
+  </projectset>
+</formula>

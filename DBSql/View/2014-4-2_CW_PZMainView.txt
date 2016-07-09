@@ -1,0 +1,87 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[CW_PZMainView]') and OBJECTPROPERTY(id, N'IsView') = 1) 
+drop view [dbo].[CW_PZMainView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：CW_PZMainView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-4-2
+//功    能：凭证视图信息
+*/
+
+CREATE   VIEW dbo.CW_PZMainView
+AS
+SELECT dbo.CW_PZMain.GUID, dbo.CW_PZMain.DocDate, 
+      dbo.CW_PZMain.GUID_PZType, dbo.CW_PZType.PZTypeKey, 
+      dbo.CW_PZType.PZTypeName, dbo.CW_PZMain.GUID_CWPeriod, 
+      dbo.CW_Period.CWPeriod, dbo.CW_PZMain.OAOTS, dbo.CW_PZMain.DocNum, 
+      dbo.CW_PZMain.BillCount, dbo.CW_PZMain.PZMemo1, dbo.CW_PZMain.PZMemo2, 
+      dbo.CW_PZMain.PZMemo3, dbo.CW_PZMain.GUID_Keeper, 
+      SS_Operator_1.OperatorName AS Keeper, dbo.CW_PZMain.GUID_Cashier, 
+      SS_Operator_2.OperatorName AS Cashier, dbo.CW_PZMain.GUID_Checker, 
+      SS_Operator_5.OperatorName AS Checker, dbo.CW_PZMain.GUID_CWMaster, 
+      SS_Operator_3.OperatorName AS CWMaster, dbo.CW_PZMain.GUID_Maker, 
+      SS_Operator_4.OperatorName AS Maker, dbo.CW_PZMain.GUID_Modifier, 
+      SS_Operator_5.OperatorName AS Modifier, dbo.CW_PZMain.IsCash, 
+      dbo.CW_PZMain.IsCheck, dbo.CW_PZMain.IsKeep, dbo.CW_PZMain.IsCWMaster, 
+      dbo.CW_PZMain.MakeDate, dbo.CW_PZMain.ModifyDate, dbo.CW_PZMain.IsStop, 
+      dbo.CW_PZMain.GUID_YWType, dbo.SS_YWType.YWTypeKey, 
+      dbo.SS_YWType.YWTypeName, dbo.CW_PZMain.GUID_DW, dbo.SS_DW.DWKey, 
+      dbo.SS_DW.DWName, dbo.CW_PZMain.GUID_DocType, 
+      dbo.SS_DocTypeView.DocTypeKey, dbo.SS_DocTypeView.DocTypeName, 
+      dbo.CW_PZMain.GUID_UIType, dbo.SS_UIType.UITypeKey, 
+      dbo.SS_UIType.UITypeName, dbo.CW_PZMain.GUID_HXMain, 
+      dbo.CW_PZMain.GUID_AccountDetail, dbo.CW_PZType.PZTypeOrder, 
+      dbo.SS_ComparisonMain.ComparisonKey, 
+      dbo.SS_ComparisonMain.ComparisonName, 
+      dbo.SS_ComparisonMain.ExteriorDataBase, dbo.SS_ComparisonMain.ExteriorType, 
+      dbo.AccountDetail.FiscalYear, dbo.SS_ComparisonMain.Verion, 
+      dbo.AccountDetail.ExteriorYear, dbo.AccountMain.AccountKey, 
+      dbo.AccountMain.AccountName,dbo.SS_DocTypeView.DocTypeUrl
+     
+FROM dbo.AccountDetail LEFT OUTER JOIN
+      dbo.AccountMain ON 
+      dbo.AccountDetail.GUID_AccountMain = dbo.AccountMain.GUID LEFT OUTER JOIN
+      dbo.SS_ComparisonMain ON 
+      dbo.AccountDetail.GUID = dbo.SS_ComparisonMain.GUID_AccountDetail RIGHT OUTER
+       JOIN
+      dbo.CW_PZMain ON 
+      dbo.SS_ComparisonMain.GUID_AccountDetail = dbo.CW_PZMain.GUID_AccountDetail LEFT
+       OUTER JOIN
+      dbo.SS_UIType ON 
+      dbo.CW_PZMain.GUID_UIType = dbo.SS_UIType.GUID LEFT OUTER JOIN
+      dbo.SS_DocTypeView ON 
+      dbo.CW_PZMain.GUID_DocType = dbo.SS_DocTypeView.GUID LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.CW_PZMain.GUID_DW = dbo.SS_DW.GUID LEFT OUTER JOIN
+      dbo.SS_YWType ON 
+      dbo.CW_PZMain.GUID_YWType = dbo.SS_YWType.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_5 ON 
+      dbo.CW_PZMain.GUID_Modifier = SS_Operator_5.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_4 ON 
+      dbo.CW_PZMain.GUID_Maker = SS_Operator_4.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_3 ON 
+      dbo.CW_PZMain.GUID_CWMaster = SS_Operator_3.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_6 ON 
+      dbo.CW_PZMain.GUID_Checker = SS_Operator_6.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_2 ON 
+      dbo.CW_PZMain.GUID_Cashier = SS_Operator_2.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.CW_PZMain.GUID_Keeper = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.CW_Period ON 
+      dbo.CW_PZMain.GUID_CWPeriod = dbo.CW_Period.GUID LEFT OUTER JOIN
+      dbo.CW_PZType ON dbo.CW_PZMain.GUID_PZType = dbo.CW_PZType.GUID
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

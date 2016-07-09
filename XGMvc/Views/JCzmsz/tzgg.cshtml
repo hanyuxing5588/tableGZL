@@ -1,0 +1,260 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "通知公告";
+}
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<link href="../../Content/commonjs/upload/default.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/fileprogress.js"></script>
+<script type="text/javascript" src="../../Content/commonjs/upload/handlers.js"></script>
+<script type="text/javascript">
+     var swfu;
+    window.onload = function () {
+        var settings = {    //定义参数配置对象
+            flash_url: "../../Content/commonjs/upload/swfupload.swf",
+            flash9_url: "../../Content/commonjs/upload/swfupload_fp9.swf",
+            upload_url: "/UploadFile/UploadFile",
+            post_params: { "PHPSESSID": "" },
+            file_size_limit: "100 MB",  //文件大小，单位MB
+            file_types: "*.*",
+            file_types_description: "All Files", //文件类型描述
+            file_upload_limit: 100,  //限定用户 一次性最多上传多少个文件
+            file_queue_limit: 10,
+            custom_settings: {  //自定义设置                progressTarget: "fsUploadProgress",
+                cancelButtonId: "btnCancel"
+            },
+            debug: true,
+
+            // Button settings
+            button_image_url: "../../Content/images/XPButtonNoText_160x22.png",
+            button_width: "140",
+            button_height: "29",
+            //            button_disabled:"true",    //改变按钮状态
+            //          buttom_disabled:loadSettings.button_disabled,
+            button_placeholder_id: "spanButtonPlaceHolder",
+            button_text: '<span class="theFont" >上传附件</span>',
+            button_text_style: ".theFont { font-size: 16px;background-color: #C0C0C0; }",
+            button_text_left_padding: 12,
+            button_text_top_padding: 3,
+
+            // The event handler functions are defined in handlers.js
+            swfupload_preload_handler: preLoad,
+            swfupload_load_failed_handler: loadFailed,
+            //            file_queued_handler: fileQueued,
+            //file_queued_handler: cancelQueue,     //取消
+            file_queue_error_handler: fileQueueError,
+            file_dialog_complete_handler: fileDialogComplete,
+            upload_start_handler: uploadStart,  //启动上传
+            upload_progress_handler: uploadProgress,
+            upload_error_handler: uploadError,
+            upload_success_handler: uploadSuccess_tzgg,     //成功之后返回值绑定
+            upload_complete_handler: uploadComplete,
+            queue_complete_handler: queueComplete	// Queue plugin event
+        },
+        //实例化一个SWFUpload，传入参数配置对象
+        swfu = new SWFUpload(settings);
+        //SWFUpload.cancelQueue();
+    }
+    </script>
+
+<style type="text/css">
+    .but
+    {
+    	color:black;
+    	border:1px solid #95b959;
+    	
+    	height:10px;
+    	background-repeat: no-repeat;
+    	
+        display:block;
+        font-size:12px;
+        text-decoration:none !important;
+        font-family:Microsoft Simhei;
+        padding:8px 12px;
+        border-radius:3px;
+        box-shadow:inset 0px 0px 2px #fff;
+        	
+    	}
+    .but:hover
+    {
+    	border:#1px solid #EFEFEF;
+    	background-color:#cae387;
+    	}
+</style>
+<div class="easyui-layout" id="tzgg-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            ` <a href="#" class="easyui-linkbutton" id="tzgg-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newStatus']},scope:'tzgg',status:'1',                        
+                  forbidstatus:[1,2,3]">新增</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="tzgg-edit"
+                      data-options="plain:'true',iconCls:'icon-xiugai',
+                  treeId:['tzgg-tree-ren'],
+                  bindmethod:{'click':['setStatus']},scope:'tzgg',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="tzgg-remove"
+                      data-options="plain:'true',iconCls:'icon-shanchu',
+                  bindmethod:{ 'click': ['setStatus'] },scope:'tzgg',status:'3',
+                  forbidstatus:[1,2,3]">删除</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="tzgg-save"
+                      data-options="plain:'true',iconCls:'icon-baocun',
+                  JCDA:true,
+                  treeId:['tzgg-tree-ren'],
+                  NewIdStatus:'1',
+                  bindmethod:{ 'click': ['saveDoc'] },
+                  bindparms:{'saveDoc':['/JCzmsz/Savetzgg']},
+                  scope:'tzgg',status:'4',forbidstatus:[4]">保存</a> 
+                  
+                  <a href="#" class="easyui-linkbutton"
+                      id="tzgg-cancel" data-options="plain:'true',iconCls:'icon-quxiao', 
+                  scope:'tzgg',forbidstatus:[4],
+                  bindmethod:{ 'click': ['cancel'] }">取消</a> <a href="#" class="easyui-linkbutton"
+                      id="tzgg-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                  bindmethod:{ 'click': ['closeTab'] },
+                  scope:'tzgg'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="通知">
+                <ul class="easyui-tree" id="tzgg-tree-ren" data-options="
+                    msg:'通知',
+                    associate:{
+                            'tzgg-OA_Notice-NoticeDate':['NoticeDate'],
+                            'tzgg-OA_Notice-isPop':['isPop'],
+                            'tzgg-OA_Notice-EndDate':['EndDate'],
+                            'tzgg-OA_Notice-overdue':['overdue'],
+                            'tzgg-OA_Notice-Title':['Title'],
+                            'tzgg-OA_Notice-Notice':['Notice'],
+                            'tzgg-OA_Notice-GUID':['GUID'],
+                            'tzgg-OA_NoticeAnnex-GUID_Notice':['GUID'],
+                            'tzgg-OA_NoticeAnnex-AnnexName':['AnnexName']
+                  },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  forbidstatus:[3],
+                  checkbox:false,
+                  url:'/Tree/GetJCNoticeTree',
+                  scope:'tzgg',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 960px; padding-left: 10px;">
+        <table border="0" style="height: 350px; width: 960px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div style="text-align: center;">
+                        <table border="0px" style="margin-top: 5%; padding: 0px; width: 650px; height: 150px;">
+                            <tr>
+                                <td style="width: 90px;">
+                                    <label for="field1" id="lbl-NoticeDate">
+                                        &nbsp;日&nbsp;&nbsp;&nbsp;&nbsp;期</label>
+                                </td>
+                                <td style="width: 200px; text-align: left;">
+                                    <input class="easyui-datebox" id="tzgg-OA_Notice-NoticeDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                                </td>
+                                <td style="width: 90px;">
+                                    <label for="field" id="lbl-isPop">
+                                        &nbsp;首页显示</label>
+                                </td>
+                                <td style="text-align: left;">
+                                    <input type="checkbox" class="easyui-checkbox" id="tzgg-OA_Notice-isPop" data-options="forbidstatus:[4,3]"></input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 90px;">
+                                    <label for="field1" id="lbl-EndDate">
+                                        &nbsp;弹出过期</label>
+                                </td>
+                                <td style="width: 200px; text-align: left;">
+                                    <input class="easyui-datebox" id="tzgg-OA_Notice-EndDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                                </td>
+                                <td style="width: 90px;">
+                                    <label for="field1" id="lbl-overdue">
+                                        &nbsp;过&nbsp;&nbsp;&nbsp;&nbsp;期</label>
+                                </td>
+                                <td style="text-align: left;">
+                                    <input type="checkbox" class="easyui-checkbox" id="tzgg-OA_Notice-overdue" data-options="forbidstatus:[4,3]"></input>&nbsp;&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 90px;">
+                                    <label for="field" id="lbl-Title">
+                                        <font color="red">*</font>标&nbsp;&nbsp;&nbsp;&nbsp;题</label>
+                                </td>
+                                <td colspan="3" style="text-align: left;">
+                                    <input class="easyui-validatebox" id="tzgg-OA_Notice-Title" style="width: 100%" data-options="forbidstatus:[4,3]"></input>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 90px;">
+                                    <label for="field" id="lbl-Notice">
+                                        <font color="red">*</font>内&nbsp;&nbsp;&nbsp;&nbsp;容</label>
+                                </td>
+                                <td colspan="3" style="text-align: left;">
+                                    <textarea id="tzgg-OA_Notice-Notice" class="easyui-validatebox" data-options="forbidstatus:[4,3]"
+                                        style="width: 100%; height: 250px; resize: none;"></textarea>
+                                </td>
+                            </tr>
+                            @* <tr>
+                                <td style="width: 90px;">
+                                    <label for="field" id="lbl-GUID_NoticeAnnex">
+                                        &nbsp;附&nbsp;&nbsp;&nbsp;&nbsp;件</label>
+                                </td>
+                                <td colspan="3" style="text-align:left;">
+                                    <textarea id="tzgg-OA_NoticeAnnex-AnnexName" class="easyui-validatebox" data-options="forbidstatus:[4,3]" style="width:100%; height:80px; float:left; resize:none;"></textarea>
+                                </td>
+                            </tr>*@
+                            <tr>
+                                <td style="width: 90px;">
+                                    <label for="field" id="lbl-">
+                                        &nbsp;附&nbsp;&nbsp;&nbsp;&nbsp;件</label>
+                                </td>
+                                <td colspan="3" style="text-align: left;">
+                                    <div class="fieldset flash" id="fsUploadProgress">
+                                        @*<span class="legend">附件</span>*@
+                                    </div>
+                                    <div id="divStatus" style="display: none">
+                                        0 上传完的文件</div>
+                                    <div>
+                                        <span id="spanButtonPlaceHolder"></span>
+                                        <input id="btnCancel1" type="button" value="清空" onclick="swfu.cancelUpload();" disabled="disabled"
+                                            style="margin-left: 2px; font-size: 16px; height: 29px;" />
+                                        <input id="btnCancel" type="button" value="取消" onclick="swfu.cancelQueue();" style="margin-left: 2px;
+                                            font-size: 16px; height: 29px;" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="tzgg-OA_Notice-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="tzgg-OA_Notice-OrderNum" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="tzgg-OA_FileTempModel-GUID_OA_FileTemp" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="tzgg-OA_Notice-FileName" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="tzgg-OA_NoticeAnnex-GUID_Notice" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="tzgg-OA_NoticeAnnex-GUID" type="hidden" keyattr="1"></input>
+
+</div>
+<label id="tzgg-extendregion" style="display: none">
+    <input id="tzgg-status" type="text"></input>
+    <input id="initscope" type="text" value="tzgg"></input>
+    <input id="initstatus" type="text" value="4"></input>
+    <input id="initController" type="text" value="JCzmsz"></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="tzgg-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

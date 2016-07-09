@@ -1,0 +1,989 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "支票申领单";
+}
+<div class="easyui-layout" id="zpsld-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="zpsld-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'zpsld',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/zpsld',['zpsld-BX_Main-moneychinese','zpsld-BX_Main-moneyunmber']]}">打印</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'zpsld',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/zpsld',['zpsld-BX_Main-moneychinese','zpsld-BX_Main-moneyunmber']]}">预览</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'zpsld',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+                   
+                   <a href="#" class="easyui-linkbutton" 
+                   id="zpsld-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'zpsld',status:'1',
+                   bindparms:{'newDoc':['/zpsld/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                  <a href="#" class="easyui-linkbutton"
+                   id="zpsld-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'zpsld-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zpsld',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="zpsld-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'zpsld-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'zpsld',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="zpsld-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['zpsld-BX_Detail']},
+                   scope:'zpsld',forbidstatus:[3,4,5,6]">增行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['zpsld-BX_Detail']},scope:'zpsld',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['zpsld-BX_Detail']},scope:'zpsld',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="zpsld-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/zpsld','zpsld-BX_Detail','parti']},scope:'zpsld', forbidstatus:[3]">明细</a>
+
+                    <a href="#" class="easyui-linkbutton" id="zpsld-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/zpsld','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'zpsld'">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="zpsld-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                      columnMap:{
+                        'zpsld-BX_Detail-GUID':'GUID',
+                        'zpsld-BX_Detail-GUID_BGCode':'GUID_BGCode',  
+                        'zpsld-BX_Detail-BGCodeKey':'BGCodeKey',                     
+                        'zpsld-BX_Detail-GUID_Project':'GUID_Project',
+                        'zpsld-BX_Detail-ProjectKey':'ProjectKey',
+                        'zpsld-BX_Detail-GUID_Department':'GUID_Department',
+                        'zpsld-BX_Detail-Total_Real':'ThisTimeTotal'                        
+                     },
+                     columnMapText:{
+                        'zpsld-BX_Detail-GUID_BGCode':'BGCodeName', 
+                        'zpsld-BX_Detail-GUID_Project':'ProjectName', 
+                        'zpsld-BX_Detail-GUID_Department':'DepartmentName',
+                        'zpsld-CN_PaymentNumber-GUID_BGResource':'GUID_BGResource',
+                        'zpsld-CN_PaymentNumber-BGSourceName':'BGSourceName',
+                        'zpsld-BX_Detail-BGTypeName':'BGTypeName'
+                     },
+                     configBudget:{
+                        'zpsld-BX_Main-DWKey':'validatebox',
+                        'zpsld-BX_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{
+                        'BudgetStatistics':[
+                            '/BudgetStatistics/zpsld',
+                            '/BudgetStatistics/BudgetStatistics',
+                            'BudgetStatistics-BG_Main',
+                            'zpsld-BX_Main-DocDate',
+                            'zpsld-BX_Detail',
+                            'BudgetStatistics',
+                            '02' @*报销管理*@
+                     ]},
+                     window:'b-window',
+                     scope:'zpsld'">预算</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'zpsld-BX_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['zpsld-BX_Main-DocState','9']},scope:'zpsld',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'zpsld-BX_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['zpsld-BX_Main-DocState','6']},scope:'zpsld',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                       'examine':
+                           {
+                                'datagrid':['zpsld-BX_Detail'],
+                                'validatebox':['zpsld-BX_Main-DocMemo'],
+                                  'numberbox':['zpsld-BX_Main-BillCount'],
+                                'datebox':['zpsld-BX_Main-DocDate'],
+                                'combogrid':['zpsld-BX_Main-GUID_Person','zpsld-BX_Main-GUID_DW','zpsld-BX_Main-GUID_Department']
+                            }
+                        },
+                   scope:'zpsld',forbidstatus:[4]">校验</a>
+
+                    <a href="#" class="easyui-linkbutton" id="zpsld-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'zpsld',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/zpsld/Save','zpsld-examine']},scope:'zpsld',status:'4',
+                   forbidstatus:[4]">保存</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'zpsld-BX_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/zpsld/CommitFlow']},scope:'zpsld',
+                   forbidstatus:[1,2,3]">提交</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'zpsld-BX_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'zpsld',
+                   forbidstatus:[1,2,3]">退回</a>
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="zpsld-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/zpsld','history-BX_Main','history']},
+                    window:'b-window',scope:'zpsld'">历史</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="zpsld-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/zpsld','/Process/process','zpsld-process','process']},
+                   window:'b-window',scope:'zpsld',
+                   forbidstatus:[1,2,3]">流程</a>
+
+                   <a href="#" class="easyui-linkbutton" id="zpsld-app" data-options="
+                    plain:'true',iconCls:'icon-shenpidan', scope:'zpsld',forbidstatus:[4],
+                    bindmethod:{ 'click': ['app'] }">审批单</a>
+
+                     <a href="#" class="easyui-linkbutton" id="zpsld-linkDoc"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'xjbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['linkDoc'] },
+                   bindparms:{'linkDoc':['/xjbxd/CommitFlow']},scope:'zpsld', window:'c-window',
+                   forbidstatus:[1,2,3]">关联</a> 
+                 
+                   <a href="#" class="easyui-linkbutton"
+                   id="zpsld-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'zpsld'">退出</a>
+        </div>
+    </div>
+  <div data-options="region:'west',split:'true'" style="width: 265px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="zpsld-tree-per" data-options="associate:{
+                    'zpsld-BX_Main-GUID_Person':['GUID','PersonName'],
+                    'zpsld-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'zpsld-BX_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  gridassociate:{
+                      'gridId':'zpsld-BX_Detail',
+                      'map': {
+                        'zpsld-BX_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'zpsld-BX_Detail',
+                        'defaultdatamap': {
+                            'GUID_Department':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID_Department':'GUID_Department'
+                            }
+                    },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="zpsld-tree-dep" data-options="associate:{
+                    'zpsld-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'zpsld-BX_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  gridassociate:{
+                      'gridId':'zpsld-BX_Detail',
+                      'map': {
+                        'zpsld-BX_Detail-GUID_Department':['GUID','DepartmentName']
+                      }
+                  },
+                  griddefaultassociate:{
+                        'gridId':'zpsld-BX_Detail',
+                        'defaultdatamap': {
+                            'GUID':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID':'GUID_Department'
+                            }
+                    },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位" >
+                <ul class="easyui-tree" id="zpsld-tree-dw" data-options="associate:{
+                    'zpsld-BX_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+             <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="zpsld-tree-code" data-options="gridassociate:{
+                      'gridId':'zpsld-BX_Detail',
+                      'map': {
+                        'zpsld-BX_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                        'zpsld-BX_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                        'zpsld-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'zpsld-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                        'zpsld-CN_PaymentNumber-PaymentNumber':['clear']
+                        },
+                      'append':'true'
+                  },
+                 
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="zpsld-tree-project" data-options="gridassociate:{
+                    'gridId':'zpsld-BX_Detail',
+                    'map':{
+                            'zpsld-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                            'zpsld-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                            'zpsld-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                            'zpsld-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                            @*'zpsld-CN_PaymentNumber-PaymentNumber':['clear'] *@
+                            'zpsld-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                            'zpsld-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                            }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="zpsld-abandonedStatus" statusControlID="zpsld-BX_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        支票申领单</div>
+                </td>
+            </tr>
+           <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>申领单号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="zpsld-BX_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>申领日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="zpsld-BX_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>申领人</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="zpsld-BX_Main-GUID_Person" data-options="
+                    columns:[[
+                        {field:'GUID',hidden:'true'},
+                        {field:'GUID_Department',hidden:'true'},
+                        {field:'GUID_DW',hidden:'true'},
+                        {field:'PersonKey',title:'人员编码',width:'100'},
+                        {field:'PersonName',title:'人员名称',width:'100'},
+                        {field:'DepartmentName',title:'部门名称',width:'100'},
+                        {field:'DWName',title:'单位名称',width:'145'}
+                        ]],
+                    width:180,
+                    panelWidth:500,
+                    method:'post',
+                    remoteUrl:'/Combogrid/Person',
+                    idField:'GUID',
+                    textField:'PersonName',
+                    filterField:'PersonKey,PersonName',
+                    bindmethod: { 'onCloseEx': ['setAssociate'] },
+                    remoteSort:false,
+                    forbidstatus:[4,3],
+                    required:false,
+                    singleSelect:true,
+                    editable:true,
+                    pagination:true,
+                    striped: false,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true,
+                    griddefaultassociate:{
+                            'gridId':'zpsld-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department'
+                             }
+                        },
+                    associate:
+                        {
+                        'zpsld-BX_Main-GUID_DW':['GUID_DW'],
+                        'zpsld-BX_Main-GUID_Department':['GUID_Department']
+                        }">
+                    </select>
+                </td>
+            </tr>
+             <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="zpsld-BX_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'200'}
+                            ]],
+                        panelWidth:400,
+                        width:180,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="zpsld-BX_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                             {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:true,width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'130'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                         delay:1500,
+                          filterField:'DepartmentKey,DepartmentName',
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        griddefaultassociate:{
+                            'gridId':'zpsld-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID':'GUID_Department'
+                             }
+                        },
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'zpsld-BX_Main-GUID_DW':['GUID_DW']},
+                        sortName:'DepartmentName',
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>摘要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="zpsld-BX_Main-DocMemo"  style="width: 515px" maxlength="200"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                         <font color="red">*</font>附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="zpsld-BX_Main-BillCount"  style="width: 176px"  maxlength="2"
+                        data-options="forbidstatus:[4,3]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="zpsld-BX_Detail" data-options="
+                    orderNum:'zpsld-BX_Detail-OrderNum',
+                    requireCol:[
+                        'zpsld-BX_Detail-BGCodeKey',
+                        'zpsld-BX_Detail-GUID_BGCode',
+                        'zpsld-BX_Detail-Total_Real',
+                        'zpsld-BX_Detail-FeeMemo',
+                      @*  'zpsld-CN_PaymentNumber-IsGuoKu',*@
+                        'zpsld-BX_Detail-GUID_SettleType',
+                        'zpsld-BX_Detail-GUID_Department'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:'180',
+                    width:'975',
+                    scope:'zpsld',
+                    single:false,
+                    rownumbers:true,
+                    formatters:{
+                        'zpsld-CN_PaymentNumber-IsGuoKu':'boolbox',
+                        'zpsld-BX_Detail-Total_Real':'numberbox',
+                        'zpsld-BX_Detail-Total_Plan':'numberbox'
+                        },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['zpsld','zpsld-BX_Detail','zpsld-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'zpsld-BX_Detail-ProjectKey',
+                        'zpsld-BX_Detail-GUID_Project',
+                        'zpsld-BX_Detail-GUID_SettleType',
+                        'zpsld-CN_PaymentNumber-IsGuoKu',
+                        'zpsld-CN_PaymentNumber-IsProject',
+                        'zpsld-BX_Detail-GUID_Department',
+                        'zpsld-BX_Detail-GUID_BGType',
+                        'zpsld-BX_Detail-GUID_Cutomer',
+                        'zpsld-CN_PaymentNumber-GUID_FunctionClass',
+                        'zpsld-CN_PaymentNumber-GUID_BGResource',
+                        'zpsld-BX_Detail-GUID_Person'
+                    ],
+                    disableColMap:{
+                            'zpsld-CN_PaymentNumber-IsGuoKu':['zpsld-CN_PaymentNumber-GUID_FunctionClass','zpsld-BX_Detail-GUID_Project']
+                    },
+                    fieldformula:[
+                        {name:'csum',field:'zpsld-BX_Detail-Total_Real',target:['zpsld-BX_Main-moneyunmber','zpsld-BX_Main-moneychinese']},
+                        {name:'cconcat',field:'zpsld-BX_Detail-FeeMemo',target:['zpsld-BX_Main-DocMemo']}
+                    ]">
+                       <thead>
+                            <tr>
+                                <th field="zpsld-CN_PaymentNumber-GUID_ProjectEx" hidden="true"></th> @*附加项目*@
+                                <th field="zpsld-CN_PaymentNumber-ExtraCodeEx" hidden="true"></th> @*附加项目码*@
+                                <th field="zpsld-CN_PaymentNumber-ExtraCode" hidden="true"></th> @*附加码*@
+                                <th field="zpsld-CN_PaymentNumber-FinanceCode" hidden="true"></th> @*财政码*@
+                                <th field="zpsld-CN_PaymentNumber-EconomyClassKey" hidden="true"></th> @*经济分类码*@
+                                <th field="zpsld-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>@*支出类型码*@
+                                <th field="zpsld-CN_PaymentNumber-BGSourceKey" hidden="true"></th>@*预算来源码*@
+                                <th field="zpsld-CN_PaymentNumber-BGType" hidden="true"></th>@*预算类型码*@
+
+                                <th field="zpsld-BX_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_Person" hidden="true">
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-BGSourceName" hidden="true">
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_BGType" hidden="true">
+                                <th field="zpsld-BX_Detail-BGTypeName" hidden="true">
+                               
+                                </th>
+                                <th field="zpsld-BX_Detail-BGCodeKey" title="科目编码"  hidden="true" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                    gridassociate:{gridId:'zpsld-BX_Detail',
+                                     map:{
+                                        'zpsld-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'zpsld-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'zpsld-BX_Detail-GUID_BGCode':['GUID','BGCodeName']
+                                      @*  'zpsld-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },           
+                                     panelWidth:250,
+                                     panelHeight:200,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'BGCodeKey',
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeKey',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'150'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_BGCode" title="科目名称" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                    gridassociate:{gridId:'zpsld-BX_Detail',
+                                     map:{
+                                        'zpsld-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'zpsld-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'zpsld-BX_Detail-BGCodeKey':['GUID','BGCodeKey']
+                                       @* 'zpsld-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },   
+                                     panelWidth:250,
+                                     panelHeight:200,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'GUID',
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'true'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'150'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+                                <th field="zpsld-BX_Detail-Total_Plan" title="限额" sortable="false" align="center"
+                                    width="80" editor="{type:'numberbox',options:{precision:2}}">
+                                    限额
+                                </th>
+                                <th field="zpsld-BX_Detail-Total_Real" title="金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    金额
+                                </th>
+                                <th field="zpsld-BX_Detail-FeeMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        customValue:true,
+                                        panelWidth:320,
+                                        panelHeight:300,
+                                        remoteUrl:'/Combogrid/BGCodeMemo',
+                                        method:'get',
+                                        idField:'FeeMemo',
+                                        textField:'FeeMemo',
+                                        filterField:'FeeMemo',
+                                        associateControl:{
+                                                gridId:'zpsld-BX_Detail',map:['zpsld-BX_Detail-GUID_BGCode']
+                                            },
+                                        isLoad:false,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'GUID_BGCode',title:'GUID_BGCode',hidden:true},
+                                            {field:'FeeMemo',title:'摘要',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    摘要
+                                </th>
+                                <th field="zpsld-BX_Detail-ProjectKey" width="90" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:300,
+                                        panelHeight:255,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        gridassociate:{
+                                            gridId:'zpsld-BX_Detail',
+                                        map:{
+                                            'zpsld-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                                            'zpsld-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'zpsld-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'zpsld-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'zpsld-BX_Detail-GUID_BGType':['GUID_BGType'],
+                                            'zpsld-BX_Detail-BGTypeName':['BGTypeName'],
+                                            'zpsld-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'zpsld-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'ExtraCode',hidden:'true'},
+                                            {field:'FinanceCode',hidden:'true'},
+                                               {field:'GUID_BGType',title:'GUID_BGType',hidden:true},
+                                          {field:'BGTypeName',title:'支出类型名称',hidden:true},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'80'},
+                                            {field:'ProjectName',title:'项目名称',width:'300'}
+                                        ]]
+                                    }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="200" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:265,
+                                      panelHeight:255,
+                                      remoteUrl:'/Combogrid/Project',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      gridassociate:{
+                                            gridId:'zpsld-BX_Detail',
+                                      map:{
+                                            'zpsld-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                            'zpsld-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'zpsld-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'zpsld-BX_Detail-GUID_BGType':['GUID_BGType'],
+                                            'zpsld-BX_Detail-BGTypeName':['BGTypeName'],
+                                                 'zpsld-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'zpsld-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'zpsld-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'IsFinance',hidden:true},
+                                          {field:'IsProject',hidden:true},
+                                          {field:'ExtraCode',hidden:'true'},
+                                          {field:'FinanceCode',hidden:'true'},
+                                             {field:'GUID_BGType',title:'GUID_BGType',hidden:true},
+                                          {field:'BGTypeName',title:'支出类型名称',hidden:true},
+                                          {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                          {field:'ProjectKey',title:'项目编码',width:'80'},
+                                          {field:'ProjectName',title:'项目名称',width:'300'}
+                                        ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_SettleType" title="结算方式" sortable="false" align="center"
+                                    width="90" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:265,width:255,
+                                      remoteUrl:'/Combogrid/SettleType',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'SettleTypeName',
+                                      filterField:'SettleTypeKey,SettleTypeName',
+                                        columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'SettleTypeKey',title:'结算方式编码',width:'100'},
+                                              {field:'SettleTypeName',title:'结算方式名称',width:'150'}
+                                        ]]
+                                     }
+                              }">
+                                    结算方式
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_Cutomer" title="收款单位" sortable="false" align="center"
+                                    width="90" editor="{
+                                  type:'combogrid',
+                                  options:{
+                                  panelWidth:450,
+                                  panelHeight:250,
+                                  remoteUrl:'/Combogrid/Customer',
+                                  method:'get',
+                                  idField:'GUID',
+                                  textField:'CustomerName',
+                                  filterField:'CustomerKey,CustomerName',
+                                  singleSelect:true,
+                                  editable:true,
+                                  pagination:true,
+                                  striped: false,
+                                  pageSize:20,
+                                  pageList:[20,50,100],
+                                  rownumbers:true,
+                                    columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'CustomerKey',title:'往来客户编码',width:'100'},
+                                          {field:'CustomerName',title:'往来客户名称',width:'250'}
+                                         ]]
+                                     }
+                                  }">
+                                    收款单位
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_Department" title="部门" sortable="false" align="center"
+                                    width="200" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:300,  
+                                      width:255,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                          columns:[[
+                                                {field:'GUID',title:'名称',hidden:true},
+                                                {field:'DepartmentKey',title:'部门编码',width:'100'},
+                                                {field:'DepartmentName',title:'部门名称',width:'150'}
+                                            ]]
+                                         }
+                                    }">
+                                    部门
+                                </th>
+                                <th field="zpsld-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="{                                        
+                                    type:'searchbox',
+                                    options:{
+                                    'particulars':['/particulars/zpsld','zpsld-BX_Detail','parti'],
+                                    'window':'b-window'
+                                    }
+                                    }">
+                                    财政支付令
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="zpsld-BX_Detail2" data-options="
+                    orderNum:'zpsld-BX_Detail-OrderNum',
+                    fitColumns:'false',
+                    method:'get',
+                    singleSelect:'true',
+                    checkOnSelect:'true',
+                    height:'160',
+                    width:'975',
+                    rownumbers:true,
+                    scope:'zpsld'
+                       ">
+                       <thead>
+                            <tr>
+                                <th field="zpsld-CN_PaymentNumber-IsGuoKu2" title="是否国库" sortable="false" align="center"
+                                    width="90" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="zpsld-CN_CheckDrawName-BankAccountName2" title="账号名称" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     panelWidth:400,
+                                     panelHeight:250,
+                                     remoteUrl:'',
+                                     method:'get',
+                                     idField:'GUID',
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName'
+                                    }
+                                }">
+                                    账号名称
+                                </th>
+                                <th field="zpsld-CN_CheckDrawMain-CheckNumber2" title="支票号" sortable="false" align="center"
+                                    width="100" editor="{type:'text'}">
+                                    支票号
+                                </th>
+                                <th field="zpsld-BX_Detail-Total_Real2" title="金额" sortable="false" align="center"
+                                    width="80" editor="{type:'numberbox',options:{precision:2}}">
+                                    限额
+                                </th>
+                                <th field="zpsld-BX_Detail-Total_BX2" width="80" title="报销金额" sortable="false" align="right"
+                                    editor="{type:'numberbox',options:{precision:2}}">
+                                    报销金额
+                                </th>
+                                <th field="zpsld-BX_Detail-ProjectKey2" width="100" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        remoteUrl:'',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName'
+                                    }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="zpsld-BX_Detail-GUID_Project2" title="项目名称" sortable="false" align="center"
+                                    width="100" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      remoteUrl:'',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName'
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="zpsld-BX_Main-moneychinese" style="width: 515px"
+                        data-options="forbidstatus:[-1],chinese:true,setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="zpsld-BX_Main-moneyunmber" style="width: 176px"
+                        data-options="options:{precision:2},forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                 <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Maker">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="zpsld-BX_Main-GUID_Maker" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Modifier">
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="zpsld-BX_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-datebox" id="zpsld-BX_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="zpsld-BX_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+             <tr>
+                <td colspan="6">
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="zpsld-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="zpsld-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zpsld-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zpsld-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="zpsld-BX_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="zpsld-BX_Main-OAOTS" type="hidden"></input>
+                 <input class="easyui-validatebox" id="gwkbxd-BX_Main-GLDH" type="hidden"></input>
+     </div>
+</div>
+<label id="zpsld-extendregion" style="display: none">
+    <input id="zpsld-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">  </div>
+     <div id="c-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="zpsld-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="zpsld-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

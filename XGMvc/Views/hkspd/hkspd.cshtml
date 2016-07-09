@@ -1,0 +1,1000 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "汇款审批单";
+}
+<script src="../../Scripts/bx/hkspd.js?r=12" type="text/javascript"></script>
+
+<style type="text/css">
+#hkspd-xiaoyan span span.l-btn-text 
+{
+	color:Red;
+	padding-top:0px !important;
+}
+#hkspd-xiaoyan {
+    position: relative;
+    top: 3px;
+    background-color:#EFEFEF;
+    height:20px;
+}
+</style>
+<div class="easyui-layout" id="hkspd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="hkspd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'hkspd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/hkspd',['hkspd-BX_Main-moneychinese','hkspd-BX_Main-moneyunmber']]}">打印</a> 
+
+                    <a href="#" class="easyui-linkbutton" id="hkspd-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'hkspd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/hkspd',['hkspd-BX_Main-moneychinese','hkspd-BX_Main-moneyunmber']]}">预览</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="hkspd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'hkspd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="hkspd-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'hkspd',status:'1',
+                   bindparms:{'newDoc':['/hkspd/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="hkspd-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'hkspd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'hkspd',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="hkspd-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'hkspd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'hkspd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="hkspd-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['hkspd-BX_Detail']},
+                   scope:'hkspd',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="hkspd-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['hkspd-BX_Detail']},scope:'hkspd',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="hkspd-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['hkspd-BX_Detail']},scope:'hkspd',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="hkspd-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/hkspd','hkspd-BX_Detail','parti']},scope:'hkspd',forbidstatus:[3]">明细</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="hkspd-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/hkspd','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'hkspd'">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="hkspd-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                     window:'b-window',
+                     columnMap:{
+                        'hkspd-BX_Detail-GUID':'GUID',
+                        'hkspd-BX_Detail-GUID_BGCode':'GUID_BGCode',  
+                        'hkspd-BX_Detail-BGCodeKey':'BGCodeKey',                     
+                        'hkspd-BX_Detail-GUID_Project':'GUID_Project',
+                        'hkspd-BX_Detail-ProjectKey':'ProjectKey',
+                        'hkspd-BX_Detail-GUID_Department':'GUID_Department',
+                        'hkspd-BX_Detail-Total_Real':'ThisTimeTotal'                        
+                     },
+                     columnMapText:{
+                        'hkspd-BX_Detail-GUID_BGCode':'BGCodeName', 
+                        'hkspd-BX_Detail-GUID_Project':'ProjectName', 
+                        'hkspd-BX_Detail-GUID_Department':'DepartmentName',
+                        'hkspd-CN_PaymentNumber-GUID_BGResource':'GUID_BGResource',
+                        'hkspd-CN_PaymentNumber-BGSourceName':'BGSourceName',
+                        'hkspd-BX_Detail-GUID_BGType':'BGTypeName'
+                     },
+                     configBudget:{
+                        'hkspd-BX_Main-DWKey':'validatebox',
+                        'hkspd-BX_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{
+                        'BudgetStatistics':[
+                            '/BudgetStatistics/hkspd',
+                            '/BudgetStatistics/BudgetStatistics',
+                            'BudgetStatistics-BG_Main',
+                            'hkspd-BX_Main-DocDate',
+                            'hkspd-BX_Detail',
+                            'BudgetStatistics',
+                            '02' @*报销管理*@
+                     ]},
+                     window:'b-window',
+                     scope:'hkspd',forbidstatus:[4,3]">预算</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="hkspd-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'hkspd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['hkspd-BX_Main-DocState','9']},scope:'hkspd',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="hkspd-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'hkspd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['hkspd-BX_Main-DocState','6']},scope:'hkspd',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>
+
+                   <a href="#" class="easyui-linkbutton" id="hkspd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                        'windowExamine':{
+                            'combogrid':{source:'hkspd-BX_Detail-GUID_Cutomer',target:'hkspd-xiaoyan'}
+                        },
+                        'examine':
+                        {
+                            'datagrid':['hkspd-BX_Detail'],
+                            'validatebox':['hkspd-BX_Main-DocMemo','hkspd-SS_Customer-CustomerBankNumber','hkspd-SS_Customer-CustomerBankName'],
+                            'datebox':['hkspd-BX_Main-DocDate'],
+                            'combogrid':['hkspd-BX_Main-GUID_Person','hkspd-BX_Main-GUID_DW','hkspd-BX_Main-GUID_Department'],
+                    @*   },
+                        'bubbleExamine':
+                        {*@
+                           'numberbox':['hkspd-BX_Main-BillCount'] 
+                      
+                    }},
+                   scope:'hkspd',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="hkspd-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'hkspd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="hkspd-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/hkspd/Save','hkspd-examine']},scope:'hkspd',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="hkspd-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'hkspd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/hkspd/CommitFlow']},scope:'hkspd',
+                   forbidstatus:[1,2,3]">提交</a>
+
+                   <a href="#" class="easyui-linkbutton" id="hkspd-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'hkspd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'hkspd',
+                   forbidstatus:[1,2,3]">退回</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="hkspd-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/hkspd','history-BX_Main','history']},
+                    window:'b-window',scope:'hkspd'">历史</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="hkspd-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/hkspd','/Process/process','hkspd-process','process']},
+                   window:'b-window',scope:'hkspd',
+                   forbidstatus:[1,2,3]">流程</a>
+
+                <a href="#" class="easyui-linkbutton" id="hkspd-linkDoc"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'xjbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['linkDoc'] },
+                   bindparms:{'linkDoc':['/xjbxd/CommitFlow']},scope:'hkspd', window:'c-window',
+                   forbidstatus:[1,2,3]">关联</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="hkspd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'hkspd'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="hkspd-tree-per" data-options="associate:{
+                    'hkspd-BX_Main-GUID_Person':['GUID','PersonName'],
+                    'hkspd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'hkspd-BX_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                             'gridId':'hkspd-BX_Detail',
+                        'map':{
+                             'hkspd-BX_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                             }
+                        },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  griddefaultassociate:{
+                            'gridId':'hkspd-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department'
+                                },
+                                'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                                },
+                                'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department'
+                                }
+                        },
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="hkspd-tree-dep" data-options="associate:{
+                    'hkspd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'hkspd-BX_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                             'gridId':'hkspd-BX_Detail',
+                        'map':{
+                             'hkspd-BX_Detail-GUID_Department':['GUID','DepartmentName']
+                             }
+                        },
+                 griddefaultassociate:{
+                        'gridId':'hkspd-BX_Detail',
+                        'defaultdatamap': {
+                            'GUID':'GUID_Department'
+                            },
+                            'defaultrowmap':{
+                            'DepartmentName':'GUID_Department'
+                            },
+                            'defaulthiderowmap':{
+                            'GUID':'GUID_Department'
+                            }
+                    },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="hkspd-tree-dw" data-options="associate:{
+                    'hkspd-BX_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="科目" data-options="selected:true">
+                <ul class="easyui-tree" id="hkspd-tree-code" data-options="gridassociate:{
+                      'gridId':'hkspd-BX_Detail',
+                      'map': {
+                        'hkspd-BX_Detail-GUID_BGCode':['GUID','BGCodeName'],
+                        'hkspd-BX_Detail-BGCodeKey':['GUID','BGCodeKey'],
+                        'hkspd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                        'hkspd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                         'hkspd-CN_PaymentNumber-PaymentNumber':['clear']
+                      },
+                      'append':'true'
+                  },
+                 
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="hkspd-tree-project" data-options="gridassociate:{
+                    'gridId':'hkspd-BX_Detail',
+                    'map':{
+                    'hkspd-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                    'hkspd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                    'hkspd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                    'hkspd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                   @* 'hkspd-CN_PaymentNumber-PaymentNumber':['clear']*@ 
+                    'hkspd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                    'hkspd-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="hkspd-abandonedStatus" statusControlID="hkspd-BX_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        汇款审批单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-DocNum">
+                         <font color="red">*</font>报销单号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="hkspd-BX_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>报销日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="hkspd-BX_Main-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }
+
+                    "></input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-GUID_Person">
+                        <font color="red">*</font>报销人</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid"  id="hkspd-BX_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                            ]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        griddefaultassociate:{
+                            'gridId':'hkspd-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID_Department':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID_Department':'GUID_Department'
+                             }
+                        },
+                        associate:
+                            {
+                                'hkspd-BX_Main-GUID_DW':['GUID_DW'],
+                                'hkspd-BX_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="hkspd-BX_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'220'}]],
+                        width:180,
+                        panelWidth:325,
+                        method:'post',
+                        required:false,
+                        sortName:'DWKey',
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px" id="lbl-GUID_Department">
+                    <label>
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" 
+                        id="hkspd-BX_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:true,width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'130'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        griddefaultassociate:{
+                            'gridId':'hkspd-BX_Detail',
+                            'defaultdatamap': {
+                                'GUID':'GUID_Department'
+                             },
+                             'defaultrowmap':{
+                                'DepartmentName':'GUID_Department'
+                             },
+                             'defaulthiderowmap':{
+                                'GUID':'GUID_Department'
+                             }
+                        },
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'hkspd-BX_Main-GUID_DW':['GUID_DW']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-BillCount">
+                       <font color="red">*</font>附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="hkspd-BX_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label id="lbl-GUID_Cutomer">
+                        <font color="red">*</font>收款单位名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" wldw='1' id="hkspd-BX_Detail-GUID_Cutomer" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'CustomerKey',title:'往来单位编码',width:'80'},
+                            {field:'CustomerName',title:'往来单位名称',width:'180'},
+                            {field:'CustomerBankName',title:'开户银行',width:'150'},
+                            {field:'CustomerBankNumber',title:'银行账号',width:'135'},
+                            {field:'CustomerAddress',title:'往来单位地址',width:'200'}
+                            ]],
+                            width:180,
+                            panelWidth:800,
+                            panelHeight:280,
+                            method:'post',
+                            remoteUrl:'/Combogrid/Customer',
+                            idField:'GUID',
+                            textField:'CustomerName',
+                            filterField:'CustomerKey,CustomerName',
+                            customValue:true,
+                            isLoadSetData:true,
+                            bindmethod: { 'onCloseEx': ['setAssociate'] },
+                            remoteSort:false,
+                            singleSelect:true,
+                            forbidstatus:[4,3],
+                            required:false,
+                            editable:true,
+                            sortName:'CustomerKey',
+                            pagination:true,
+                            striped: false,
+                            pageSize:20,
+                            pageList:[20,50,100],
+                            rownumbers:true,
+                            associate:
+                               {
+                                 'hkspd-SS_Customer-CustomerAddress':['CustomerAddress'],
+                                  'hkspd-SS_Customer-CustomerKey':['CustomerKey'],
+                                 'hkspd-SS_Customer-CustomerBankName':['CustomerBankName'],
+                                 'hkspd-SS_Customer-CustomerBankNumber':['CustomerBankNumber']
+                               }
+                     ">
+                    </select>
+                     <a href="#" class="easyui-linkbutton" id="hkspd-xiaoyan" data-options="
+                       scope:'hkspd',
+                       window:'b-window',
+                       plain:'true',
+                       IsExist:true,
+                       bindmethod:{ 'click': ['setJCDA'] },
+                      ">校验</a> 
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerAddress">
+                        &nbsp;地址</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" wldw='1' id="hkspd-SS_Customer-CustomerAddress"  style="width: 176px"
+                    data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerBankNumber">
+                        <font color="red">*</font>银行账号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" wldw='1' id="hkspd-SS_Customer-CustomerBankNumber"  style="width: 176px"
+                    data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerBankName">
+                        <font color="red">*</font>银行名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" wldw='1' id="hkspd-SS_Customer-CustomerBankName"  style="width: 176px"
+                    data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>汇款理由</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" wldw='1' id="hkspd-BX_Main-DocMemo"  style="width: 176px"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="hkspd-BX_Detail" data-options="
+                    orderNum:'hkspd-BX_Detail-OrderNum',
+                    requireCol:[
+                        'hkspd-BX_Detail-GUID_BGCode',
+                        'hkspd-BX_Detail-Total_Real',
+                        'hkspd-BX_Detail-FeeMemo',
+                        'hkspd-CN_PaymentNumber-IsGuoKu',
+                        'hkspd-BX_Detail-GUID_Department',
+                        'hkspd-BX_Detail-GUID_SettleType',
+                        'hkspd-BX_Detail-GUID_BGType'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:315,
+                    width:920,
+                    scope:'hkspd',
+                    single:true,
+                    formatters:{'hkspd-CN_PaymentNumber-IsGuoKu':'boolbox','hkspd-BX_Detail-Total_Real':'numberbox'},
+                    disableColMap:{
+                            'hkspd-CN_PaymentNumber-IsGuoKu':['hkspd-CN_PaymentNumber-GUID_FunctionClass','hkspd-BX_Detail-GUID_Project']
+                    },
+                    rownumbers:true,
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['hkspd','hkspd-BX_Detail','hkspd-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'hkspd-BX_Detail-ProjectKey',
+                        'hkspd-BX_Detail-GUID_Project',
+                        'hkspd-BX_Detail-GUID_SettleType',
+                        'hkspd-BX_Detail-GUID_Person',
+                        'hkspd-BX_Detail-GUID_Department',
+                        'hkspd-CN_PaymentNumber-IsGuoKu',
+                        'hkspd-CN_PaymentNumber-IsProject',
+                        'hkspd-BX_Detail-GUID_BGType',
+                        'hkspd-CN_PaymentNumber-GUID_FunctionClass',
+                        'hkspd-CN_PaymentNumber-GUID_BGResource',
+                        'hkspd-BX_Detail-GUID_Person'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'hkspd-BX_Detail-Total_Real',target:['hkspd-BX_Main-moneyunmber','hkspd-BX_Main-moneychinese']},
+                        {name:'cconcat',field:'hkspd-BX_Detail-FeeMemo',target:['hkspd-BX_Main-DocMemo']}
+                    ]">
+                        <thead>
+                            <tr>
+                                <th field="hkspd-CN_PaymentNumber-GUID_ProjectEx" hidden="true"></th> @*附加项目*@
+                                <th field="hkspd-CN_PaymentNumber-ExtraCodeEx" hidden="true"></th> @*附加项目码*@
+                                <th field="hkspd-CN_PaymentNumber-ExtraCode" hidden="true"></th> @*附加码*@
+                                <th field="hkspd-CN_PaymentNumber-FinanceCode" hidden="true"></th> @*财政码*@
+                                <th field="hkspd-CN_PaymentNumber-EconomyClassKey" hidden="true"></th> @*经济分类码*@
+                                <th field="hkspd-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>@*支出类型码*@
+                                <th field="hkspd-CN_PaymentNumber-BGSourceKey" hidden="true"></th>@*预算来源码*@
+                                <th field="hkspd-CN_PaymentNumber-BGType" hidden="true"></th>@*预算类型码*@
+
+                                <th field="hkspd-BX_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="hkspd-BX_Detail-GUID_Person" hidden="true">
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="hkspd-BX_Detail-GUID_Cutomer" hidden="true">
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-GUID_BGResource" hidden="true"></th> 
+                                <th field="hkspd-CN_PaymentNumber-BGSourceName" hidden="true"></th>
+                                <th field="hkspd-BX_Detail-BGCodeKey" title="科目编码" hidden="true" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'hkspd-BX_Detail',
+                                     map:{
+                                        'hkspd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'hkspd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'hkspd-BX_Detail-GUID_BGCode':['GUID','BGCodeName']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:240,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     idField:'BGCodeKey',
+                                     delay:1500,
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeKey',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'EconomyClassKey'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                             {field:'BGCodeName',title:'科目名称',width:'140'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                               <th field="hkspd-BX_Detail-GUID_BGCode" title="科目名称" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'hkspd-BX_Detail',
+                                     map:{
+                                        'hkspd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                                        'hkspd-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey'],
+                                        'hkspd-BX_Detail-BGCodeKey':['GUID','BGCodeKey']
+                                        }
+                                    },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:210,
+                                      panelWidth:245,
+                                     remoteUrl:'/Combogrid/BGCodeView',
+                                     method:'get',
+                                     delay:1500,
+                                     idField:'GUID',
+                                     filterField:'BGCodeKey,BGCodeName',
+                                     textField:'BGCodeName',
+                                     sortName:'BGCodeKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_EconomyClass',hidden:'true'},
+                                            {field:'EconomyClassKey',hidden:'EconomyClassKey'},
+                                            {field:'BGCodeKey',title:'科目编码',width:'80'},
+                                            {field:'BGCodeName',title:'科目名称',width:'140'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+                                <th field="hkspd-BX_Detail-Total_Real" title="金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    金额
+                                </th>
+                                <th field="hkspd-BX_Detail-FeeMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        customValue:true,
+                                        panelWidth:320,
+                                        panelHeight:300,
+                                        remoteUrl:'/Combogrid/BGCodeMemo',
+                                        method:'get',
+                                        idField:'FeeMemo',
+                                        textField:'FeeMemo',
+                                        filterField:'FeeMemo',
+                                        associateControl:{
+                                                gridId:'hkspd-BX_Detail',map:['hkspd-BX_Detail-GUID_BGCode']
+                                            },
+                                        isLoad:false,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'GUID_BGCode',title:'GUID_BGCode',hidden:true},
+                                            {field:'FeeMemo',title:'摘要',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    摘要
+                                </th>
+                                <th field="hkspd-BX_Detail-ProjectKey" width="100" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:305,width:280,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        sortName:'ProjectKey',
+                                        gridassociate:{gridId:'hkspd-BX_Detail',
+                                        map:{
+                                            'hkspd-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                                            'hkspd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                            'hkspd-CN_PaymentNumber-IsProject':['IsProject'],
+                                            'hkspd-BX_Detail-GUID_BGType':['GUID_BGType','BGTypeName'],
+                                            'hkspd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'hkspd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'hkspd-CN_PaymentNumber-FinanceCode':['FinanceCode'],
+
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'ExtraCode',hidden:'true'},
+                                            {field:'GUID_BGType',title:'GUID_BGType',hidden:true},
+                                            {field:'BGTypeName',title:'支出类型名称',hidden:true},
+                                            {field:'FinanceCode',hidden:'true'},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'80'},
+                                            {field:'ProjectName',title:'项目名称',width:'200'}
+                                        ]]
+                                        }
+    
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="hkspd-BX_Detail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="230" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                        panelWidth:305,width:280,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'ProjectName',
+                                        filterField:'ProjectKey,ProjectName',
+                                        sortName:'ProjectKey',
+                                        gridassociate:{gridId:'hkspd-BX_Detail',
+                                            map:{
+                                                'hkspd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                                                'hkspd-BX_Detail-GUID_BGType':['GUID_BGType','BGTypeName'],
+                                                'hkspd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                                'hkspd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                                'hkspd-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                                'hkspd-CN_PaymentNumber-FinanceCode':['FinanceCode'],
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'IsFinance',hidden:true},
+                                          {field:'IsProject',hidden:true},
+                                          {field:'ExtraCode',hidden:'true'},
+                                             {field:'GUID_BGType',title:'GUID_BGType',hidden:true},
+                                            {field:'BGTypeName',title:'支出类型名称',hidden:true},
+                                          {field:'FinanceCode',hidden:'true'},
+                                          {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                          {field:'ProjectKey',title:'项目编码',width:'80'},
+                                          {field:'ProjectName',title:'项目名称',width:'200'}
+                                        ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="hkspd-BX_Detail-GUID_Department" title="部门" sortable="false" align="center"
+                                    width="150" editor="{
+                              type:'combogrid',
+                              options:{
+
+                                  panelWidth:375,  
+                                  width:350,
+                                  remoteUrl:'/Combogrid/Department',
+                                  method:'get',
+                                  idField:'GUID',
+                                  textField:'DepartmentName',
+                                  filterField:'DepartmentKey,DepartmentName',
+                                  sortName:'DepartmentKey',
+                                  columns:[[
+                                    {field:'GUID',title:'名称',width:'60',hidden:true},
+                                    {field:'DepartmentKey',title:'部门编码',width:'80'},
+                                    {field:'DepartmentName',title:'部门名称',width:'120'},
+                                    {field:'DWName',title:'所属单位',width:'150'}
+                                ]]
+                              }
+                            }">
+                                    部门
+                                </th>
+                                <th field="hkspd-BX_Detail-GUID_SettleType" title="结算方式" sortable="false" align="center"
+                                    width="90" editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        panelWidth:235,width:210,
+                                        remoteUrl:'/Combogrid/SettleType',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'SettleTypeName',
+                                        filterField:'SettleTypeKey,SettleTypeName',
+                                        sortName:'SettleTypeKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'SettleTypeKey',title:'结算方式编号',width:'90'},
+                                          {field:'SettleTypeName',title:'结算方式名称',width:'120'}
+                                        ]]
+                                      }
+                                  }">
+                                    结算方式
+                                </th>
+                                <th field="hkspd-BX_Detail-GUID_BGType" title="预算类型" sortable="false" align="center"
+                                    width="80" editor="{
+                              type:'combogrid',
+                              options:{
+                                panelWidth:235,width:210,
+                                remoteUrl:'/Combogrid/BGType',
+                                method:'get',
+                                idField:'GUID',
+                                textField:'BGTypeName',
+                                filterField:'BGTypeKey,BGTypeName',
+                                sortName:'BGTypeKey',
+                                columns:[[
+                                  {field:'GUID',title:'GUID',hidden:true},
+                                  {field:'BGTypeKey',title:'预算类型编码',width:'90'},
+                                  {field:'BGTypeName',title:'预算类型名称',width:'120'}
+                                ]]
+                              }
+                          }">
+                                    预算类型
+                                </th>
+                                <th field="hkspd-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="
+                                    {
+                                    type:'searchbox',
+                                    options:{
+                                    'particulars':['/particulars/hkspd','hkspd-BX_Detail','parti'],
+                                    'window':'b-window'
+                                    }
+                                    }">
+                                    财政支付</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 90px">
+                    <label>
+                        实报金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="hkspd-BX_Main-moneychinese" style="width: 495px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 80px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="hkspd-BX_Main-moneyunmber" style="width: 176px"
+                        data-options="
+                            precision:2,
+                            forbidstatus:[-1],
+                            setNotValue:true,
+                            groupSeparator:',',
+                            decimalSeparator:',',
+                            "></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="hkspd-BX_Main-GUID_Maker" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 80px">
+                    <label>
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="hkspd-BX_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="hkspd-BX_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 80px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="hkspd-BX_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 80px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="hkspd-BX_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="hkspd-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="hkspd-BX_Main-GUID_DocType" type="hidden"></input>
+     <input class="easyui-validatebox"  wldw='1' id="hkspd-SS_Customer-CustomerKey" type="hidden"></input>
+    <input class="easyui-validatebox" id="hkspd-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="hkspd-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="hkspd-BX_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="hkspd-BX_Main-OAOTS" type="hidden"></input>
+           <input class="easyui-validatebox" id="hkspd-BX_Main-GLDH" type="hidden"></input>
+</div>
+<label id="hkspd-extendregion" style="display: none">
+    <input id="hkspd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">  </div>
+     <div id="c-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="hkspd-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="hkspd-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

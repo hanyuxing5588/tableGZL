@@ -1,0 +1,239 @@
+﻿<div class="easyui-layout" id="dwda-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="dwda-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'dwda',forbidstatus:[1,2,3],
+                   window:'dwda-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/dwda',['dwda-BX_Main-moneychinese','dwda-BX_Main-moneyunmber']]}">
+                打印</a> <a href="#" class="easyui-linkbutton" id="dwda-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newDoc']},scope:'dwda',status:'1',                        
+                  bindparms:{'newDoc':['/dwda/New']},forbidstatus:[1,2,3]">新增</a> <a href="#" class="easyui-linkbutton"
+                      id="dwda-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                  docState:'dwda-BX_Main-DocState',
+                  bindmethod:{'click':['setStatus']},scope:'dwda',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> <a href="#" class="easyui-linkbutton" id="dwda-remove"
+                      data-options="plain:'true',iconCls:'icon-shanchu',
+                  docState:'xjbxd-BX_Main-DocState',
+                  bindmethod:{ 'click': ['setStatus'] },scope:'dwda',status:'3',
+                  forbidstatus:[1,2,3]">删除</a> <a href="#" class="easyui-linkbutton" id="dwda-save"
+                      data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/dwda/Save']},
+                   scope:'dwda',status:'4',forbidstatus:[4]">保存</a> <a href="#" class="easyui-linkbutton"
+                       id="xjbxd-cancel" data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'dwda',forbidstatus:[4],
+                     bindmethod:{ 'click': ['cancel'] }">取消</a> <a href="#" class="easyui-linkbutton"
+                         id="xjbxd-cancel" data-options="plain:'true',iconCls:'icon-dingwei', 
+                   scope:'dwda',forbidstatus:[4],
+                     bindmethod:{ 'click': ['cancel'] }">定位</a> <a href="#" class="easyui-linkbutton"
+                         id="dwda-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'dwda'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="单位">
+                <ul class="easyui-tree" id="dwda-tree-ren" data-options="
+                  associate:{
+                        'dwda-SS_DW-DWKey':['GUID','SS_DW-DWKey'],
+                        'dwda-SS_DW-DWName':['GUID','SS_DW_DWNam']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 800px; padding-left: 10px;">
+        <table border="0" style="height: 350px; width: 800px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="dwda-abandonedStatus" statuscontrolid="dwda-BX_Main-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        单位档案</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID-DWKey">
+                        <font color="red">*</font>单&nbsp;位&nbsp;编&nbsp;号</label>
+                </td>
+                <td style="width: 650px;">
+                    <input class="easyui-validatebox" id="dwda-SS_DW-DWKey" style="width: 176px;" data-options="forbidstatus:[4,3]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-SS_DW_DWNam">
+                        <font color="red">*</font>单&nbsp;位&nbsp;名&nbsp;称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="dwda-SS_DW-DWName" style="width: 176px;" data-options="forbidstatus:[4,3]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-SS_DW-">
+                        &nbsp;上级单位编号</label>
+                </td>
+                <td style="width: 650px;">
+                    <select class="easyui-combogrid" id="dwda-SS_DW-PKey" data-options="
+                           scope:'dwda',
+                           width:'180',
+                           method:'post',
+                           panelWidth:'250',
+                           filterField:'PKey,PName',
+                           remoteUrl:'/Combogrid/DW',
+                           idField:'PGUID',
+                           textField:'PName',
+                           columns:[[
+                            {field:'PGUID',hidden:'true'},
+                            {field:'dwda-SS_DW-PKey',title:'单位编号',width:'100'},
+                            {field:'dwda-SS_DW-PName',title:'单位名称',width:'150'}
+                           ]],
+                           bindmethod:{'onSelect':['setAssociate']},
+                           assciate:{
+                            'dwda-SS_DW-PName':['PName']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-ProjectKey">
+                        &nbsp;上级单位名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="dwda-SS_DW-PName" data-options="
+                           panelWidth:'250',
+                           width:'180',
+                           method:'post',
+                           scope:'dwda',
+                           filterField:'PKey,PName',
+                           remoteUrl:'/Combogrid/DW',
+                           idField:'PGUID',
+                           textField:'PName',
+                           columns:[[
+                                {field:'PGUID',hidden:'true'},
+                                {field:'dwda-SS_DW-PName',title:'单位名称',width:'150'},
+                                {field:'dwda-SS_DW-PKey',title:'单位编号',width:'100'}
+                           ]],
+                           bindmethod: { 'onSelect': ['setAssociate'] },
+                           associate:
+                            {
+                                 'dwda-SS_DW-PKey':['PKey'],
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <input type="checkbox" id="dwda-SS_DW-IsStop" data-options="forbidstatus:[-1]">是否停用</input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="dwda-SS_DW" data-options="
+                            fitColumns:'false',
+                            method:'get',
+                            singleSelect:'true',
+                            checkOnSelect:'true',
+                            height:'450',
+                            width:'1000',
+                            scope:'dwda',
+                            forbidstatus:[4,3],
+                            pagination:true,
+                            pageSize:20,
+                            pageList:[20,50,100],
+                            rownumbers:true,
+                            url:''
+                      ">
+                        <thead>
+                            <tr>
+                                <th field="b-sel" data-options="width:60,checkbox:'true'">
+                                </th>
+                                <th field="dwda-SS_DW-GUID" hidden="true">
+                                </th>
+                                <th field="dwda-SS_DW-PGUID" hidden="true">
+                                </th>
+                                <th field="dwda-SS_Department-GUID" hidden="true">
+                                </th>
+                                <th field="dwda-BX_Main-GUID" hidden="true">
+                                </th>
+                                <th field="dwda-SS_DW-DWKey" title="单位编码" width="80" sortable="false" align="center"
+                                    editor="{type:'text'}">
+                                    单位编码
+                                </th>
+                                <th field="dwda-SS_DW-DWName" title="单位名称" sortable="false" align="center" width="100"
+                                    editor="{type:'text'}">
+                                    单位名称
+                                </th>
+                                <th field="dwda-SS_DW-PKey" title="上级编码" sortable="false" align="center" width="80"
+                                    editor="{type:'text'}">
+                                    上级编码
+                                </th>
+                                <th field="dwda-SS_DW-PName" title="上级名称" sortable="false" align="center" width="100"
+                                    editor="{type:'text'}">
+                                    上级名称
+                                </th>
+                                <th field="dwda-" title="单位地址" sortable="false" align="center" width="100" editor="{type:'text'}">
+                                    单位地址
+                                </th>
+                                <th field="dwda-SS_Person-" title="传真" sortable="false" align="center" width="80"
+                                    editor="text">
+                                    传真
+                                </th>
+                                <th field="dwda-SS_Person-" title="联系人" sortable="false" align="center" width="80"
+                                    editor="text">
+                                    联系人
+                                </th>
+                                <th field="dwda-SS_Person-" title="邮编" sortable="false" align="center" width="80"
+                                    editor="text">
+                                    邮编
+                                </th>
+                                <th field="dwda-SS_Person-Email" title="EMAIL" sortable="false" align="center" width="80"
+                                    editor="text">
+                                    EMAIL
+                                </th>
+                                <th field="dwda-" title="启用时间" sortable="false" align="center" width="50" editor="">
+                                    启用时间
+                                </th>
+                                <th field="dwda-" title="结束时间" sortable="false" align="center" width="50" editor="text">
+                                    结束时间
+                                </th>
+                                <th field="dwda-SS_DW-IsStop" title="是否停用" sortable="false" align="center" width="50"
+                                    editor="text">
+                                    是否停用
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Detail-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="dwda-BX_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="dwda-extendregion" style="display: none">
+    <input id="dwda-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="dwda-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

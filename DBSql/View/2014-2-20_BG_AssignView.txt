@@ -1,0 +1,76 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[BG_AssignView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[BG_AssignView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：BG_AssignView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-1-27
+//功    能：预算分配视图信息
+*/
+
+CREATE  VIEW dbo.BG_AssignView
+ as
+(SELECT dbo.BG_Assign.GUID, dbo.BG_Assign.OAOTS, dbo.BG_Assign.BGYear, 
+      dbo.BG_Assign.BGMonth, dbo.BG_Assign.GUID_DW, dbo.SS_DW.DWKey, 
+      dbo.SS_DW.DWName, dbo.BG_Assign.GUID_Department, 
+      dbo.SS_Department.DepartmentKey, dbo.SS_Department.DepartmentName, 
+      dbo.BG_Assign.GUID_Project, dbo.SS_Project.ProjectKey, 
+      dbo.SS_Project.ProjectName, dbo.BG_Assign.BeginDate, dbo.BG_Assign.StopDate, 
+      dbo.BG_Assign.GUID_BGTYPE, dbo.BG_Assign.GUID_BGSetUp, 
+      dbo.BG_Setup.BGSetupKey, dbo.BG_Setup.BGSetupName, 
+      dbo.BG_Setup.GUID_BGStep, BG_Step_2.BGStepKey, BG_Step_2.BGStepName, 
+      dbo.BG_Assign.GUID_Maker, dbo.SS_Operator.OperatorName AS Maker, 
+      dbo.BG_Assign.GUID_Modifier, SS_Operator_1.OperatorName AS Modifier, 
+      dbo.BG_Assign.MakeDate, dbo.BG_Assign.ModifyDate, dbo.BG_Assign.SubmitDate, 
+      dbo.BG_Type.BGTypeKey, dbo.BG_Type.BGTypeName, 
+      dbo.BG_Assign.GUID_DocType, dbo.SS_DocTypeView.DocTypeKey, 
+      dbo.SS_DocTypeView.DocTypeName, dbo.BG_Assign.GUID_UIType, 
+      dbo.SS_UIType.UITypeKey, dbo.SS_UIType.UITypeName, dbo.BG_Assign.IsPStep, 
+      dbo.BG_Assign.GUID_PStep, BG_Step_1.BGStepKey AS PBGStepKey, 
+      BG_Step_1.BGStepName AS PBGStepName, dbo.SS_ProjectClass.ProjectClassKey, 
+      dbo.SS_ProjectClass.ProjectClassName, dbo.BG_Assign.DocNum, 
+      dbo.BG_Assign.DocState, dbo.BG_Assign.GUID_FunctionClass, 
+      dbo.SS_FunctionClass.FunctionClassKey, 
+      dbo.SS_FunctionClass.FunctionClassName,
+      dbo.SS_FunctionClass.FinanceCode, dbo.SS_DocTypeView.DocTypeUrl
+FROM dbo.BG_Type RIGHT OUTER JOIN
+      dbo.SS_DocTypeView RIGHT OUTER JOIN
+      dbo.SS_UIType RIGHT OUTER JOIN
+      dbo.SS_Project RIGHT OUTER JOIN
+      dbo.SS_FunctionClass RIGHT OUTER JOIN
+      dbo.BG_Assign INNER JOIN
+      dbo.BG_Setup ON dbo.BG_Assign.GUID_BGSetUp = dbo.BG_Setup.GUID ON 
+      dbo.SS_FunctionClass.GUID = dbo.BG_Assign.GUID_FunctionClass ON 
+      dbo.SS_Project.GUID = dbo.BG_Assign.GUID_Project LEFT OUTER JOIN
+      dbo.SS_ProjectClass ON 
+      dbo.SS_Project.GUID_ProjectClass = dbo.SS_ProjectClass.GUID LEFT OUTER JOIN
+      dbo.BG_Step BG_Step_1 ON 
+      dbo.BG_Assign.GUID_PStep = BG_Step_1.GUID LEFT OUTER JOIN
+      dbo.BG_Step BG_Step_2 ON dbo.BG_Setup.GUID_BGStep = BG_Step_2.GUID ON 
+      dbo.SS_UIType.GUID = dbo.BG_Assign.GUID_UIType ON 
+      dbo.SS_DocTypeView.GUID = dbo.BG_Assign.GUID_DocType ON 
+      dbo.BG_Type.GUID = dbo.BG_Assign.GUID_BGTYPE LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.BG_Assign.GUID_DW = dbo.SS_DW.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.BG_Assign.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_Operator ON 
+      dbo.BG_Assign.GUID_Maker = dbo.SS_Operator.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.BG_Assign.GUID_Modifier = SS_Operator_1.GUID
+)
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

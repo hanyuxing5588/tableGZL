@@ -1,0 +1,42 @@
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[PayMoneyState]') and xtype in (N'FN', N'IF', N'TF'))
+drop function [dbo].[PayMoneyState]
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+
+
+/*
+//名称：PayMoneyState
+//创建日期：
+//修改人：sxb
+//修改日期：2014-4-11
+//修改描述：
+//功能描述：付款状态
+*/
+
+create  function PayMoneyState(@mainGuid varchar(50))
+	returns varchar(50)
+as 
+begin 
+	declare @count int
+	declare @resultStr varchar(500)
+	select @count=count(*) from hx_detail where guid_hx_main in(
+		select distinct guid_hx_main from hx_detail where guid_main=@mainGuid and isDC=0/*查找核销主表*/
+	) and isdc=1
+	if(@count>0)
+		set @resultStr='已还款'
+	else
+		set @resultStr='未还款'
+	return @resultStr
+end 
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO

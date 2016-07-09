@@ -1,0 +1,537 @@
+﻿@{
+    Layout = null;
+}
+<link href="../../Scripts/jquery-easyui-1.3.4/themes/defaultIcon.css" rel="stylesheet" type="text/css" />
+<link href="../../Scripts/jquery-easyui-1.3.4/themes/gray/easyui.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/jquery-easyui-1.3.4/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/jquery-easyui-1.3.4/jquery.easyui.min.js" type="text/javascript"></script>
+<script src="../../Scripts/jquery-easyui-1.3.4/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
+<script src="../../Scripts/jquery-easyui-1.3.4/plugins/jquery.panel.js" type="text/javascript"></script>
+<script src="../../Content/commonjs/jquery.tool.js" type="text/javascript"></script>
+<script type="text/javascript">
+    window.TCTTaskData = function () {
+        $.ajax({
+            url: '/Home/GetAcencyTaskData',
+            async: true,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+
+                var gridId = '#todoTask';
+                $(gridId).datagrid('loading');
+                $(gridId).datagrid('loadData', data);
+                $(gridId).datagrid('loaded');
+            }
+        });
+    };
+    var toolbar = [{
+        text: '刷新',
+        iconCls: 'icon-reload',
+        handler: function (evt) {
+            
+            $.ajax({
+                url: '/Home/GetAcencyTaskData',
+                async: true,
+                type: 'post',
+                dataType: 'json',
+                success: function (data) {
+                    
+                    var gridId = '#todoTask';
+                    $(gridId).datagrid('loading');
+                    $(gridId).datagrid('loadData', data);
+                    $(gridId).datagrid('loaded');
+                }
+            });
+        }
+
+    }];
+    //格式化datagrid单元格样式    $.cellStyler = function (value, row, index) {
+        
+        return 'background-color:#ffee00;color:red;';
+    };
+    //格式化datagrid单元格内容    $.cellFormatter = function (value, row, index) {
+        
+        var result = '';
+        if (value == true) {
+            result = 'New！';
+        } else {
+            result = '·';
+        }
+        return result;
+    };
+    $.formatterNum = function (v, r, i) {
+        if (parseFloat(v) === 0 || !$.isNumeric(v)) {
+            return '';
+        } else {
+            v = parseFloat(v) / 10000;
+            return new Number(v).formatThousand(v);
+        }
+    }
+    $.formatterPercent = function (v, r, i) {
+        if (parseFloat(v) === 0 || !$.isNumeric(v)) {
+            return '';
+        } else {
+            v = new Number(v).toFixed(2);
+            return v+'%';
+        }
+    }
+    //打开待办任务
+    $.OpenAgencyTask = function (rowIndex, rowData) {
+        var itemParam = rowData;
+        $.ajax({
+            url: '/Home/GetViewParameters',
+            data: itemParam,
+            cache: false,
+            async: true,
+            type: 'post',
+            datatype: 'json',
+            success: function (data) {
+                if (!data || data.Msg) {
+                    $.messager.alert('提示', '打开待办任务出错，请刷新列表');
+                } else {
+                    var status1 = $.GetDocStatus(data.Url, data.common); // data.common == "ysfp" ? 1 : 4; //临时处理
+                    parent.window.openTabs(data.MenuName, data.Url, data.DataId, status1, '', data);
+                }
+            }
+        });
+    };
+    $.GetDocStatus = function (url, common) {
+        if (common == "ysfp") return 1;
+        if (common == "yscszsz" && url == "ysbz") return 1;
+        return 4;
+    },
+    //打开通知公告
+    $.OpenNotice = function (rowIndex, rowData) {
+        
+        var guid = rowData['GUID'],
+            title = rowData.Title,
+            NoticeDate = rowData.NoticeDate,
+            Notice = rowData.Notice;
+        $('#b-dialog').dialog({
+            onOpen: function () {
+                $(this).find('#Notice-Title').val(title);
+                $(this).find('#Notice-Date').val(NoticeDate);
+                $(this).find('#Notice-Notice').val(Notice);
+            }
+        });
+        $('#b-dialog').dialog('open');
+
+        $.ajax({
+            url: '/Home/GetDataByGridId',
+            data: { guid: guid },
+            cache: false,
+            async: true,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                $('#NoticeGrid').datagrid('loadData', data);
+            }
+        });
+
+    };
+    //扩展datagrid客户端分页    $.extend($.fn.datagrid.methods, {
+        pagerFilter: function (data) {
+            if (data == null) {
+                data = {
+                    total: 0,
+                    rows: []
+                }
+            }
+            if (typeof data.length == 'number' && typeof data.splice == 'function') {      
+                data = {
+                    total: data.length,
+                    rows: data
+                }
+            }
+            var dg = $(this);
+            var opts = dg.datagrid('options');
+            var pager = dg.datagrid('getPager');
+            pager.pagination({
+                onSelectPage: function (pageNum, pageSize) {
+                    opts.pageNumber = pageNum;
+                    opts.pageSize = pageSize;
+                    pager.pagination('refresh', {
+                        pageNumber: pageNum,
+                        pageSize: pageSize
+                    });
+                    dg.datagrid('loadData', data);
+                }
+            });
+            if (!data.originalRows) {
+                data.originalRows = (data.rows);
+            }
+            var start = (opts.pageNumber - 1) * parseInt(opts.pageSize);
+            var end = start + parseInt(opts.pageSize);
+            data.rows = (data.originalRows.slice(start, end));
+            return data;
+        }
+    });
+    //模糊查询
+    $.search = function (jq) {
+        var gridId = '#OfficeFile';
+        var $header = $('#p2').panel('header');
+        var passValue = $header.find('span input').val();
+        $.ajax({
+            url: '/Home/GetDataByKeyWord',
+            data: { KeyWord: passValue },
+            cache: false,
+            async: true,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                $(gridId).datagrid('loadData', data);
+            }
+        });
+
+    };
+    //在panel控件中加载searchbox控件
+    $.initPanel = function (jq) {
+        var $header = $(jq).panel('header');
+        $header.css('padding', '2px 2px 2px 2px');
+        $header.find('div.panel-title').remove();
+        $header.find('div.panel-tool').
+            before('<input id="search" class="easyui-searchbox" style="width:200px;padding:0 0 0 0" data-options="searcher:function(){$.search(this)}"></input>');
+        if (!window.easyloader && $.parser.auto) {
+            $.parser.parse($header);
+        }
+        $header.find('span input').attr('readonly', false);
+    };
+    $.initGridTitle = function (jq) {
+        alert(1);
+    };
+    //单击树查询数据    $.OnClickTree = function (jq, node) {
+        var opts = $(jq).tree('options');
+        var gridId = '#' + opts.gridId;
+        $.ajax({
+            url: '/Home/GetDataByTreeId',
+            data: { guid: node.id },
+            cache: false,
+            async: true,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                $(gridId).datagrid('loadData', data);
+            }
+        });
+    };
+    //grid是否分页
+    $.gridPagination = function (jq, data) {
+        var opts = $(jq).datagrid('options');
+        var pageSize = opts.pageSize;
+        if (data.rows.length > pageSize) {
+            if (opts.isLoaded) return;
+            $(jq).datagrid({ isLoaded: true, pagination: true, loadFilter: $.fn.datagrid.methods['pagerFilter'] });
+            $(jq).datagrid('loadData', data);
+        }
+    }
+    //政策法规文件下载
+    $.downFiles = function (jq, type, rowIndex, rowData) {
+        
+        var opts = $(jq).datagrid('options');
+        var url = opts.examineUrl;
+        var downUrl = opts.downUrl;
+        var id = rowData["GUID"];
+        $.ajax({
+            url: url,
+            data: { guid: id },
+            cache: false,
+            async: true,
+            type: 'post',
+            dataType: 'json',
+            success: function (data) {
+                
+                if (!data.flag) {
+                    $.messager.alert('警告', '该附件不存在！', 'warning');
+                    return;
+                } else {
+//                    $.messager.confirm("提示", "确定要下载?", function (flag) {
+//                        if (!flag) return;
+                        $('#iframeDocFile').attr("src", downUrl + id);
+//                    });
+                }
+            }
+        });
+
+    };
+    //将datagrid最后的合计行的标题居中显示
+        $.GridOnLoadSuccess = function (data) {
+        
+        $(".datagrid-ftable .datagrid-row td[field='ProjectName'] div").css('text-align', 'center');
+    }
+</script>
+<style type="text/css">
+.datagrid-cell-group 
+{
+	text-align:left;
+	}
+</style>
+<div id="cc" class="easyui-layout" data-options="fit:true">  
+    <div data-options="region:'north'" style="height:250px;">
+        <div id="cc1" class="easyui-layout"  data-options="fit:true"> 
+            <div data-options="region:'west',title:'待办任务',border:false" style="width:500px;">
+                <table class="easyui-datagrid" id="todoTask" 
+                    data-options="
+                        fit:true,
+                        nowrap:false,
+                        striped:true,
+                        showHeader:false,
+                        singleSelect:true,
+                        url:'/Home/GetAcencyTaskData',
+                        pageSize:6,
+                        pageList:[6,12,18,24,30],
+                        toolbar:toolbar,
+                        onDblClickRow:function(rowIndex, rowData){
+                            $.OpenAgencyTask(rowIndex, rowData);
+                        },
+                        onLoadSuccess:function(data){
+                            $.gridPagination(this,data);
+                        }
+                        ">
+                    <thead>
+                        <tr>
+                            <th data-options="field:'ProcessID', hidden:'true'"></th>
+                            <th data-options="field:'ProcessNodeID', hidden:'true'"></th>
+                            <th data-options="field:'StrAcceptDate', hidden:'true'"></th>
+                            <th data-options="field:'NodeType', hidden:'true'"></th>
+                            <th data-options="field:'AcceptDate', hidden:'true'"></th>
+                            <th data-options="field:'BXUserName', title:'报销人', align:'center', width:'70'"></th>
+                            <th data-options="field:'NodeName', title:'节点名', align:'center', width:'150'"></th>
+                            <th data-options="field:'DocNum', title:'单据编码', align:'center', width:'70'"></th>
+                            <th data-options="field:'SumMoney', title:'金额', align:'right', width:'80',
+                                formatter: function (value, row, index) {
+                                   return $.isNumeric(value) ? new Number(value).formatThousand(value) : '0.00'
+                               }" >
+                            </th>
+                            <th data-options="field:'DocName', title:'单据类型', align:'center', width:'120'"></th>
+                           
+                        </tr>
+                                            
+                    </thead>   
+                </table>
+            </div>  
+            <div data-options="region:'center',border:false">
+                <div id="right_tab" class="easyui-tabs" data-options="fit:true">  
+                    <div title="通知公告" >
+                       <table class="easyui-datagrid" id="Notice" 
+                            data-options="
+                                fit:true,
+                                nowrap:false,
+                                striped:true,
+                                singleSelect:true,
+                                remoteSort:false,
+                                url:'/Home/GetNoticeData',
+                                showHeader:false,
+                                pageSize: 7, 
+                                pageList: [7, 14, 21, 28, 35],
+                                onDblClickRow:function(rowIndex, rowData){
+                                    $.OpenNotice(rowIndex, rowData);
+                                },
+                                onLoadSuccess:function(data){
+                                    $.gridPagination(this,data);
+                                }
+                                ">
+                            <thead>
+                                <tr>
+                                    <th data-options="field:'GUID',hidden:'true'"  ></th>
+                                    <th data-options="field:'NoticeDate', hidden:'true'"></th>
+                                    <th data-options="field:'EndDate',hidden:'true'"></th>
+                                    <th data-options="
+                                            field:'IsNew',
+                                            width:30,
+                                            align:'center',
+                                            styler:function(value,row,index){
+                                                return $.cellStyler(value,row,index);
+                                            },
+                                            formatter:function(value,row,index){
+                                                return $.cellFormatter(value,row,index);
+                                            }">
+                                    </th>
+                                    <th data-options="field:'Title',title:'通知公告',width:700"></th>
+                            
+                                </tr>
+                                            
+                            </thead>   
+                        </table>
+                    </div>
+                    <div title="政策法规" >  
+                        <div id="cc2" class="easyui-layout" data-options="fit:true">  
+                            <div data-options="region:'west',border:false" style="width:250px;">
+                                <div id="p1" class="easyui-panel" title="文件下载"   
+                                    data-options="
+                                        fit:true,
+                                        closable:false,
+                                        collapsible:false,
+                               
+                                        minimizable:false,
+                                        maximizable:false">  
+                                        <ul class="easyui-tree" id="treeId" data-options="
+                                          url:'/Tree/GetFileTypeData',
+                                          method:'post',
+                                          gridId:'OfficeFile',
+                                          onClick:function(node){
+                                            $.OnClickTree(this,node);
+                                          }">
+                                        </ul>
+                                </div>
+                            </div>  
+                            <div data-options="region:'center',border:false" >
+                                <div id="p2" class="easyui-panel" title="title"   
+                                    data-options="
+                                        fit:true,
+                                        closable:false,
+                                        collapsible:false,
+                                        minimizable:false,
+                                        maximizable:false,
+                                        onOpen:function(){
+                                            $.initPanel(this);
+                                        }">  
+                                        <table class="easyui-datagrid" id="OfficeFile" 
+                                            data-options="
+                                                fit:true,
+                                                showHeader:false,
+                                                singleSelect:true,
+                                                nowrap:false,
+                                                striped:true,
+                                                method:'post',
+                                                url:'/Home/GetFileData',
+                                                examineUrl:'/Home/IsOfficeExist',
+                                                downUrl:'/Home/GetOfficeDownFile?guid=',
+                                                onDblClickRow:function(rowIndex, rowData){
+                                                    $.downFiles(this,'zcfg',rowIndex, rowData);
+                                                }
+                                                ">
+                                            <thead>
+                                                <tr>
+                                                    <th field="GUID" hidden="true"></th>
+                                                    <th field="GUID_OfficeFileType" hidden="true"></th>
+                                                    <th field="FileName" title="文件名" width="800"></th>
+                                                </tr>
+                                            
+                                            </thead>   
+                                        </table>
+                                </div>
+                            </div>  
+                        </div> 
+                    </div>  
+                </div> 
+            </div> 
+        </div>
+    </div>  
+    <div data-options="region:'center',border:false">
+        <div id="center_tab" class="easyui-tabs" data-options="fit:true">  
+            <div title="项目执行进度" >  
+               <table class="easyui-treegrid" id="Progress" 
+                    data-options="
+                        fit:true,
+                        nowrap:false,
+                        singleSelect:true,
+                        showFooter: true,
+                        striped:true,
+                        url:'/Home/GetProgressData',
+                        idField: 'GUID',
+				        treeField: 'ProjectName',
+                        onLoadSuccess:$.GridOnLoadSuccess
+                        ">
+                    <thead>
+                        <tr style="background-color:#CCFFCC">
+                            <th colspan="1">
+                                单位/部门:@ViewData["DeptName"]
+                            </th> 
+                            <th colspan="6">
+                            </th> 
+                            <th colspan="1">
+                                金额单位:万元
+                            </th> 
+                        </tr>
+                        <tr>
+                            <th data-options="field:'ProjectName', title:'项目名称',halign:'center', align:'left', width:'400'">项目名称</th>
+                            <th data-options="field:'ProjectKey', title:'项目编号',halign:'center', align:'left', width:'100'">项目编号</th>
+                            <th data-options="field:'PersonName', title:'项目负责人',halign:'center', align:'left', width:'100'">项目负责人</th>
+                            <th data-options="field:'iBGTotalSum', title:'总经费',halign:'center', align:'right', width:'100',
+                              styler:function(value,row,index){
+                                        return 'color:#0000FF;';
+                                },
+                                formatter:$.formatterNum">总经费</th>
+                            <th data-options="field:'iBGTotalXD', title:'预算下达',halign:'center', align:'right', width:'100',
+                              styler:function(value,row,index){
+                                        return 'color:#008000;';
+                                },
+                                formatter:$.formatterNum">预算下达</th>
+                            <th data-options="field:'iBXTotal', title:'预算执行',halign:'center', align:'right', width:'100',
+                              styler:function(value,row,index){
+                                        return 'color:#008000;';
+                                },
+                                formatter:$.formatterNum">预算执行</th>
+                            <th data-options="field:'iBalance', title:'预算结余',halign:'center', align:'right', width:'100',
+                                styler:function(value,row,index){
+                                        return 'color:#008000;';
+                                },
+                                formatter:$.formatterNum
+                              ">预算结余</th>
+                            <th data-options="field:'iRatio', title:'完成比例',halign:'center', align:'right', width:'100',
+                                styler:function(value,row,index){
+                                        return 'color:#008000;';
+                                },
+                                formatter:$.formatterPercent
+
+                            ">完成比例</th>
+                        </tr>
+                                            
+                    </thead>   
+                </table>
+            </div>  
+        </div>  
+    </div>  
+</div> 
+<label id="lbl-hidden" style="display: none">
+    <div id="b-dialog" line="true" class="easyui-dialog" data-options="
+        resizable: false,title: '通知',width: 700,
+        closed:true,height: 500,modal: true,
+        minimizable: false,maximizable: false,collapsible: false">
+        <div style="padding:10px 0 0 15px;">
+            <table border="0" style="height: auto; width: 650px; padding: 0 0 0 0; margin: 0 0 0 0">
+            <tr>
+                <td style="width:13%;font-size: 12px;">&nbsp;&nbsp;通知标题</td>
+                <td style="width:87%">
+                    <input class="easyui-validatebox" id="Notice-Title" disabled="true" style="width:100%"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width:13%;font-size: 12px;">&nbsp;&nbsp;通知日期</td>
+                <td style="width:87%">
+                    <input class="easyui-validatebox" id="Notice-Date" disabled="true" style="width:100%"></input>
+                </td>
+            </tr>
+        </table>
+            <textarea id="Notice-Notice" disabled="true" rows="15" cols="89"></textarea>
+            <table class="easyui-datagrid" id="NoticeGrid" 
+                data-options="
+                    height:150,
+                    width:645,
+                    nowrap:false,
+                    singleSelect:true,
+                    striped:true,
+                    method:'post',
+                    examineUrl:'/Home/IsNoticeExist',
+                    downUrl:'/Home/GetNoticeDownFile?guid=',
+                    rownumbers:true,
+                    onDblClickRow:function(rowIndex, rowData){
+                        $.downFiles(this,'tzgg',rowIndex, rowData);
+                    }
+                    ">
+                <thead>
+                    <tr>
+                        <th data-options="field:'GUID',hidden:'true'"  ></th>
+                        <th data-options="field:'GUID_Notice', hidden:'true'"></th>
+                        <th data-options="field:'AnnexName', title:'文件名', align:'left', width:'500'"></th>
+                    </tr>
+                                            
+                </thead>   
+            </table>
+        </div>
+        
+    </div>
+</label>
+<input type="text" style="width:100px;" />
+<iframe id="iframeDocFile"></iframe>
+

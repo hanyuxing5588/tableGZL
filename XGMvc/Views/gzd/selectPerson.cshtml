@@ -1,0 +1,97 @@
+﻿<body>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var vTree = $("#selectPerson-tree-person");
+        var dg = $("#gzd-SA_PlanActionDetail");
+        vTree.tree({
+            //            onExpand: function (node) {               
+            //                var treePersonGUID;
+            //                var child = vTree.tree("getChildren", node.target);
+            //                var gridRow = $("#gzd-SA_PlanActionDetail").datagrid("getRows");
+            //                for (var i = 0, j = child.length; i < j; i++) {
+            //                    treePersonGUID = child[i].attributes.GUID;
+            //                    for (var n = 0, m = gridRow.length; n < m; n++) {
+            //                        var gridPersonGUID = gridRow[n]["gzd-SA_PlanPersonSetModel-GUID_Person"];
+            //                        if (treePersonGUID == gridPersonGUID) {
+            //                            vTree.tree("check", child[i].target);
+            //                        }
+            //                    }
+            //                }
+            //            }
+            onLoadSuccess: function (node, data) { //onLoadSuccess
+                
+                var roots = vTree.tree('getRoots');
+
+                for (var n = 0, m = roots.length; n < m; n++) {
+                    var treedata = vTree.tree('getChildren', roots[n].target);
+                    if (treedata == undefined) continue;
+                    for (var i = 0, j = treedata.length; i < j; i++) {
+                        var personid = treedata[i].id;
+                        if (isLeaf(treedata[i]) && isExistPerson(personid)) {
+                            vTree.tree("check", treedata[i].target);
+                        }
+                    }
+                }
+
+            }
+        });
+
+        var isLeaf = function (node) {
+            var b = vTree.tree("isLeaf", node.target);
+            
+            if (b) {
+                return true;
+            }
+            return false;
+        };
+
+        var gridRows = dg.datagrid('getRows');
+        var isExistPerson = function (guid) {
+            
+            var personid = "";
+            for (var i = 0; i < gridRows.length; i++) {
+                personid = gridRows[i]["gzd-SA_PlanPersonSetModel-GUID_Person"];
+                if (personid == guid) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+    });
+</script>
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+<div b-type="1" data-options="region:'north',tools:'#tbar'" style="height:51px">
+<div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">                  
+
+
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="selectPerson-haffirm" b-action="haffirm" gridId="selectPerson-bxdetail" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitSelect'] },
+                   bindparms:{'submitSelect':['gzd-SA_PlanActionDetail','selectPerson','selectPerson-tree-person']},                   
+                   window:'b-window',
+                   scope:'gzd',
+                   iconCls:'icon-queren'">确认</a>
+                  
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="selectPerson-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'gzd', 
+                    window:'b-window',         
+                    iconCls:'icon-quxiao'">取消</a>
+</div>
+</div>
+
+<div b-type="1" data-options="region:'center'" >
+<div title="人员">
+<ul class="easyui-tree" id="selectPerson-tree-person" data-options="                 
+                  url:'/Tree/GetAllPersonTree',
+                  checkbox:true,
+                  method:'post'"></ul></div>
+</div>
+</div>
+</body>

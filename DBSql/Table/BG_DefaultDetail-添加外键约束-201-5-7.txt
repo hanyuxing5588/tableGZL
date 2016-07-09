@@ -1,0 +1,28 @@
+﻿/*先把dbo.BG_DefaultMain 的主键设置好*/
+if exists(select * from sysobjects where name ='PK_BG_DefaultMain')
+print 'PK_BG_DefaultMain：约束已存在！'
+else
+begin
+alter table dbo.BG_DefaultMain add constraint PK_BG_DefaultMain primary key(GUID)
+print 'PK_BG_DefaultMain：约束添加成功！'
+end
+
+if exists(select * from sysobjects where name ='PK_BG_DefaultDetail')
+print 'PK_BG_DefaultDetail：约束已存在！'
+else
+begin
+alter table dbo.BG_DefaultDetail add constraint PK_BG_DefaultDetail primary key(GUID)
+print 'PK_BG_DefaultDetail：约束添加成功！'
+end
+
+/* 添加外键*/
+if exists(select * from sysobjects where name ='FK_BG_DefaultDetail_BG_DefalutMain')
+print 'FK_BG_DefaultDetail_BG_DefalutMain：约束已存在！'
+else
+begin
+alter table dbo.BG_DefaultDetail add constraint 
+FK_BG_DefaultDetail_BG_DefalutMain
+foreign key (GUID_BG_Main)
+references dbo.BG_DefaultMain(GUID) 
+print 'FK_BG_DefaultDetail_BG_DefalutMain：约束添加成功！'
+end

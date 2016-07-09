@@ -1,0 +1,224 @@
+﻿
+
+<script>
+    /*行颜色与部门对应表*/
+    $.Dep2ColorDic = {
+        '办公厅': '#29BBFF',
+        '一局': '#8FD749',
+        '二局': '#A79E92',
+        '三局': '#E5CE70',
+        '国际合作局': '#A8BAE1'
+    };
+    $.formatNum = function (s1) {
+        var p = /(\d+)(\d{3})/;
+        s1 = s1 ? s1 : 0.00;
+        s1 = parseFloat(s1).toFixed(2);
+        while (p.test(s1)) {
+            s1 = s1.replace(p, "$1,$2");
+        }
+        return s1;
+    }
+    $.getRowColor = function (name) {
+        var ry = $('#ryCheckbox').attr('checked') ? 1 : 0;
+        var bm = $('#bmCheckbox').attr('checked') ? 4 : 0;
+        var jk = $('#jkCheckbox').attr('checked') ? 7 : 0;
+        var sum = ry + bm + jk;
+        if (sum == 4 || sum == 0) {
+            return $.Dep2ColorDic[name] || '#FFFFFF';
+        }
+        return "#FFFFFF";
+    }
+    $(document).ready(function () {
+
+        $('#xmjdylb_grid').datagrid({
+            height:$('body').height()-150,
+            rowStyler: function (index, row) {
+                return 'background-color:' + $.getRowColor(row.DepartmentName);
+            }
+        });
+
+        var GetData = function () {
+            var ry = $('#ryCheckbox').attr('checked') ? 1 : 0;
+            var bm = $('#bmCheckbox').attr('checked') ? 2 : 0;
+            var jk = $('#jkCheckbox').attr('checked') ? 3 : 0;
+            var jk1 = $('#hwCheckbox').attr('checked') ? 4 : 0;
+            var c = [];
+            c.push(ry);
+            c.push(bm);
+            c.push(jk);
+            c.push(jk1);
+            var ruleQ = $('#comboM').combo('getValue');
+            $.ajax({
+                url: '/GCYReport/GetLoadYSKMCData/',
+                data: { orderKey: c.join(','), mType: ruleQ },
+                dataType: "json",
+                type: "POST",
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                    $.messager.alert("错误", '网络超时,请重新登录', 'error');
+                    //                    $.messager.alert("错误", textStatus, 'error');
+                },
+                success: function (data) {
+                    
+                    if (!data || data == null) {
+                        return;
+                    }
+                    $('#xmjdylb_grid').datagrid('loadData', data);
+                    $('#xmjdylb_grid').edatagrid('mergeColCellsByContext', { colName: 'DepartmentName' });
+
+                }
+            });
+
+        }
+        var ExportExcel = function () {
+            var l = $('#xmjdylb_grid').datagrid('getRows');
+            if (l <= 1) {
+                $.messager.alert('系统提示', '没有要输出的数据！');
+                return;
+            }
+            var ry = $('#ryCheckbox').attr('checked') ? 1 : 0;
+            var bm = $('#bmCheckbox').attr('checked') ? 2 : 0;
+            var jk = $('#jkCheckbox').attr('checked') ? 3 : 0;
+            var jk1 = $('#hwCheckbox').attr('checked') ? 4 : 0;
+            var c = [];
+            c.push(ry);
+            c.push(bm);
+            c.push(jk);
+            c.push(jk1);
+            var ruleQ = $('#comboM').combo('getValue');
+            window.open('/GCYReport/ExportYSKMCReport?orderKey=' + c.join(',') + '&mType=' + ruleQ);
+        }
+        $('#yskmxb-select').bind('click', function () {
+            GetData();
+        });
+        $('#yskmxb-shuchu').bind('click', function () {
+            ExportExcel();
+        });
+        $('#bmCheckbox').bind('click', function () {
+            GetData();
+        });
+        $('#jkCheckbox').bind('click', function () {
+            GetData();
+        });
+        $('#ryCheckbox').bind('click', function () {
+            GetData();
+        });
+        $('#hwCheckbox').bind('click', function () {
+            GetData();
+        });
+        $('#comboM').combo({
+            'onChange': function (x, c) {
+                GetData();
+            }
+        });
+        $('#yskmxb-tuichu').bind('click', function () {
+            parent.window.CloseTabs();
+        });
+        $('#yskmxb-select').click();
+    })
+</script>
+<body>
+    <div class="easyui-layout" id="yskmxb-dataregion" data-options="fit:true" z="1">
+        <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="yskmxb-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  scope:'yskmxb',
+                  forbidstatus:[-1]">查询</a>
+                  <a href="#" class="easyui-linkbutton" id="yskmxb-shuchu"
+                      data-options="plain:'true',iconCls:'icon-shuchu',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'yskmxb',
+                  forbidstatus:[-1]">输出</a> 
+                  <a href="#" class="easyui-linkbutton" id="yskmxb-tuichu"
+                      data-options="plain:'true',iconCls:'icon-tuichu',
+                  scope:'yskmxb'">退出</a>
+            </div>
+        </div>
+        <div data-options="region:'center'">
+            <div data-options="region:'north'" style="width: 100%; margin: 0px; padding: 0px;">
+                <table border="0" style="height: 40px; padding: 0px; margin: 5">
+                    <tr>
+                        <td style="width: 70px; height:25px;">
+                            <input id='ryCheckbox' width=20px type="checkbox"></input><label>人员排序</label>
+                        </td>
+                        <td>
+                            <input id='bmCheckbox' width=20px type="checkbox"></input><label>部门排序</label>
+                        </td>
+                        <td>
+                          <input id='jkCheckbox' width=20px type="checkbox"></input><label>借款日期排序</label>
+                        </td>
+                         <td>
+                           <input id='hwCheckbox' width=20px type="checkbox"></input><label>是否显示已还完</label>
+                        </td>
+                      
+                    </tr>
+                </table>
+            </div>
+            <div style="width: 100%;">
+                <table border="0" style="height: 40px; width: 100%; padding: 0px; margin: 0">
+                    <tr>
+                        <td colspan="17" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                            应收款明细表
+                        </td>
+                        <td style="width:150px">
+                         金额单位
+                           <select id="comboM" class="easyui-combobox" 
+                               data-options="
+                                editable:false,panelHeight:65"
+                                style="width: 80px;">
+                                <option value="10000">万元</option>
+                                <option value="1000">千元</option>
+                                <option value="1">元</option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+                <table class="easyui-datagrid" id="xmjdylb_grid" data-options="
+                        singleSelect:true,
+                        rownumbers:true,
+                        scope:'yskmxb'
+                        ">
+                    <thead>
+                        <tr>
+                            <th field="DepartmentName" width="100px;"
+                             data-options="styler:function(){return 'background-color:#EBEBE4;';}"
+                             align="center" >
+                                部门
+                            </th>
+                            <th field="DocDate" width="100px;" align="center">
+                                日期
+                            </th>
+                            <th field="DocNum" width="80px;" align="center">
+                                凭证号
+                            </th>
+                            <th field="DocMemo" width="250px;"  halign="center">
+                                摘要
+                            </th>
+                            <th field="Loan" width="100px;" align="right" 
+                                data-options=" formatter:function(a,b,c){  return $.formatNum(a,b,c);}"
+                                halign="center">
+                                借款金额
+                            </th>
+                           @*  <th field="Repayment" width="100px;" align="right" 
+                                data-options=" formatter:function(a,b,c){  return $.formatNum(a,b,c);}"
+                             halign="center">
+                                还款金额
+                            </th>*@
+                             <th field="Balance" width="100px;" align="right" 
+                                 data-options=" formatter:function(a,b,c){  return $.formatNum(a,b,c);}"
+                             halign="center">
+                                借款余额
+                            </th>
+                            <th field="Remark" width="232px;" halign="center">
+                                备注
+                            </th>
+                            <th field="PersonName" width="100px;" align="center">
+                                借款人
+                            </th>
+                        </tr>
+                    </thead>
+                   
+                </table>
+        </div>
+    </div>
+</body>

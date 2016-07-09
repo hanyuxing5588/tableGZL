@@ -1,0 +1,197 @@
+﻿/* 个性化定制 */
+.theme{ position:absolute; right:10px; overflow:hidden; zoom:1; z-index:13;}
+.theme div{ background-image: url(icons/skin.png);background-repeat: no-repeat;width: 16px;height: 16px;padding-right: 5px;float: left;margin-top: 0px;  }
+.content ul { float:left;background: url("images/theme.png") no-repeat 0 0; height: 11px; overflow:hidden; zoom:1;margin-top:9px;margin-left:28px;}
+.content li{ cursor: pointer; float: left; height: 11px;margin-right: 2px; overflow: hidden;width: 12px;}
+.content li.cur {background-image: url("images/theme.png");background-position-x: -14px;background-position-y: -11px;background-repeat: no-repeat;background-color: transparent;}
+.fonts{background-position:center;background-repeat:no-repeat;padding:45px 0 0 0;text-align:center;bottom: auto;text-decoration:none !important;}
+.iconcls08010205{background-image: url(images/报表/部门收入汇总.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010201{background-image: url(images/报表/个人收入查询.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010203{background-image: url(images/报表/个人薪资查询.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010101{background-image: url(images/报表/管理费用执行查询.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010302{background-image: url(images/报表/项目支出分析.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010102{background-image: url(images/报表/项目支出执行查询.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010105{background-image: url(images/报表/项目执行进度一览表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010106{background-image: url(images/报表/财政拨款收支一览表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010107{background-image: url(images/报表/应收款明细表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010102{background-image: url(images/报表/执行进度.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls0801030203{background-image: url(images/报表/执行进度一览.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls0801030205{background-image: url(images/报表/执行进度.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls0801030101{background-image: url(images/报表/执行率汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+
+.iconcls0801030501 {background-image: url(images/报表/gdg.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls0801030202 {background-image: url(images/报表/gsd.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls09010102 {background-image: url(images/报表/自助查询.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+
+
+.iconcls07020111{background-image: url(images/报销/报销单列表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020102{background-image: url(images/报销/差旅报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020311{background-image: url(images/报销/单据恢复记账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020310{background-image: url(images/报销/单据记账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07030101{background-image: url(images/报销/单据列表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020116{background-image: url(images/报销/公务卡报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020117{background-image: url(images/报销/公务卡汇总报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020106{background-image: url(images/报销/汇款审批单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020303{background-image: url(images/报销/货品购入.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020304{background-image: url(images/报销/货品领用.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020201{background-image: url(images/报销/借款单填制.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020104{background-image: url(images/报销/劳务费领款单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020105{background-image: url(images/报销/临时工工资单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020109{background-image: url(images/报销/期初报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020108{background-image: url(images/报销/其他报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020301{background-image: url(images/报销/收款凭单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020107{background-image: url(images/报销/手续费报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020306{background-image: url(images/报销/物品出库单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020308{background-image: url(images/报销/物品退库单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020314{background-image: url(images/报销/物品明细账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020309{background-image: url(images/报销/物品期初单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020305{background-image: url(images/报销/物品入库单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020315{background-image: url(images/报销/物品收发存汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020307{background-image: url(images/报销/物品退货单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020313{background-image: url(images/报销/物品总账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020118{background-image: url(images/报销/现金报销单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020302{background-image: url(images/报销/应付单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020103{background-image: url(images/报销/支票申领单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020501{background-image: url(images/报销/专用基金列支单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060310{background-image: url(images/报销/核销处理.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060311{background-image: url(images/报销/核销处理.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050501{background-image: url(images/报销/会计凭证.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050102{background-image: url(images/报销/应付单填制.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060101{background-image: url(images/报销/支票领取.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020312{background-image: url(images/报销/月末结账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020101{background-image: url(images/报销/资金申请单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls07020118{background-image: url(images/报销/内部调账单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+
+.iconcls03060305{background-image: url(images/出纳/出纳付款单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060309{background-image: url(images/出纳/出纳收款单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060310{background-image: url(images/出纳/核销处理.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060401{background-image: url(images/出纳/日记账期初录入.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060202{background-image: url(images/出纳/现金存储.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060201{background-image: url(images/出纳/现金领取.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060402{background-image: url(images/出纳/现金日记账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060404{background-image: url(images/出纳/银行对账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060403{background-image: url(images/出纳/银行日记账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060103{background-image: url(images/出纳/支票采购.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060104{background-image: url(images/出纳/支票登记薄.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060102{background-image: url(images/出纳/支票管理.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060101{background-image: url(images/出纳/支票领取.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls03060105{background-image: url(images/报销/单据列表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+
+
+.iconcls04050306{background-image: url(images/会计/部门工资项目汇总.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050302{background-image: url(images/会计/单位人员领款单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050304{background-image: url(images/会计/工资发放.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050401{background-image: url(images/会计/工资统筹计划录入.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050501{background-image: url(images/会计/会计凭证.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050301{background-image: url(images/会计/劳务费个税月度汇总.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050305{background-image: url(images/会计/类款项汇总.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050102{background-image: url(images/会计/应付单填制.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls04050101{background-image: url(images/会计/应收单填制.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+
+.iconcls02070101{background-image: url(images/收入/收入凭单.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls02070201{background-image: url(images/收入/财政收入.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+
+.iconcls05040308{background-image: url(images/预算/部门预算汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040307{background-image: url(images/预算/单位预算汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040301{background-image: url(images/预算/基本支出科目汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040306{background-image: url(images/预算/人员支出汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040305{background-image: url(images/预算/项目分类汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040303{background-image: url(images/预算/项目支出汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040302{background-image: url(images/预算/项目支出科目汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040103{background-image: url(images/预算/预算编制.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040102{background-image: url(images/预算/预算初始值设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040201{background-image: url(images/预算/预算调整.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040101{background-image: url(images/预算/预算分配.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040202{background-image: url(images/预算/预算控制.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040104{background-image: url(images/预算/预算列表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls05040304{background-image: url(images/预算/总支出汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+
+.iconcls010719{background-image: url(images/基础/报表公式设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010102{background-image: url(images/基础/部门档案.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010404{background-image: url(images/基础/部门对应关系设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010602{background-image: url(images/基础/部门权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010608{background-image: url(images/基础/菜单权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010607{background-image: url(images/基础/操作权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010707{background-image: url(images/基础/出差补助标准.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010701{background-image: url(images/基础/打印模板设计.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010716{background-image: url(images/基础/单据编号.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010101{background-image: url(images/基础/单位档案.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010601{background-image: url(images/基础/单位权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010409{background-image: url(images/基础/费用类型与部门对应关系.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010713{background-image: url(images/基础/工资公式设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010903{background-image: url(images/基础/工资计划人员设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010902{background-image: url(images/基础/工资计划设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010606{background-image: url(images/基础/工资权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010901{background-image: url(images/基础/工资项目设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010905{background-image: url(images/基础/工资项数据加载方式设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010703{background-image: url(images/基础/功能分类.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010406{background-image: url(images/基础/供应商对应关系设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010729{background-image: url(images/基础/会计科目设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010741{background-image: url(images/基础/计价方式.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010743{background-image: url(images/基础/计价方式规则设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010744{background-image: url(images/基础/计价方式选择.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010706{background-image: url(images/基础/交通工具.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010801{background-image: url(images/基础/角色设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010740{background-image: url(images/基础/结算方式设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010401{background-image: url(images/基础/科目对应关系设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010605{background-image: url(images/基础/科目权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010203{background-image: url(images/基础/科目摘要设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010405{background-image: url(images/基础/客户对应关系设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010717{background-image: url(images/基础/客户管理.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010408{background-image: url(images/基础/凭证科目规则.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010407{background-image: url(images/基础/凭证模板设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010721{background-image: url(images/基础/取数指标设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010103{background-image: url(images/基础/人员档案.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010402{background-image: url(images/基础/人员对应关系设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010904{background-image: url(images/基础/人员工资默认值设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010731{background-image: url(images/基础/人员类别设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010603{background-image: url(images/基础/人员权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010724{background-image: url(images/基础/审批表模板.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010734{background-image: url(images/基础/省份设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010736{background-image: url(images/基础/收款类型设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010735{background-image: url(images/基础/收入类型设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010718{background-image: url(images/基础/通知公告.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010702{background-image: url(images/基础/外聘人员档案.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010710{background-image: url(images/基础/往来单位档案.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010726{background-image: url(images/基础/文件类型.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010745{background-image: url(images/基础/物品分类.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010746{background-image: url(images/基础/物品计量单位.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010302{background-image: url(images/基础/项目档案.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010723{background-image: url(images/基础/项目调整.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010403{background-image: url(images/基础/项目对应关系设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010301{background-image: url(images/基础/项目分类.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010604{background-image: url(images/基础/项目权限设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010722{background-image: url(images/基础/项目指标设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010733{background-image: url(images/基础/银行设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010705{background-image: url(images/基础/银行账号.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010301{background-image: url(images/基础/项目分类.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010708{background-image: url(images/基础/应收应付类型.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010803{background-image: url(images/基础/用户分组.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010802{background-image: url(images/基础/用户设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010714{background-image: url(images/基础/预算公式设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010202{background-image: url(images/基础/预算科目设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010201{background-image: url(images/基础/预算科目总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010715{background-image: url(images/基础/预算默认值设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010738{background-image: url(images/基础/账套子表设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010730{background-image: url(images/基础/证件类型设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010725{background-image: url(images/基础/政策法规.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010704{background-image: url(images/基础/支出类型.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010720{background-image: url(images/基础/执行目标设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010709{background-image: url(images/基础/专用基金类型.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010742{background-image: url(images/基础/仓库.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010737{background-image: url(images/基础/会计期间设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010732{background-image: url(images/基础/账套设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls06030101{background-image: url(images/审批/待办任务.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010609{background-image: url(images/审批/待办任务.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls010610{background-image: url(images/审批/待办任务.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010301{background-image: url(images/基础/预算公式设置.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010108{background-image: url(images/报表/执行进度.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.Square{width:0px;height:0px;-moz-border-radius: 1px;-webkit-border-radius: 1px;border: 2px solid #000;margin-top: 14px;margin-left: -10px;color:#333333}
+.iconcls08010204{background-image: url(images/预算/人员支出汇总表.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls09010101{background-image: url(images/决算支持.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls0801030201{background-image: url(images/决算支持.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010206{background-image: url(images/报表/中信银行.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010207{background-image: url(images/报表/银行日记账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010208{background-image: url(images/报表/现金日记账.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+.iconcls08010209{background-image: url(images/报表/工商代扣.png) !important;background-repeat: no-repeat;background-position-x: 40px;background-position-y: 10px;}
+

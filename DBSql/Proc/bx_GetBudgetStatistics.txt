@@ -1,0 +1,45 @@
+﻿if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[bx_GetBudgetStatistics]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[bx_GetBudgetStatistics]
+GO
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+--预算统计
+CREATE proc bx_GetBudgetStatistics
+@operatorId uniqueidentifier,
+@dwId uniqueidentifier,
+@mainID uniqueidentifier,
+@depId uniqueidentifier,
+@projectId uniqueidentifier,
+@bgcodeId uniqueidentifier,
+@resourceId uniqueidentifier,
+@year int
+as
+begin	
+	--预算金额
+	select *,
+	(TotalPlan-AddUp-ThisTime)as Balance,----预算金额-累计发生-本次发生=余额
+	case TotalPlan when '0.00' then '0.00'--（累计发生+本次发生）/预算金额*100%
+	else
+	(AddUp+ThisTime)/TotalPlan*100 
+	end  CompletionRate
+	
+	 from 
+	(
+	select *,
+	cast('0.00' as float) as AddUp,
+	cast('0.00' as float) as ThisTime
+	--dbo.bx_AddUpTotal(ys.guid_dw,ys.guid_department,ys.guid_project,ys.guid_bgcode) as AddUp,
+	--dbo.bx_ThisTimeTotal(ys.guid_dw,ys.guid_department,ys.guid_project,ys.guid_bgcode,@mainID) as ThisTime--‘’要传当前主GUID
+	from dbo.f_TotalPlan(@dwId,@depId,@projectId,@bgcodeId,@resourceId,@year) as ys
+	) as t	
+
+end
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO

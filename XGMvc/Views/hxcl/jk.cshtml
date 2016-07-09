@@ -1,0 +1,72 @@
+﻿<body>
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+<div b-type="1" data-options="region:'north',tools:'#tbar'" style="height:51px">
+<div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">
+                   
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="jk-haffirm1" gridId="jk-WL_Main" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitBorrow'] },
+                   bindparms:{'submitBorrow':['jk-WL_Main','@ViewData["ModelUrl"]']},
+                   window:'b-window',
+                   scope:'jk',
+                   iconCls:'icon-queren'">确认</a>
+
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="jk-selectAll"   b-action="hselectall"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['hxclSelectAll'] },
+                    bindparms:{'hxclSelectAll':['@ViewData["ModelUrl"]','jk-WL_Main']},
+                    scope:'jk', 
+                    window:'b-window',         
+                    iconCls:'icon-quanxuan'">全选</a>
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="jk-unselectAll"   b-action="hunselectall"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['hxclUnSelectAll'] },
+                    bindparms:{'hxclUnSelectAll':['@ViewData["ModelUrl"]','jk-WL_Main']},
+                    scope:'jk', 
+                    window:'b-window',         
+                    iconCls:'icon-quanxiao'">全消</a>
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="jk-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'jk', 
+                    window:'b-window',         
+                    iconCls:'icon-tuichu'">退出</a>
+</div>
+</div>
+<div b-type="1" data-options="region:'center',fit:true" >
+<table style="height:515px;padding:5px"  class="easyui-datagrid"  id="jk-WL_Main" b-type="1" 
+        data-options="
+        fitColumns:false,
+        method:'get',
+        url:'@ViewData["GridUrl"]',
+        singleSelect:false,
+        checkOnSelect:true,
+        pagination:true,
+        striped: false,
+        pageSize:20,
+        pageList:[20,50,100],
+        rownumbers:true
+        ">
+        <thead>
+            <tr>
+            <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+            <th field="GUID" hidden="true"></th>
+            <th field="DocNum"align="left" width="80" >单据编号</th>                       
+            <th field="Total_Real"align="right" width="80" formatter=$.view.formatters['numberbox'] >金额</th>
+            <th field="DocDate"lign="center" width="120" >借款日期</th>
+            <th field="PersonName"align="left" width="120" >借款人</th>
+            <th field="DWName"align="left" width="200" >借款单位</th>
+            <th field="DepartmentName"align="left" width="200" >借款部门</th>
+            </tr>
+        </thead>
+</table>
+</div>
+</body>

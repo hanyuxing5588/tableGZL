@@ -1,0 +1,224 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+<title>单据</title>
+<link rel="stylesheet" type="text/css" href="../../Js/jquery-easyui-1.3.4/themes/default/easyui.css"/>
+<link rel="stylesheet" type="text/css" href="../../test/test/style.css"/>
+<link rel="stylesheet" type="text/css" href="../../Js/jquery-easyui-1.3.4/themes/icon.css"/>
+<script language="javascript" type="text/javascript" src="../../Js/jquery-easyui-1.3.4/jquery-1.7.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="../../Js/jquery-easyui-1.3.4/jquery-1.7.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="../../Js/jquery-easyui-1.3.4/jquery.easyui.min.js"></script>
+<script language="javascript" type="text/javascript" src="../../Js/jquery-easyui-1.3.4/locale/easyui-lang-zh_CN.js"></script>
+<script language="javascript" type="text/javascript" src="../../Js/json2.js"></script>
+<script language="javascript" type="text/javascript" src="../../Js/jquery.easyui.extend.js"></script>
+</head>
+<body>
+<div class="easyui-layout" id="lwflkd-dataregion" data-options="fit:true" z="1">
+<div data-options="region:'north'" style="height:50px;">
+<div style="padding:2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">
+<a href="#"  class="easyui-linkbutton" id="lwflkd-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newDoc']},scope:'lwflkd',status:'1',                        
+                  bindparms:{'newDoc':['/lwflkd/New']},forbidstatus:[1,2,3]">新增</a>
+<a href="#"  class="easyui-linkbutton" id="lwflkd-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                  bindmethod:{'click':['setStatus']},scope:'lwflkd',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a>
+<a href="#"  class="easyui-linkbutton" id="lwflkd-remove" data-options="plain:'true',iconCls:'icon-shanchu',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'lwflkd',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+<a href="#"  class="easyui-linkbutton" id="lwflkd-detail" data-options="plain:'true',iconCls:'icon-mingxi',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/lwflkd/mx','lwflkd-BX_Detail','pa']},scope:'lwflkd',
+                   forbidstatus:[0,3]">明细</a>
+<a href="#"  class="easyui-linkbutton" id="lwflkd-addrow" data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['lwflkd-BX_Detail']},
+                   scope:'lwflkd',forbidstatus:[0,3]">增行</a>
+<a href="#"  class="easyui-linkbutton" id="lwflkd-delrow" data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['lwflkd-BX_Detail']},
+                   scope:'lwflkd',forbidstatus:[0,3]">删行</a>
+<a href="#"  class="easyui-linkbutton" id="lwflkd-print" data-options="plain:'true',iconCls:'icon-dayin',
+                   bindmethod:{ 'click': ['history'] },
+                   scope:'lwflkd',forbidstatus:[-1]">打印</a>
+<a href="#"  class="easyui-linkbutton" id="lwflkd-echo" data-options="plain:'true',iconCls:'icon-shuchu',
+                   bindmethod:{ 'click': ['history'] },
+                   scope:'lwflkd',forbidstatus:[-1]">输出</a></div></div>
+<div data-options="region:'west',split:'true'" style="width:265px"><div class="easyui-tabs" data-options="fit:true">
+<div title="人员">
+<ul class="easyui-tree" id="lwflkd-tree-per" data-options="associate:{
+                    'lwflkd-BX_Detail-GUID_Person':['GUID','PersonName'],
+                    'lwflkd-BX_Detail-GUID_DW':['GUID_DW','DWName'],
+                    'lwflkd-BX_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  bindmethod:{'dblclick': ['setAssociate'] },
+                  forbidstatus:[0,3],
+                  url:'',
+                  method:'post'"></ul></div>
+<div title="单位">
+<ul class="easyui-tree" id="lwflkd-tree-dw" data-options="associate:{
+                    'lwflkd-BX_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'dblclick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[0,3],
+                  method:'post'"></ul></div>
+<div title="部门">
+<ul class="easyui-tree" id="lwflkd-tree-dep" data-options="associate:{
+                  'lwflkd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                  'lwflkd-BX_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'dblclick':['setAssociate']},
+                  forbidstatus:[0,3],
+                  url:'',
+                  method:'post'"></ul></div>
+<div title="项目">
+<ul class="easyui-tree" id="lwflkd-tree-code" data-options="associate:{
+                  'gridId':'lwflkd-BX_Detail','map':{'lwflkd-BX_Detail-GUID_Project':['ProjectName','GUID'],'lwflkd-BX_Detail-ProjectKey':['ProjectKey']}
+                  },
+                  bindmethod:{'dblclick':['serAssociate']},
+                  forbidstatus:[0,3],
+                  url:'',
+                  method:'post'"></ul></div>
+<div title="科目">
+<ul class="easyui-tree" id="lwflkd-tree-code" data-options="gridassociate:{
+                      'gridId':'lwflkd-BX_Detail',
+                      'map': {'lwflkd-BX_Detail-GUID_BGCode':['BGCodeName','GUID']},
+                      'append':'true'
+                  },
+                  bindmethod:{ 'dblclick': ['setAssociate'] },
+                  forbidstatus:[0,3],
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'"></ul></div></div></div>
+<div data-options="region:'center'" style="width:935px">
+<table border="0" style="height:450px; width:900px; margin:5px">
+<tr>
+<td style="width:60px">
+<label for="field1">报销年份</label>
+</td>
+
+<td>
+<input class="easyui-datebox" id="lwflkd-Main-DocDate" data-options="width:180,forbidstatus:[0,3]"></input>
+</td>
+
+<td style="width:60px">
+<label for="field1">月份</label>
+</td>
+
+<td>
+<input class="easyui-datebox" id="lwflkd-Main-DocDate" data-options="width:180,forbidstatus:[0,3]"></input>
+</td>
+
+<td style="width:60px">
+<label>单据号</label>
+</td>
+
+<td colspan="4">
+<input class="easyui-validatebox" id="" style="width:176px"></input>
+</td>
+</tr>
+
+<tr>
+<td style="width:50px">
+<label for="field1">审批状态</label>
+</td>
+
+<td>
+<select class="easyui-combobox" id="lwflkd-State_ShenPI" bLocal="true" data-options="width:180,panelHeight:90"><option  field="" title="全部" width="110">全部</option ><option  field="DepartmentName" title="已审批" width="110">已审批</option ><option  field="DWName" title="未审批" width="110">未审批</option ><option  field="DWName" title="审批中" width="110">审批中</option ></select></td>
+
+<td style="width:50">
+<label>支票状态</label>
+</td>
+
+<td>
+<select class="easyui-combobox" id="lwflkd-State_Check" bLocal="true" data-options="width:180,panelHeight:90"><option  field="DepartmentName" title="全部" width="110">全部</option ><option  field="DepartmentName" title="已审批" width="110">已审批</option ><option  field="DWName" title="未审批" width="110">未审批</option ><option  field="DWName" title="审批中" width="110">审批中</option ></select></td>
+
+<td style="width:50">
+<label for="field1">提现状态</label>
+</td>
+
+<td>
+<select class="easyui-combobox" id="lwflkd-State_Cash" bLocal="true" data-options="width:180,panelHeight:90"><option  field="DepartmentName" title="全部" width="110">全部</option ><option  field="DepartmentName" title="已审批" width="110">已审批</option ><option  field="DWName" title="未审批" width="110">未审批</option ><option  field="DWName" title="审批中" width="110">审批中</option ></select></td>
+</tr>
+
+<tr>
+<td style="width:50">
+<label for="field1">付款状态</label>
+</td>
+
+<td>
+<select class="easyui-combobox" id="lwflkd-State_PK" bLocal="true" data-options="width:180,panelHeight:90"><option  field="DepartmentName" title="全部" width="110">全部</option ><option  field="DepartmentName" title="已审批" width="110">已审批</option ><option  field="DWName" title="未审批" width="110">未审批</option ><option  field="DWName" title="审批中" width="110">审批中</option ></select></td>
+
+<td style="width:50px">
+<label for="field1">凭证状态</label>
+</td>
+
+<td>
+<select class="easyui-combobox" id="lwflkd-State_PZ" bLocal="true" data-options="width:180,panelHeight:90"><option  field="DepartmentName" title="全部" width="110">全部</option ><option  field="DepartmentName" title="已审批" width="110">已审批</option ><option  field="DWName" title="未审批" width="110">未审批</option ><option  field="DWName" title="审批中" width="110">审批中</option ></select></td>
+
+<td style="width:50px">
+<label for="field1">作废状态</label>
+</td>
+
+<td>
+<select class="easyui-combobox" id="lwflkd-isActive" bLocal="true" data-options="width:180,panelHeight:90"><option  field="DepartmentName" title="全部" width="110">全部</option ><option  field="DepartmentName" title="已审批" width="110">已审批</option ><option  field="DWName" title="未审批" width="110">未审批</option ><option  field="DWName" title="审批中" width="110">审批中</option ></select></td>
+</tr>
+
+<tr>
+<td colspan="6">
+<table class="easyui-edatagrid" id="lwflkd-BX_Detail" data-options="fitColumns:false,pagination:false,method:'get',singleSelect:true,checkOnSelect:true,height:560,width:840,
+                       scope:'lwflkd',
+                       forbidstatus:{
+                          'lwflkd-BX_InviteFee-InvitePersonName':[0,3],
+                          'lwflkd-BX_InviteFee-InvitePersonIDCardType':[0,3],
+                          'lwflkd-BX_InviteFee-InvitePersonIDCard':[0,3],
+                          'lwflkd-BX_InviteFee-Total_BX':[-1],
+                          'lwflkd-BX_InviteFee-Total_Tax':[0,3],
+                          'lwflkd-BX_InviteFee-Total_Real':[0,3],
+                          'lwflkd-BX_InviteFee-FeeMemo':[0,3],
+                          
+                       },
+                       copyField:[
+                            'lwflkd-BX_Detail-ProjectKey',
+                            'lwflkd-BX_Detail-GUID_Project',
+                            'lwflkd-BX_Detail-GUID_SettleType',
+                            'lwflkd-BX_Detail-GUID_Person',
+                            'lwflkd-BX_Detail-GUID_Department'
+                        ],
+                       fieldformula:[
+                          {name:'csum',field:'lwflkd-BX_Detail-TotalReal',target:['lwflkd-moneyunmber','lwflkd-moneychinese']},
+                          {name:'cconcat',field:'lwflkd-BX_Detail-FeeMemo',target:['lwflkd-BX_Main-DocMemo']}
+                      ]"><thead><tr>
+<th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+<th field="lwflkd-BX_InviteFee-InvitePersonName" hidden="true"></th>
+<th field="lwflkd-BX_InviteFee-InvitePersonIDCardType" hidden="true"></th>
+<th field="lwflkd-BX_InviteFee-InvitePersonIDCard" hidden="true"></th>
+<th field="lwflkd-BX_InviteFee-Total_BX" hidden="true"></th>
+<th field="lwflkd-BX_InviteFee-Total_Tax" hidden="true"></th>
+<th field="lwflkd-BX_InviteFee-Total_Real" hidden="true"></th>
+<th field="lwflkd-BX_InviteFee-FeeMemo" hidden="true"></th>
+<th field="lwflkd-BX_InviteFee-GUID_InvitePerson" title="人员名称" width="90" sortable="false" align="center" editor="{type:'combogrid',
+                                    bindmethod: { 'onSelect': ['setAssociate'] },
+                                    options:{
+                                      width:520,remoteUrl:'/Combogrid/GUID_InvitePerson',method:'get',idField:'GUID',
+                                      filterField:'BGCodeKey,BGCodeName',
+                                      textField:'BGCodeName',
+                                      columns:[[
+                                            {field:'GUID',title:'代码',width:'60',hidden:'true'},
+                                            {field:'BGCodeKey',title:'人员名称编码',width:'60',hidden:'true'},
+                                            {field:'BGCodeName',title:'人员名称名称',width:'300'}
+                                      ]]
+                                    }
+                                }">人员名称</th>
+<th field="lwflkd-BX_InviteFee-InvitePersonIDCards" title="证件类型" sortable="false" width="100" align="center">证件类型</th>
+<th field="lwflkd-BX_InviteFee-Toal_BX" width="100" title="证件编号" sortable="false" align="center" editor="text">证件编号</th>
+<th field="lwflkd-BX_Detail-ProjectKey" width="80" title="应发金额" sortable="false" align="center" editor="text">应发金额</th>
+<th field="lwflkd-BX_InviteFee-Toal_Tax" title="代扣税额" sortable="false" align="center" width="80">代扣税额</th>
+<th field="lwflkd-BX_InviteFee-Toal_Real" title="实领金额" sortable="false" align="center" width="80">实领金额</th>
+<th field="lwflkd-BX_InviteFee-FeeMemos" title="备注" sortable="false" align="center" width="270">备注</th></tr></thead></table></td>
+</tr>
+</table>
+</div></div>
+<label id="" style="display:none">
+<input id="" type="text"></input>
+
+<div id="" line="true"></div>
+</label>
+</body></html>

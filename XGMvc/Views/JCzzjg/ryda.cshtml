@@ -1,0 +1,421 @@
+﻿
+<script src="../../Content/commonjs/setControlWidth.js" type="text/javascript"></script>
+<script type="text/javascript">
+   
+
+//    $.extend($.view, {
+//        initBefore: function (scope, status, dataguid) {
+//            
+//            var datagridId = "ryda-SS_Person";
+//            var rowColCount = 6; //一行的列数
+//            $.setControl("divWest", datagridId);
+//        }
+//    });
+</script>
+
+<script src="../../Scripts/jc/jc.js?r=1" type="text/javascript"></script>
+<div class="easyui-layout" id="ryda-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            @*<a href="#" class="easyui-linkbutton" id="ryda-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'ryda',forbidstatus:[1,2,3],
+                   window:'ryda-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/ryda']}">打印</a> *@
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="ryda-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{'click':['newStatus']},scope:'ryda',status:'1',                        
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ryda-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   treeId:['ryda-tree-per'],
+                   bindmethod:{'click':['setStatusexamine']},scope:'ryda',status:'2',                       
+                   forbidstatus:[1,2,3]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ryda-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   treeId:['ryda-tree-per'],
+                   bindmethod:{ 'click': ['setStatusexamine'] },scope:'ryda',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="ryda-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   JCDA:true,
+                   treeId:['ryda-tree-per'],
+                   NewIdStatus:'1',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCzzjg/Saveryda']},
+                   scope:'ryda',status:'4',forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"  id="ryda-cancel" 
+                   data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'ryda',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   @*<a href="#" class="easyui-linkbutton" id="ryda-chaxun" 
+                   data-options="plain:'true',iconCls:'icon-chaxun', 
+                   scope:'ryda',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">定位</a> *@
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="ryda-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'ryda'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="ryda-tree-per" data-options="
+                  msg:'人员',
+                  m:'SS_Person',
+                  associate:{
+                       
+                                'ryda-SS_Person-DWKey':['DWKey','DWKey'],
+                                'ryda-SS_Person-DWName':['DWName'],
+                                'ryda-SS_Person-DepartmentKey':['DepartmentKey','DepartmentKey'],
+                                'ryda-SS_Person-DepartmentName':['DepartmentName'],
+                                'ryda-SS_Person-PersonKey':['PersonKey'],
+                                'ryda-SS_Person-PersonName':['PersonName'],
+                                'ryda-SS_Person-GUID':['GUID'],
+                                'ryda-SS_Person-GUID_DW':['GUID_DW'],
+                                'ryda-SS_Person-GUID_Department':['GUID_Department'],
+                                'ryda-SS_Person-GUID_PersonType':['GUID_PersonType'],
+                                'ryda-SS_Person-IDCardType':['IDCardType'],
+                                'ryda-SS_Person-PersonBirthday':['PersonBirthday'],
+                                'ryda-SS_Person-OfficialCard':['OfficialCard'],
+                                'ryda-SS_Person-BankCardNo':['BankCardNo'],
+                                 'ryda-SS_Person-IsTax':['IsTax'],
+                                'ryda-SS_Person-IDCard':['IDCard']
+                  },
+                  associateEX:{
+                    @*人员档案修改时不需要传旨*@
+                  },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  url:'/Tree/GetJCPersonTree',
+                  forbidstatus:[3],
+                  method:'post',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  IsDocStatusAssociate:true,
+                  scope:'ryda'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table id="table" border="0" style="height: 350px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="ryda-abandonedStatus" statuscontrolid="ryda-SS_Person-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        人员档案</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" id="lbl-PersonKey">
+                        <font color="red">*</font>人员编号</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-validatebox" id="ryda-SS_Person-PersonKey" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-PersonName">
+                        <font color="red">*</font>人员名称</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-validatebox" id="ryda-SS_Person-PersonName" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-PersonBirthday">
+                        &nbsp;生&nbsp;&nbsp;&nbsp;&nbsp;日</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-datebox" id="ryda-SS_Person-PersonBirthday" 
+                        data-options="forbidstatus:[4,3],forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" id="lbl-DepartmentKey">
+                        <font color="red">*</font>部门编号</label>
+                </td>
+                <td class="tdValue">
+                    <select class="easyui-combogrid" id="ryda-SS_Person-DepartmentKey" data-options="                          
+                           method:'post',
+                           panelWidth:'255',
+                           filterField:'DepartmentKey,DepartmentName',
+                           remoteUrl:'/Combogrid/JCLeafDepartment',
+                           idField:'GUID',
+                           textField:'DepartmentKey',
+                           sortName:'DepartmentKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',width:'80'},
+                            {field:'DepartmentName',title:'部门名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'ryda-SS_Person-DepartmentName':['GUID','DepartmentName'],
+                            'ryda-SS_Person-GUID_Department':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-DepartmentName">
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td class="tdValue">
+                    <select class="easyui-combogrid" id="ryda-SS_Person-DepartmentName" data-options="
+                           panelWidth:'255',                          
+                           method:'post',
+                           filterField:'DepartmentKey,DepartmentName',
+                           remoteUrl:'/Combogrid/JCLeafDepartment',
+                           idField:'GUID',
+                           textField:'DepartmentName',
+                           sortName:'DepartmentKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'GUID_Department',hidden:'true'},
+                                {field:'DepartmentKey',title:'部门编码',width:'80'},
+                                {field:'DepartmentName',title:'部门名称',width:'150'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'ryda-SS_Person-DepartmentKey':['DepartmentKey','DepartmentKey'],
+                                 'ryda-SS_Person-GUID_Department':['GUID']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-OfficialCard">
+                        &nbsp;公务卡号</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-validatebox" id="ryda-SS_Person-OfficialCard" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" id="lbl-DWKey">
+                        <font color="red">*</font>单位编号</label>
+                </td>
+                <td class="tdValue">
+                    <select class="easyui-combogrid" id="ryda-SS_Person-DWKey" data-options="                          
+                           method:'post',
+                           panelWidth:'275',
+                           filterField:'DWKey,DWName',
+                           remoteUrl:'/Combogrid/DWLeafView',
+                           idField:'GUID',
+                           textField:'DWKey',
+                           sortName:'DWKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'ryda-SS_Person-DWName':['GUID','DWName'],
+                            'ryda-SS_Person-GUID_DW':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-DWName">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td class="tdValue">
+                    <select class="easyui-combogrid" id="ryda-SS_Person-DWName" data-options="
+                           panelWidth:'275',                           
+                           method:'post',
+                           filterField:'DWKey,DWName',
+                           remoteUrl:'/Combogrid/DWLeafView',
+                           idField:'GUID',
+                           textField:'DWName',
+                           sortName:'DWKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'GUID_DW',hidden:'true'},
+                                {field:'DWKey',title:'单位编码',width:'100'},
+                                {field:'DWName',title:'单位名称',width:'150'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'ryda-SS_Person-DWKey':['DWKey','DWKey'],
+                                 'ryda-SS_Person-GUID_DW':['GUID']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-BankCardNo">
+                        &nbsp;银行卡号</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-validatebox" id="ryda-SS_Person-BankCardNo" 
+                        data-options="forbidstatus:[4,3],required:false"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" id="lbl-GUID_PersonType"><font color="red">*</font>人员类别</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-combobox" id="ryda-SS_Person-GUID_PersonType"  url="/Combo/JCPersonType" 
+                        data-options="
+                            panelHeight:100,
+                            editable:true,
+                            valueField:'GUID',
+                            textField:'PersonTypeName',
+                            filterField:'PersonTypeKey',
+                            forbidstatus:[4,3]" >
+                    </input>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-IDCardType">&nbsp;证件类型</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-combobox" id="ryda-SS_Person-IDCardType"  url="/Combo/JCIDCardType" 
+                        data-options="
+                            panelHeight:100,
+                            editable:false,
+                            valueField:'CredentialTypekey',
+                            textField:'CredentialTypeName',
+                            filterField:'CredentialTypeKey',
+                            forbidstatus:[4,3]" >
+                    </input>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-IDCard">
+                        <font color="red">*</font>证件号码</label>
+                </td>
+                <td class="tdValue">
+                <input class="easyui-validatebox" id="ryda-SS_Person-IDCard" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+            </tr>
+            <tr>
+                   
+                <td class="tdTextTr2"  colspan="3">
+                   <label for="field1">  是否计税</label>
+                    <input type="checkbox" style="width:60px" class="easyui-checkbox" id="ryda-SS_Person-IsTax" data-options="forbidstatus:[4,3]"></input>&nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="ryda-SS_Person" data-options="
+                    method:'get',
+                    height:380,                   
+                    scope:'ryda',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    fitColumns:false,
+                    single:false,
+                    rownumbers:true,
+                    pagination:true,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    forbidstatus:[-1]
+                       ">
+                        <thead>
+                            <tr>
+                                <th field="ryda-SS_Person-GUID" hidden="true"></th>
+                                <th field="ryda-SS_Person-GUID_DW" hidden="true"></th>
+                                <th field="ryda-SS_Person-GUID_Department" hidden="true"></th>
+                                <th field="GUID" hidden="true"></th>
+                                <th field="GUID_SS_Bank" hidden="true"></th>
+                                <th field="Email" hidden="true"></th>
+                                <th field="BirthDayType" hidden="true"></th>
+                                <th field="GUID_PersonType" hidden="true"></th>
+
+                                <th field="ryda-SS_Person-PersonKey" title="人员编码" width="100" sortable="false" align="left">
+                                    人员编码
+                                </th>
+                                <th field="ryda-SS_Person-PersonName" title="人员名称" width="100" sortable="false" align="left">
+                                    人员名称
+                                </th>
+                                <th field="ryda-SS_Person-DepartmentKey" title="部门编码" width="100" sortable="false"
+                                    align="left">
+                                    部门编码
+                                </th>
+                                <th field="ryda-SS_Person-DepartmentName" title="部门名称" sortable="false" align="left"
+                                    width="150">
+                                    部门名称
+                                </th>
+                                <th field="ryda-SS_Person-DWKey" title="单位编码" sortable="false" align="left" width="100">
+                                    单位编码
+                                </th>
+                                <th field="ryda-SS_Person-DWName" width="150" title="单位名称" sortable="false" align="left">
+                                    单位名称
+                                </th>
+                                <th field="ryda-SS_Person-CredentialTypeName" title="证件类型" sortable="false" align="left"
+                                    width="100">
+                                    证件类型
+                                </th>
+                                <th field="ryda-SS_Person-IDCard" title="证件号码" sortable="false" align="left" width="120">
+                                    证件号码
+                                </th>
+                                <th field="ryda-SS_Person-OfficialCard" title="公务卡号" sortable="false" align="left"
+                                    width="120">
+                                    公务卡号
+                                </th>
+                                <th field="ryda-SS_Person-BankCardNo" title="银行账号" sortable="false" align="left"
+                                    width="120">
+                                    银行账号
+                                </th>
+                                <th field="ryda-SS_Person-PersonTypeName" title="人员类别" sortable="false" align="left"
+                                    width="80">
+                                    人员类别
+                                </th>
+                                <th field="ryda-SS_Person-PersonBirthday" title="生日" width="100" sortable="false"
+                                    align="left">
+                                    生日
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="ryda-SS_Person-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="ryda-SS_Person-GUID_Department" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="ryda-SS_Person-GUID_DW" type="hidden" keyattr="1"></input>
+</div>
+<label id="ryda-extendregion" style="display: none">
+    <input id="ryda-status" type="text"></input>
+    <input id="initscope" type="text" value="ryda"></input>
+    <input id="initController" type="text" value="JCzzjg"></input>
+    <input id="initstatus" type="text" value="4"></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="ryda-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>
+<script>
+    (function () {
+        var datagridId = "ryda-SS_Person";
+        var rowColCount = 6; //一行的列数
+        $.setControl("divWest", datagridId);
+    })();
+</script>

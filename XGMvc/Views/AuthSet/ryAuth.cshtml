@@ -1,0 +1,123 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "部门权限";
+}
+<style>
+    .lblszfs
+    {
+    	margin-left:10px;
+    }
+</style>
+<script src="../../Scripts/jc/authset.js" type="text/javascript"></script>
+<div class="easyui-layout" id="dwAuth-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 80px">
+        <div  style="height:51;padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                     <a href="#" class="easyui-linkbutton" id="auth-selectAll" data-options="
+                    plain:'true',iconCls:'icon-quanxuan', scope:'dwAuth',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">全选</a> 
+                  
+                   <a href="#" class="easyui-linkbutton" id="auth-cancel" data-options="plain:'true',iconCls:'icon-quxiao',tabId:'tabid',
+                    bindmethod:{ 'click': ['cancel'] }">全消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="auth-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   gridId:'dwAuthTreeGrid',tabId:'tabid',classId:'1,2,3',dataLoadUrl:'/AuthSet/GetPersonAuth',
+                   forbidstatus:[4]">保存</a> 
+                    
+                   <a href="#" class="easyui-linkbutton"
+                   id="auth-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'xjbxd'">退出</a>
+        </div>
+        <div>
+            <label id='lblszfs' class="lblszfs"> 设置方式</label>
+            <select id="auth-setPay" class="easyui-combobox"  data-options="editable:false,tempValue:0"; style="width:150px;">  
+            <option value="0">逐一设置</option>  
+             <option value="1">批量设置</option>  
+            </select> 
+            <input id='chkView' style="margin:4px 0 0 0" type="checkbox"/>
+            <label> 浏览权限</label>
+            <input  id='chkUpdate' style="margin:4px 0 0 0" type="checkbox"/>
+            <label> 修改权限</label>
+            <input id='chkDelete' style="margin:4px 0 0 0"  type="checkbox"/>
+            <label> 删除权限</label>
+            <input  id='chkEnableDate' style="margin:4px 0 0 0" type="checkbox"/>
+            <label>权限有效期</label>
+             <label class="lblszfs">生效日期:</label>
+             <input id="startDate" type="text" class="easyui-datebox" disabled=disabled />
+               <label>失效日期:</label>
+             <input id="endDate" type="text" class="easyui-datebox" disabled=disabled />
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 300px">
+        <div class="easyui-tabs" id='tabid' data-options="fit:true">
+            <div title="角色">
+                <ul class="easyui-tree" id="dwAuth-tree-role" data-options="
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  comboId:'auth-setPay',
+                  checkbox:true,
+                  url:'/Tree/GetRole',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="操作员">
+                <ul class="easyui-tree" id="dwAuth-tree-per" data-options="
+                  bindmethod:{'onClick': ['setAssociate'] },
+                  checkbox:true,
+                  comboId:'auth-setPay',
+                  url:'/Tree/GetPerson',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table id="dwAuthTreeGrid"  class="easyui-treegrid" data-options="
+				iconCls: 'icon-ok',
+				rownumbers: true,
+                isAssociate:true,
+                check:true,
+				animate: true,
+				collapsible: true,
+				fitColumns: true,
+                threeLinkCheck:true,
+              checkOnSelect:false,
+               selectOnCheck:false,
+				method: 'get',
+				idField: 'Guid',
+				treeField: 'ModelName',
+                 height:560,
+				showFooter: true
+			">
+		<thead>
+			<tr>
+                <th data-options="field:'_parentId',width:180,hidden:true">1</th>
+                   <th data-options="field:'ClassId',width:180,hidden:true">1</th>
+                <th field="Guid" data-options="width:100,checkbox:'true',formatter:function(a,b,c){
+                   return $.gridCheckBoxCol1(a,b,c,'GUID');
+                }"></th>
+				<th data-options="field:'ModelName',width:180" >名称</th>
+				<th data-options="field:'IsBrowser',width:60,align:'center',
+                formatter:function(a,b,c){
+                   return $.gridCheckBoxCol(a,b,c,'IsBrowser');
+                }">浏览权限</th>
+				<th data-options="field:'IsModify',width:80,align:'center',  formatter:function(a,b,c){
+                   return $.gridCheckBoxCol(a,b,c,'IsModify');
+                }">修改权限</th>
+				<th data-options="field:'IsDelete',width:80,align:'center',  formatter:function(a,b,c){
+                   return $.gridCheckBoxCol(a,b,c,'IsDelete');
+                }">删除权限</th>
+                <th data-options="field:'IsTimeLimited',width:80,align:'center',formatter:function(a,b,c){
+                   return $.gridCheckBoxCol(a,b,c,'IsTimeLimited');
+                }">使用有效期</th>
+                <th data-options="field:'StartTime',width:80,editor:'datebox'">有效日期</th>
+                <th data-options="field:'StopTime',width:80,editor:'datebox'">失效日期</th>
+				<th data-options="field:'IsDefault',align:'center',width:80,formatter:function(a,b,c){
+                   return $.gridCheckBoxCol(a,b,c,'IsDefault');
+                }">是否默认</th>
+			</tr>
+		</thead> </table>
+    </div>
+  
+</div>
+

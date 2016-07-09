@@ -1,0 +1,6 @@
+DELETE FROM dbo.OAO_WorkFlowProcessVariable
+DELETE FROM dbo.OAO_WorkFlowProcessNodeExecutor
+DELETE FROM dbo.OAO_WorkFlowProcessNode
+DELETE FROM OAO_WorkFlowProcessData
+DELETE FROM dbo.OAO_WorkFlowProcess
+DELETE FROM dbo.OAO_WorkFlowProcessVariable

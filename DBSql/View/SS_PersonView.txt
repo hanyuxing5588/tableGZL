@@ -1,0 +1,45 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SS_PersonView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[SS_PersonView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：SS_PersonView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-1-21
+//功    能：人员视图信息
+*/
+
+Create  VIEW dbo.SS_PersonView
+AS
+SELECT dbo.SS_Person.GUID, dbo.SS_Person.PersonKey, dbo.SS_Person.PersonName, 
+      dbo.SS_Person.GUID_DW, dbo.SS_DW.DWKey, dbo.SS_DW.DWName, 
+      dbo.SS_Person.GUID_Department, dbo.SS_Department.DepartmentKey, 
+      dbo.SS_Department.DepartmentName, dbo.SS_Person.IDCardType, 
+      dbo.SS_Person.IDCard, dbo.SS_Person.BankCardNo, dbo.SS_Person.OfficialCard, 
+      dbo.SS_Person.PersonBirthday, dbo.SS_Person.BirthDayType, 
+      dbo.SS_Person.Email, dbo.SS_Person.OfficeTelephone, 
+      dbo.SS_Person.HomeTelephone, dbo.SS_Person.Mobile, 
+      dbo.SS_Person.RoomNumber, dbo.SS_Person.GUID_PersonType, 
+      dbo.SS_PersonType.PersonTypeKey, dbo.SS_PersonType.PersonTypeName,SS_CredentialType.CredentialTypeName
+FROM dbo.SS_Person LEFT OUTER JOIN
+      dbo.SS_PersonType ON 
+      dbo.SS_Person.GUID_PersonType = dbo.SS_PersonType.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.SS_Person.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.SS_Person.GUID_DW = dbo.SS_DW.GUID
+      left join dbo.SS_CredentialType on SS_Person.IDCardType=SS_CredentialType.CredentialTypekey
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+

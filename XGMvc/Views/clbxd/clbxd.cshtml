@@ -1,0 +1,1056 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "差旅报销单";
+}
+<style>
+    .datagrid-cell, .datagrid-cell-group, .datagrid-header-rownumber, .datagrid-cell-rownumber
+    {
+        margin: 0;
+        padding: 0 4px;
+        white-space: nowrap;
+        word-wrap: normal;
+        overflow: hidden;
+        height: 22px;
+        line-height: 18px;
+        font-size: 12px;
+    }
+</style>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        //预算科目变化出差事由跟着变化 sxh 2014/03/18 16:54
+        $('#clbxd-BX_Detail-GUID_BGCode').combogrid({
+            onChange: function (newValue, oldValue) {
+                $.ajax({
+                    url: '/Combo/BgcodeMemo',
+                    data: { bgId: newValue },
+                    dataType: "json",
+                    type: "POST",
+                    error: function (xmlhttprequest, textStatus, errorThrown) {
+                        $.messager.alert("错误", textStatus, 'error');
+                    },
+                    success: function (data) {
+                        if (data) {
+                            $('#clbxd-BX_Detail-FeeMemo').combobox('loadData', data);
+                        }
+                    }
+                });
+            }
+        });
+
+        
+    });
+    $.extend($.fn.datagrid.methods, {
+    //        verifyData: function () {
+    //        
+    //            var opts = $(this).datagrid('options');
+    //            var cols = opts.requireCol;
+    //            if (!cols) return;
+    //            var rows = $(this).datagrid('getRows');
+    //            if (rows.length == 0) return;
+    //            var msgError = "", fieldTitle = "";
+
+    //            for (var i = 0, j = rows.length; i < j; i++) {
+    //                for (var m = 0, n = cols.length; m < n; m++) {
+
+    //                    var col = cols[m];
+    //                    if ($.trim(rows[i][col] + '').toLowerCase().length <= 0) {
+    //                        var colO = $(this).datagrid('getColumnOption', col);
+    //                        fieldTitle += $.trim(colO.title) + "、";
+    //                    }
+    //                }
+    //                var tempVal = fieldTitle.substring(0, fieldTitle.length - 1);
+    //                fieldTitle = "";
+    //                msgError += "第" + (i + 1) + "行：" + tempVal + "不能为空！</br>";
+    //                if (tempVal == "") {
+    //                    msgError = "";
+    //                }
+    //            }
+    //            return msgError;
+    //        }
+});
+</script>
+<script src="../../Scripts/bx/clbxd.js?r=1201511218888" type="text/javascript"></script>
+<div class="easyui-layout" id="clbxd-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="clbxd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'clbxd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/clbxd',['clbxd-BX_Main-moneychinese','clbxd-BX_Main-moneyunmber']]}">
+                    打印</a> <a href="#" class="easyui-linkbutton" id="clbxd-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'clbxd',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/clbxd',['clbxd-BX_Main-moneychinese','clbxd-BX_Main-moneyunmber']]}">
+                    预览</a> <a href="#" class="easyui-linkbutton" id="clbxd-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'clbxd',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a> <a href="#" class="easyui-linkbutton"
+                        id="clbxd-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newDoc']},scope:'clbxd',status:'1',                        
+                  bindparms:{'newDoc':['/clbxd/New']},
+                  forbidstatus:[1,2,3]">新增</a> <a href="#" class="easyui-linkbutton" id="clbxd-edit"
+                      data-options="plain:'true',iconCls:'icon-xiugai',
+                  docState:'clbxd-BX_Main-DocState',
+                  bindmethod:{'click':['setStatus']},scope:'clbxd',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> <a href="#" class="easyui-linkbutton" id="clbxd-remove"
+                      data-options="plain:'true',iconCls:'icon-shanchu',
+                  docState:'clbxd-BX_Main-DocState',
+                  bindmethod:{ 'click': ['setStatus'] },scope:'clbxd',status:'3',
+                  forbidstatus:[1,2,3]">删除</a> <a href="#" class="easyui-linkbutton" id="clbxd-delrow"
+                      data-options="plain:'true',iconCls:'icon-shanhang',
+                  bindmethod:{ 'click': ['delRowClear'] },
+                  bindparms:{'delRowClear':['clbxd-BX_Travel']},
+                  scope:'clbxd',forbidstatus:[3,4,5,6]">删行</a> <a href="#" class="easyui-linkbutton"
+                      id="clbxd-detail" data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   sourceBody:true,
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/clbxd','clbxd-BX_Travel','parti']},scope:'clbxd',forbidstatus:[3]">
+                      明细</a> <a href="#" class="easyui-linkbutton" id="clbxd-borrow" data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/clbxd','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'clbxd'">借款</a> <a href="#" class="easyui-linkbutton" id="clbxd-BudgetStatistics"
+                   data-options="plain:'true',iconCls:'icon-yusuan',
+                   bindmethod:{ 'click': ['BudgetStatistics'] },
+                   window:'b-window',
+                   isGetDataByView:true,
+                   columnMap:{
+                        'clbxd-BX_Detail-Total_Real':'ThisTimeTotal',
+                        'clbxd-BX_Detail-GUID_BGCode':['GUID_BGCode','BGCodeName'],
+                        'clbxd-BX_Detail-GUID_Project':['GUID_Project','ProjectName'],
+                        'clbxd-BX_Main-GUID_Department':['GUID_Department','DepartmentName'],
+                        'clbxd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                        'clbxd-CN_PaymentNumber-GUID_BGResource':['GUID_BGResource','BGSourceName']
+                     },
+                     columnMapText:{
+                        combogrid:['clbxd-BX_Detail-GUID_BGCode','clbxd-BX_Detail-GUID_Project','clbxd-BX_Main-GUID_Department','clbxd-BX_Detail-ProjectKey','clbxd-CN_PaymentNumber-GUID_BGResource'],
+                        validatebox:[
+                            'clbxd-BX_Detail-BGCodeKey',
+                            'clbxd-BX_Detail-BGTypeName',
+                            'clbxd-BX_Detail-Total_Real'
+                        ]
+                     },
+                     configBudget:{
+                        'clbxd-BX_Main-DWKey':'validatebox',
+                        'clbxd-BX_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{
+                        'BudgetStatistics':[
+                            '/BudgetStatistics/clbxd',
+                            '/BudgetStatistics/BudgetStatistics',
+                            'BudgetStatistics-BG_Main',
+                            'clbxd-BX_Main-DocDate',
+                            'clbxd-BX_InviteFee',@*明细Grid ID*@
+                            'BudgetStatistics',
+                            '02' @*报销管理*@
+                     ]},
+                   scope:'clbxd'">预算</a> <a href="#" class="easyui-linkbutton" id="clbxd-abandoned"
+                       data-options="plain:'true',iconCls:'icon-zuofei',
+                   docState:'clbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['clbxd-BX_Main-DocState','9']},
+                   scope:'clbxd',status:'3',forbidstatus:[1,2,3]">作废</a> <a href="#" class="easyui-linkbutton"
+                       id="clbxd-recover" data-options="plain:'true',iconCls:'icon-huifu',
+                   bindmethod:{ 'click': ['recover'] },
+                   docState:'clbxd-BX_Main-DocState',
+                   bindparms:{'recover':['clbxd-BX_Main-DocState','6']},
+                   scope:'clbxd',status:'3',forbidstatus:[1,2,3]">恢复</a> <a href="#" class="easyui-linkbutton" id="clbxd-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',docState:'clbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                           @* 'datagrid':['clbxd-BX_Travel'],*@ 
+                            'validatebox':['clbxd-BX_Main-DocMemo','clbxd-BX_Travel-TravelPerson'],                            
+                            'datebox':['clbxd-BX_Main-DocDate'],
+                            'combogrid':['clbxd-BX_Main-GUID_Person','clbxd-BX_Main-GUID_DW','clbxd-BX_Main-GUID_Department'],
+                             'numberbox':['clbxd-BX_Main-BillCount'],
+                            'combobox':['clbxd-BX_Detail-FeeMemo']
+                    @*    },
+                    'bubbleExamine':
+                        {
+                          'numberbox':['clbxd-BX_Main-BillCount']*@
+                        }
+                    },
+                   scope:'clbxd',forbidstatus:[4]">校验</a> <a href="#" class="easyui-linkbutton" id="clbxd-cancel"
+                       data-options="
+                   plain:'true',iconCls:'icon-quxiao', scope:'clbxd',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> <a href="#" class="easyui-linkbutton"
+                       id="clbxd-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/clbxd/Save']},
+                   scope:'clbxd',status:'4',forbidstatus:[4]">保存</a> <a href="#" class="easyui-linkbutton"
+                       id="clbxd-submitProcess" data-options="plain:'true',iconCls:'icon-tijiao',
+                   docState:'clbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/clbxd/CommitFlow']},
+                   scope:'clbxd',forbidstatus:[1,2,3]">提交</a> <a href="#" class="easyui-linkbutton"
+                       id="clbxd-sendBackProcess" data-options="plain:'true',iconCls:'icon-tuihui',docState:'clbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'clbxd',
+                   forbidstatus:[1,2,3]">退回</a> <a href="#" class="easyui-linkbutton" id="clbxd-histroy"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/clbxd','history-BX_Main','history']},
+                   window:'b-window',scope:'clbxd'">历史</a> <a href="#" class="easyui-linkbutton" id="clbxd-viewprocess"
+                       data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/clbxd','/Process/process','clbxd-process','process']},
+                   window:'b-window',scope:'clbxd',
+                   forbidstatus:[1,2,3]">流程</a> 
+               
+                <a href="#" class="easyui-linkbutton" id="clbxd-linkDoc"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'xjbxd-BX_Main-DocState',
+                   bindmethod:{ 'click': ['linkDoc'] },
+                   bindparms:{'linkDoc':['/xjbxd/CommitFlow']},scope:'clbxd', window:'c-window',
+                   forbidstatus:[1,2,3]">关联</a> <a href="#" class="easyui-linkbutton" id="clbxd-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'clbxd'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="clbxd-tree-per" data-options="associate:{
+                    'clbxd-BX_Main-GUID_Person':['GUID','InvitePersonName'],
+                    'clbxd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                    'clbxd-BX_Detail-GUID_Department':['GUID_Department'],
+                    'clbxd-BX_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="clbxd-tree-dep" data-options="associate:{
+                  'clbxd-BX_Main-GUID_DW':['GUID_DW','DWName'],
+                  'clbxd-BX_Detail-GUID_Department':['GUID'],
+                  'clbxd-BX_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick':['setAssociate']},
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetDepartmentTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="clbxd-tree-project" data-options="
+                 associate:{
+                    'clbxd-BX_Detail-GUID_Project':['GUID','ProjectName'],
+                    'clbxd-BX_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                    'clbxd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                    'clbxd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                    'clbxd-CN_PaymentNumber-PaymentNumber':['PaymentNumber']
+                  },
+                  bindmethod:{'onDblClick':['setAssociate']},
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="交通工具">
+                <ul class="easyui-tree" id="clbxd-tree-ren" data-options="
+                  gridassociate:{
+                      'gridId':'clbxd-BX_Travel',              
+                      'map': {
+                           'clbxd-BX_Travel-GUID_Traffic':['GUID','TrafficName']
+                        }
+                  },
+                  associate:{
+                  'clbxd-BX_Main-DocMemo':['FeeMemo']
+                  },
+                  bindmethod:{'onDblClick':['setAssociate']},
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetTrafficTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 980px; padding-left: 10px;">
+        <table border="0" style="height: 350px; width: 1040px; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="clbxd-abandonedStatus" statuscontrolid="clbxd-BX_Main-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        差旅报销单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                        <font color="red">*</font>报销单号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="clbxd-BX_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>报销日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="clbxd-BX_Main-DocDate" data-options="width:180,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Person">
+                        <font color="red">*</font>报销人</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="clbxd-BX_Main-GUID_Person" data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                            ]],
+                        width:180,
+                        panelWidth:500,
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true,
+                        associate:
+                            {
+                                'clbxd-BX_Main-GUID_DW':['GUID_DW'],
+                                'clbxd-BX_Detail-GUID_Department':['GUID_Department'],
+                                'clbxd-BX_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_DW">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="clbxd-BX_Main-GUID_DW" data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'200'}
+                            ]],
+                        panelWidth:400,
+                        width:180,
+                        method:'post',
+                        required:false,
+                        delay:1500,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        sortName:'DWKey',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Department">
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="clbxd-BX_Main-GUID_Department" data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:true,width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'130'}]],
+                        width:180,
+                        panelWidth:420,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{
+                            'clbxd-BX_Detail-GUID_Department':['GUID'],
+                            'clbxd-BX_Detail-DepartmentName':['DepartmentName'],
+                            'clbxd-BX_Main-GUID_DW':['GUID_DW']
+                        },
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Project">
+                        &nbsp;项目名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="clbxd-BX_Detail-GUID_Project" data-options="
+                           panelWidth:250,
+                           width:180,method:'post',
+                           filterField:'ProjectKey,ProjectName',
+                           remoteUrl:'/Combogrid/ProjectView',
+                           idField:'GUID',
+                           textField:'ProjectName',
+                           scope:'clbxd',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'ExtraCode',hidden:'true'},
+                             {field:'IsProject',hidden:'true'},
+                            {field:'FinanceProjectKey',hidden:'true'},
+                            {field:'IsFinance',hidden:true},
+                            {field:'FinanceCode',hidden:true},
+                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:'true'},
+                            {field:'GUID_BGType',title:'GUID_BGType',hidden:true},
+                            {field:'BGTypeName',title:'支出类型名称',hidden:true},
+                            {field:'ProjectKey',title:'项目编号',width:'100'},
+                            {field:'ProjectName',title:'项目名称',width:'128'}
+                           ]],
+                           bindmethod: {'onCloseEx': ['setAssociate','setCCZFCode','setControlFun'] },
+                          
+                           bindparms:{
+                                'setCCZFCode':[
+                                    'clbxd-BX_Detail-GUID_BGType',
+                                    'clbxd-CN_PaymentNumber-GUID_FunctionClass',
+                                    'clbxd-CN_PaymentNumber-GUID_EconomyClass',
+                                    'clbxd-CN_PaymentNumber-GUID_ExpendType',
+                                    'clbxd-CN_PaymentNumber-GUID_BGResource',
+                                    'clbxd-BX_Detail-GUID_Project',
+                                    'clbxd-CN_PaymentNumber-IsGuoKu',
+                                    'clbxd-CN_PaymentNumber-PaymentNumber'],       
+                                'setControlFun':{
+                                    'clbxd-CN_PaymentNumber-GUID_FunctionClass':['combogrid','setAssociate'],
+                                    'clbxd-CN_PaymentNumber-IsProject':['checkbox','setControlValue']
+                            }},
+                           associate:
+                            {
+                                'clbxd-BX_Detail-ProjectKey':['ProjectKey'],
+                                 'clbxd-BX_InviteFee-ExtraCode':['ExtraCode'],
+                                   'clbxd-BX_Detail-BGTypeName':['BGTypeName'],
+                                  'clbxd-BX_Detail-GUID_BGType':['GUID_BGType'],
+                                     'clbxd-CN_PaymentNumber-IsProject':['IsProject'],
+                                 'clbxd-CN_PaymentNumber-FinanceCode':['FinanceCode'],
+                                'clbxd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                'clbxd-BX_Detail-FinanceProjectKey':['FinanceProjectKey'],
+                                 'clbxd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                            },   
+                            sortName:'ProjectKey',  
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-ProjectKey">
+                        &nbsp;项目编码</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="clbxd-BX_Detail-ProjectKey" data-options="
+                           panelWidth:250,
+                           width:180,method:'post',
+                           filterField:'ProjectKey,ProjectName',
+                           remoteUrl:'/Combogrid/ProjectView',
+                           idField:'GUID',
+                           scope:'clbxd',
+                           textField:'ProjectKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},{field:'ExtraCode',hidden:'true'},
+                            {field:'FinanceProjectKey',hidden:'true'},
+                            {field:'IsFinance',hidden:true},
+                            {field:'FinanceCode',hidden:true},
+                            {field:'IsProject',hidden:'true'},
+                            {field:'GUID_BGType',title:'GUID_BGType',hidden:true},
+                            {field:'BGTypeName',title:'支出类型名称',hidden:true},
+                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:'true'},
+                            {field:'ProjectKey',title:'项目编码',width:'100'},
+                            {field:'ProjectName',title:'项目名称',width:'128'}
+                           ]],
+                           bindmethod: {'onCloseEx': ['setAssociate','setCCZFCode','setControlFun'] },
+                          
+                           bindparms:{
+                                'setCCZFCode':[
+                                    'clbxd-BX_Detail-GUID_BGType',
+                                    'clbxd-CN_PaymentNumber-GUID_FunctionClass',
+                                    'clbxd-CN_PaymentNumber-GUID_EconomyClass',
+                                    'clbxd-CN_PaymentNumber-GUID_ExpendType',
+                                    'clbxd-CN_PaymentNumber-GUID_BGResource',
+                                    'clbxd-BX_Detail-GUID_Project',
+                                    'clbxd-CN_PaymentNumber-IsGuoKu',
+                                    'clbxd-CN_PaymentNumber-PaymentNumber'],       
+                                'setControlFun':{
+                                    'clbxd-CN_PaymentNumber-GUID_FunctionClass':['combogrid','setAssociate'],
+                                    'clbxd-CN_PaymentNumber-IsProject':['checkbox','setControlValue']
+                            }},
+                           associate:
+                            {
+                                'clbxd-BX_Detail-GUID_Project':['GUID'],
+                                 'clbxd-BX_InviteFee-ExtraCode':['ExtraCode'],
+                                    'clbxd-BX_Detail-BGTypeName':['BGTypeName'],
+                                  'clbxd-BX_Detail-GUID_BGType':['GUID_BGType'],
+                                     'clbxd-CN_PaymentNumber-IsProject':['IsProject'],
+                                 'clbxd-CN_PaymentNumber-FinanceCode':['FinanceCode'],
+                                'clbxd-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                 'clbxd-BX_Detail-FinanceProjectKey':['FinanceProjectKey'],
+                                 'clbxd-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                            }, 
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocMemo">
+                        <font color="red">*</font>摘&nbsp;&nbsp;&nbsp;&nbsp;要</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="clbxd-BX_Main-DocMemo" style="width: 547px"
+                        data-options="forbidstatus:[4,3]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-BillCount">
+                         <font color="red">*</font>附单数据</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="clbxd-BX_Main-BillCount" maxlength="2" style="width: 176px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="clbxd-BX_Travel" style="overflow: auto" data-options="
+                    orderNum:'clbxd-BX_Travel-OrderNum',
+                    isNotClearData:true,
+                    height:260,width:980,
+                    singleSelect:true,
+                    isNotSrocll:true,
+                    checkOnSelect:true,
+                    rownumbers:true,
+                    gridId:{gridId:'clbxd-BX_Travel'},
+                    requireCol:[
+                        'clbxd-BX_Travel-StartDate',
+                        'clbxd-BX_Travel-ArriveDate',
+                        'clbxd-BX_Travel-PlaceFrom',
+                        'clbxd-BX_Travel-PlaceTo'
+                    ],
+                    notEditCols:[
+                        'clbxd-BX_TravelAllowance-AllowanceName',
+                        'clbxd-BX_TravelAllowance-Persons',
+                        'clbxd-BX_TravelAllowance-AllowanceDays',
+                        'clbxd-BX_TravelAllowance-AllowancePrice',
+                        'clbxd-BX_TravelAllowance-AllowenMoney'
+                    ],
+                    formatters:{
+                        'clbxd-BX_Travel-TicketMoney':'numberbox',
+                        'clbxd-BX_TravelAllowance-AllowanceDays':'numberbox',
+                        'clbxd-BX_TravelAllowance-AllowancePrice':'numberbox',
+                        'clbxd-BX_TravelAllowance-AllowenMoney':'numberbox'
+                    },
+                     fieldformula:[
+                        {name:'csum',field:['clbxd-BX_Travel-TicketMoney','clbxd-BX_TravelAllowance-AllowenMoney'],target:['clbxd-BX_Main-moneyunmber','clbxd-BX_Main-moneychinese']},
+                        {name:'cconcat',fieldCol:['clbxd-BX_Travel-PlaceFrom','clbxd-BX_Travel-PlaceTo'],field:'clbxd-BX_Travel-TravelPerson',target:'clbxd-BX_Main-DocMemo'}
+                    ],
+                    scope:'clbxd',
+                    forbidstatus:[4,3]
+                      ">
+                        <thead frozen="true">
+                            <tr>
+                                <th colspan="1" field="" align="center" width="140px">
+                                    <label for="field1" id="lbl-TravelPerson">
+                                        <font color="red">*</font>出差人：</label>
+                                </th>
+                                <th colspan="3" field="" align="center" width="140px">
+                                    <input id='clbxd-BX_Travel-TravelPerson' class="easyui-validatebox" readonly="readonly"
+                                        style="width: 200px; height: 14px" />
+                                </th>
+                            </tr>
+                            <tr>
+                                <th colspan="8">
+                                    出发
+                                </th>
+                            </tr>
+                            <tr>
+                                <th field="clbxd-BX_Travel-StartDate" hidden="false">
+                                    出发日期
+                                </th>
+                                <th field="clbxd-BX_Travel-ArriveDate" hidden="false">
+                                    到达日期
+                                </th>
+                                <th field='clbxd-BX_Travel-startMonth' resizable="false" editor="{
+                                    type:'datebox',
+                                    options:{
+                                        dateType:'m',
+                                        map:{'clbxd-BX_Travel-startDay':'d','clbxd-BX_Travel-StartDate':'clbxd-BX_Travel-startHour'},
+                                        bindmethod: { 'onSelect': ['setGridAssociate'] }   
+                                    }
+                                    
+                                }" style="text-align: center; border: 1px solid #000; width: 20px;">
+                                    &nbsp;&nbsp;月&nbsp;&nbsp;
+                                </th>
+                                <th field='clbxd-BX_Travel-startDay' resizable="false" editor="{
+                                    type:'datebox',
+                                     options:{
+                                        dateType:'d',
+                                        map:{'clbxd-BX_Travel-startMonth':'m','clbxd-BX_Travel-StartDate':'clbxd-BX_Travel-startHour'},
+                                        bindmethod: { 'onSelect': ['setGridAssociate'] }   
+                                    }
+                                }" style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp; &nbsp;日&nbsp;&nbsp;
+                                </th>
+                                <th field='clbxd-BX_Travel-startHour' resizable="false," editor="{
+                                      type:'numberspinner',
+                                      options:{
+                                          sumFields:['clbxd-BX_Travel-StartDate','clbxd-BX_Travel-startHour']
+                                      }
+                                    
+                                    }" style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp;&nbsp;时&nbsp; &nbsp;
+                                </th>
+                                <th field="clbxd-BX_Travel-PlaceFrom" resizable="false," editor="{type:'text'}" style="text-align: center;
+                                    border: 1px solid #000; height: 25px;">
+                                    &nbsp; &nbsp; &nbsp;地点&nbsp; &nbsp; &nbsp;
+                                </th>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <tr>
+                                <th field="clbxd-BX_Travel-GUID" hidden="true">
+                                </th>
+                                <th colspan="2" align="center" width="130px">
+                                    <label for="field1" id="lbl-FeeMemo">
+                                        <font color="red">*</font>出差事由：</label>
+                                </th>
+                                <th colspan="4" field="" align="left" width="140px" style="height: 30px">
+                                    <div>
+                                        <input class="easyui-combobox" id='clbxd-BX_Detail-FeeMemo' data-options="url:'/Combo/BgcodeMemo',
+                                    mothod:'get',
+                                    width:270,
+                                    valueField:'BGCodeMemo',
+                                    forbidstatus:[4,3],
+                                    textField:'BGCodeMemo'
+                                    " />
+                                    </div>
+                                </th>
+                                <th field="" align="center" width="140px">
+                                    预借旅费：
+                                </th>
+                                <th field="" colspan="2" align="center">
+                                    支票：&nbsp; &nbsp;
+                                </th>
+                                <th field="" colspan="3" align="center">
+                                    现金: &nbsp; &nbsp; &nbsp;
+                                </th>
+                            </tr>
+                            <tr>
+                                <th field="" colspan="4" align="center">
+                                    到达
+                                </th>
+                                <th field='clbxd-BX_Travel-GUID_Traffic' editor="{
+                                        type:'combogrid',
+                                        options:{
+                                            panelWidth:125,
+                                          
+                                            remoteUrl:'/Combogrid/Traffic',method:'get',idField:'GUID',textField:'TrafficName',filterField:'TrafficKey',
+                                            columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'TrafficKey',title:'编码',width:'50'},
+                                              {field:'TrafficName',title:'名称',width:'70'}
+                                            ]]
+                                        }}" rowspan="2" align="center">
+                                    交通工具
+                                </th>
+                                <th field="" colspan="2" align="center">
+                                    交通费
+                                </th>
+                                <th field="" colspan="5" align="center">
+                                    其他费用
+                                </th>
+                            </tr>
+                            <tr>
+                                <th field="clbxd-BX_Travel-endMonth" editor="{
+                                    type:'datebox',
+                                      options:{
+                                        dateType:'m',
+                                        view:'view2',
+                                        map:{'clbxd-BX_Travel-endDay':'d','clbxd-BX_Travel-ArriveDate':'clbxd-BX_Travel-endHour'},
+                                        bindmethod: { 'onSelect': ['setGridAssociate'] }   
+                                    }
+                                }" style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp;&nbsp;月&nbsp;&nbsp;
+                                </th>
+                                <th field="clbxd-BX_Travel-endDay" editor="{
+                                    type:'datebox',
+                                     options:{
+                                        dateType:'d',
+                                        view:'view2',
+                                        map:{'clbxd-BX_Travel-endMonth':'m','clbxd-BX_Travel-ArriveDate':'clbxd-BX_Travel-endHour'},
+                                        bindmethod: { 'onSelect': ['setGridAssociate'] }   
+                                    }
+                                }" style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp;&nbsp;日&nbsp;&nbsp;
+                                </th>
+                                <th field="clbxd-BX_Travel-endHour" editor="{
+                                      type:'numberspinner',
+                                      options:{
+                                          sumFields:['clbxd-BX_Travel-ArriveDate','clbxd-BX_Travel-endHour']
+                                      }
+                                }" style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp;&nbsp;时&nbsp;&nbsp;
+                                </th>
+                                <th field="clbxd-BX_Travel-PlaceTo" editor="{ type:'text'
+                                }" style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp; &nbsp; &nbsp;地点&nbsp; &nbsp; &nbsp;
+                                </th>
+                                <th field="clbxd-BX_Travel-TicketCount" editor="{ 
+                                        type:'numberbox',
+                                        options:{
+                                            min:0,
+                                            max:99
+                                        }
+                                }" style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp;据张 &nbsp;
+                                </th>
+                                <th field="clbxd-BX_Travel-TicketMoney" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}"
+                                    style="text-align: center; border: 1px solid #000; height: 25px;">
+                                    &nbsp;&nbsp; 金额&nbsp;&nbsp;
+                                </th>
+                                <th field="clbxd-BX_TravelAllowance-AllowanceName" style="text-align: center; border: 1px solid #000;
+                                    height: 25px;">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;项目&nbsp;&nbsp; &nbsp;&nbsp;
+                                </th>
+                                <th field="clbxd-BX_TravelAllowance-Persons" style="text-align: center; border: 1px solid #000;
+                                    height: 25px;">
+                                    &nbsp;人数&nbsp;
+                                </th>
+                                <th field="clbxd-BX_TravelAllowance-AllowanceDays" style="text-align: center; border: 1px solid #000;
+                                    height: 25px;">
+                                    &nbsp; 天数&nbsp;
+                                </th>
+                                <th field="clbxd-BX_TravelAllowance-AllowancePrice" hidden="true" style="text-align: center; border: 1px solid #000;
+                                    height: 25px;">
+                                    &nbsp;&nbsp; 标准&nbsp;&nbsp;
+                                </th>
+                                <th field="clbxd-BX_TravelAllowance-AllowenMoney" style="text-align: center; border: 1px solid #000;
+                                    height: 25px;">
+                                    &nbsp;&nbsp;金额&nbsp;&nbsp;
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        实报金额（大写）</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="clbxd-BX_Main-moneychinese" style="width: 547px"
+                        data-options="forbidstatus:[-1],chinese:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="clbxd-BX_Main-moneyunmber" style="width: 176px"
+                        data-options="forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_BGCode">
+                        <font color="red">*</font>预算科目</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="clbxd-BX_Detail-GUID_BGCode" data-options="
+                    columns:[[
+                        {field:'GUID',hidden:'true'},
+                        {field:'GUID_EconomyClass',hidden:'true'},
+                        {field:'BGCodeKey',title:'预算科目编号',hidden:'true'},   
+                        {field:'BGCodeName',title:'预算科目名称',width:'140'}
+                     ]],
+                     associate:
+                            {
+                               'clbxd-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                               'clbxd-BX_Detail-BGCodeKey':['BGCodeKey']
+                            },
+                        bindmethod: { 'onSelect': ['setAssociate'] },
+                        panelWidth:160,
+                        width:180,
+                        method:'post',
+                        idField:'GUID',
+                        textField:'BGCodeName',
+                        filterField:'BGCodeKey,BGCodeName',
+                        remoteUrl:'/Combogrid/BGCode',
+                        forbidstatus:[4,3]
+                    ">
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_SettleType">
+                        <font color="red">*</font>结算方式</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="clbxd-BX_Detail-GUID_SettleType" data-options="
+                    columns:[[
+                        {field:'GUID',title:'GUID',hidden:'true'},
+                        {field:'SettleTypeKey',title:'编号',hidden:'true'},
+                        {field:'SettleTypeName',title:'名称',width:'160'}
+                    ]],
+                        panelWidth:160,
+                        width:180,
+                        method:'post',
+                        idField:'GUID',
+                        textField:'SettleTypeName',
+                        filterField:'SettleTypeKey,SettleTypeName',
+                        remoteUrl:'/Combogrid/SettleType',
+                        forbidstatus:[4,3]
+                    ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_BGResource">
+                        <font color="red">*</font>预算来源</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="clbxd-CN_PaymentNumber-GUID_BGResource" data-options="
+                            columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'BGSourceKey',title:'编码',width:'90'},
+                                {field:'BGSourceName',title:'名称',width:'160'}
+                            ]],
+                            forbidstatus:[4,3],
+                            width:'180',
+                            panelWidth:'180',
+                            fitCoulmns:'true',
+                            method:'post',
+                            remoteUrl:'/Combogrid/BgSource',
+                            editable:true,
+                            hideValue:'GUID_BGResource',
+                            bindmethod:{ 'onCloseEx':['setCCZFCode'] },
+                            bindparms:{
+                                'setCCZFCode':[
+                                    'clbxd-BX_Detail-GUID_BGType',
+                                    'clbxd-CN_PaymentNumber-GUID_FunctionClass',
+                                    'clbxd-CN_PaymentNumber-GUID_EconomyClass',
+                                    'clbxd-CN_PaymentNumber-GUID_ExpendType',
+                                    'clbxd-CN_PaymentNumber-GUID_BGResource',
+                                    'clbxd-BX_Detail-GUID_Project',
+                                    'clbxd-CN_PaymentNumber-IsGuoKu',
+                                    'clbxd-CN_PaymentNumber-PaymentNumber'
+
+                            ]},
+                           idField:'GUID',
+                           textField:'BGSourceName',
+                           filterField:'BGSourceKey,BGSourceName',
+                           CZZFField:'BGSourceKey'
+                          ">
+                    </select>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        财政支付令</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="clbxd-CN_PaymentNumber-PaymentNumber" style="width: 176px"
+                        data-options="forbidstatus:[-1]"></input>
+                </td>
+                <td colspan="2" style="width: 60px">
+                    <input type="checkbox" class="easyui-checkbox" id="clbxd-CN_PaymentNumber-IsGuoKu"
+                        data-options="forbidstatus:[4,3]">国库</input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Maker">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" id="clbxd-BX_Main-GUID_Maker" data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]"> </input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-GUID_Modifier">
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" id="clbxd-BX_Main-GUID_Modifier" data-options="
+                        remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="clbxd-BX_Main-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="clbxd-BX_Main-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="clbxd-BX_Main-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="clbxd-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="clbxd-BX_Detail-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="clbxd-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="clbxd-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="clbxd-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="clbxd-BX_Main-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="clbxd-BX_Main-OAOTS" type="hidden"></input>
+        <input class="easyui-validatebox" id="clbxd-BX_Main-GLDH" type="hidden"></input>
+    @*隐藏字段*@
+    <div id="clbxd-extendarea" style="dispaly:none;">
+        <input class="easyui-checkbox" id="clbxd-CN_PaymentNumber-IsProject" data-options="
+             
+             forbidstatus:[-1],
+             bindparms:{
+                'setControlValue':[
+                    'clbxd-BX_Detail-GUID_BGType']}" type="checkbox"></input>
+        <select class="easyui-combogrid" id="clbxd-BX_Detail-GUID_BGType" data-options="columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'BGTypeKey',title:'预算类型编码',width:'80'},
+                                {field:'BGTypeName',title:'预算类型名称',width:'100'}
+                                ]],
+                            width:130,
+                            panelWidth:205,
+                            method:'post',
+                            CZZFField:'BGTypeKey',
+                            editable:false,sortName:'BGTypeKey',
+                            forbidstatus:[-1],
+
+                            remoteUrl:'/Combogrid/BGType',method:'post',idField:'GUID',textField:'BGTypeName',filterField:'BGTypeKey,BGTypeName'">
+                        </select>
+        <select class="easyui-combogrid" id="clbxd-CN_PaymentNumber-GUID_EconomyClass" data-options="columns:[[
+                                   {field:'GUID',hidden:'true'},
+                                   {field:'EconomyClassKey',title:'经济分类编码',width:'110'},
+                                   {field:'EconomyClassName',title:'经济分类名称',width:'215'}
+                                   ]],width:350,panelWidth:350,method:'post',
+                           remoteUrl:'/Combogrid/EconomyClass',
+                           CZZFField:'EconomyClassKey',
+                           idField:'GUID',textField:'EconomyClassName',
+                           hideValue:'GUID_EconomyClass',
+                           
+                           forbidstatus:[-1],sortName:'EconomyClassKey',
+                            
+                            
+                           filterField:'EconomyClassKey,EconomyClassName'">
+                        </select>
+
+        <select class="easyui-combogrid" id="clbxd-CN_PaymentNumber-GUID_ExpendType" data-options="columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'ExpendTypeKey',title:'支出类型编码',width:'110'},
+                                {field:'ExpendTypeName',title:'支出类型名称',width:'215'}
+                                ]],width:350,panelWidth:350,method:'post',
+                                 associate:{},
+                           CZZFField:'ExpendTypeKey',
+                           remoteUrl:'/Combogrid/ExpendType',
+                            hideValue:'GUID_ExpendType',sortName:'ExpendTypeKey',
+                           idField:'GUID',textField:'ExpendTypeName',
+                           forbidstatus:[-1],
+                           
+                           filterField:'ExpendTypeKey,ExpendTypeName'">
+                        </select>
+
+        <select class="easyui-combogrid" id="clbxd-CN_PaymentNumber-GUID_FunctionClass" data-options="columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'FinanceCode',hidden:'true'},
+                            {field:'IsProject',hidden:'true'},
+                            {field:'FunctionClassKey',title:'功能分类编码',width:'110'},
+                            {field:'FunctionClassName',title:'功能分类名称',width:'215'}
+                            ]],
+                            
+                           width:350,panelWidth:350,method:'post',
+                           CZZFField:'FinanceCode',
+                           remoteUrl:'/Combogrid/FunctionClass',
+                           hideValue:'GUID_FunctionClass',
+                           forbidstatus:[4],sortName:'FunctionClassKey',
+                           idField:'GUID',textField:'FunctionClassName',
+                            bindmethod:{ 'onCloseEx':['setIsGK'] },
+                            bindparms:{
+                                
+                                'setIsGK':[
+                                     'clbxd-CN_PaymentNumber-IsGuoKu'
+                            ]},
+                           filterField:'FunctionClassKey,FunctionClassName'">
+                        </select>
+
+
+
+
+
+
+
+        <input class="easyui-validatebox" type="hidden" id="clbxd-BX_Detail-GUID_Person"
+            data-options="forbidstatus:[-1]" value1="人"></input>
+        <input class="easyui-validatebox" type="hidden" id="clbxd-BX_Detail-GUID_Department"
+            data-options="forbidstatus:[-1]" value1="部门"></input>
+                 <input class="easyui-validatebox" type="hidden" id="clbxd-BX_Detail-DepartmentName" data-options="forbidstatus:[-1]" value1="部门名称"></input>
+        <input class="easyui-validatebox" type="hidden" id="clbxd-BX_Travel-OrderNum" data-options="forbidstatus:[-1]"
+            value="1"></input>
+        <input class="easyui-validatebox" type="hidden" id="clbxd-BX_Detail-FinanceProjectKey"
+            data-options="forbidstatus:[-1]" value1="财政项目编码"></input>
+
+         <input class="easyui-validatebox" type="hidden" id="clbxd-CN_PaymentNumber-GUID_ProjectEx"
+            data-options="forbidstatus:[-1]" value1="附加项目编码"></input>
+        <input class="easyui-validatebox" type="hidden" id="clbxd-BX_Detail-BGCodeKey" data-options="forbidstatus:[-1]"
+            value1="科目Key"></input>
+    </div>
+</div>
+<label id="clbxd-extendregion" style="display: none">
+    <input id="clbxd-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+   <div id="b-window" line="true">  </div>
+     <div id="c-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="clbxd-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="clbxd-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>
+<script>
+
+</script>

@@ -1,0 +1,462 @@
+﻿
+<body>
+
+<script language="javascript" type="text/javascript">
+    //数据
+    $(function () {
+
+        var chart = $('#container').highcharts({
+            title: {
+                text: '中国工程院2014年预算执行情况进度分析'
+            },
+
+            plotOptions: {
+                line: {
+                    dataLabels: {
+                        enabled: true
+                    }
+                }
+            },
+
+            credits: {
+                text: 'CAE'
+            },
+            colors: ['#F21010', '#FF00FF', '#2f7ed8'],
+            yAxis: {
+                title: {
+                    text: '百分比'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            xAxis: {
+                categories: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月']
+            },
+            series: [{
+                name: '实际执行率',
+                data: []//[7.0, 6.9, 9.5, 14.5, 18.2, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+            }, {
+                name: '计划执行率',
+                data: []//[-0.2, 0.8, 5.7, 11.3, 17.0, 22.0, 24.8, 24.1, 20.1, 14.1, 8.6, 2.5]
+
+            }, {
+                name: '与计划差异',
+                data: []//[3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+            }]
+        });
+
+        $('input[type="checkbox"]').bind('click', function () {
+            var target = $(this);
+            var chart = $('#container').highcharts();
+            var intIndex = target.attr("dataIndex");
+            var checked = target.attr("checked");
+            chart.series[intIndex].setVisible(checked == "checked" || checked == true);
+        });
+
+
+        var Linchart = function () {
+
+            var year = $('#chartYear').combo('getText');
+            var month = $('#chartMouth').combo('getText');
+            var xmkey = $('#chartXM').combo('getValue');
+            var xmText = $('#chartXM').combo('getText');
+            var isLineChart = $('#qiehuan').attr('ishow') == 1 ? 0 : 1;
+            if (isLineChart != 1) {
+                month = 12;
+            }
+            this.LoadData = function () {
+                $.ajax({
+                    url: '/ReportChart/LoadChartData',
+                    data: { year: year, month: month, xmKey: xmkey, isLine: isLineChart },
+                    error: function () {
+                        $.messager.alert("请求发送失败");
+                    },
+                    success: function (data) {
+                        if (data.msg) {
+                            $.messager.alert(data.msg);
+                            return;
+                        }
+                        if (isLineChart == 0) {
+                            var chart1 = $('#container').highcharts();
+                            if ($("#check1").attr("checked") == "checked" || checked == true) {
+                                chart1.series[0].setData(data.DTBL);
+                            }
+                            if ($("#check2").attr("checked") == "checked" || checked == true) {
+                                chart1.series[1].setData(data.ZXBL);
+                            }
+                            if ($("#check3").attr("checked") == "checked" || checked == true) {
+                                chart1.series[2].setData(data.JHC);
+                            }
+                            //                            chart1.redraw();
+                        } else {
+                            var chart1 = $('#zhu1').highcharts();
+                            var colors = Highcharts.getOptions().colors;
+                            var data1 = [];
+                            for (var i = 0; i < data.JinEData.length; i++) {
+                                data1.push({ y: data.JinEData[i], color: colors[i] })
+                            }
+                            chart1.series[0].name = xmText;
+                            chart1.series[0].setData(data1);
+                            //                            chart1.redraw();
+
+                            var data2 = [];
+                            for (var i = 0; i < data.BLData.length; i++) {
+                                data2.push({ y: data.BLData[i], color: colors[i] })
+                            }
+                            var chart2 = $('#zhu2').highcharts();
+                            chart2.series[0].name = xmText;
+                            chart2.series[0].setData(data2);
+                            //                            chart2.redraw();
+                        }
+                    }
+                });
+
+            }
+        }
+
+        /*绑定按钮事件*/
+        $('#chaxun').bind('click', function () {
+            new Linchart().LoadData();
+        });
+        $('#qiehuan').bind('click', function () {
+            var show = $(this).attr('ishow') || 1;
+            if (show == 1) {
+                $("table tr[id='tr1'],table tr[id='tr2']").hide()
+                $("table tr[id='tr3']").show();
+                $(this).attr('ishow', 0)
+                $(".monthShow").show();
+            } else {
+                $("table tr[id='tr1'],table tr[id='tr2']").show()
+                $("table tr[id='tr3']").hide();
+                $(this).attr('ishow', 1)
+                $(".monthShow").hide();
+            }
+            new Linchart().LoadData();
+        });
+        $('#tuichu').bind('click', function () {
+            $('#b-window').dialog('close');
+        });
+        $('#chartXM,#chartMouth').combobox({
+            onSelect: function (rec) {
+                new Linchart().LoadData();
+            }
+        });
+        $('#quanping').bind('click', function () {
+
+            var year = $('#chartYear').combo('getText');
+            var month = $('#chartMouth').combo('getText');
+            var xmkey = $('#chartXM').combo('getValue');
+            var xmText = $('#chartXM').combo('getText');
+            var isLineChart = $('#qiehuan').attr('ishow') == 1 ? 0 : 1;
+            if (isLineChart != 1) {
+                month = 12;
+            }
+            var host = window.location.host;
+            var urlTemp = isLineChart == 1 ? "/ReportChart/ZchartQKFX" : "/ReportChart/ZLinechartQKFX";
+            var url = "http://" + host + urlTemp;
+            url = url + '?year=' + year + "&month=" + month + "&xmKey=" + xmkey + "&isLine=" + isLineChart;
+            window.open(url);
+        });
+        setTimeout(function () {
+            new Linchart().LoadData();
+        }, 100);
+    });
+</script>
+<table border=0 style="width:100%;height:100%;margin:0px;padding:0px">
+<tr>
+    <td colspan=2 style="width:100%;height:30px">
+    <table border=0 style="width:100%;height:100%;margin:0px;padding:0px">
+    <tr>
+    <td style="width:8%">
+         年份：
+    </td>
+      <td style="width:12%">
+          <select id="chartYear"class="easyui-combobox"  data-options="forbidstatus:[4,3],editable:false,width:80,value:2014";>  
+                    <option value="1999">1999</option> 
+                    <option value="2000">2000</option>  
+                    <option value="2001">2001</option> 
+                    <option value="2002">2002</option>  
+                    <option value="2003">2003</option>  
+                    <option value="2004">2004</option>  
+                    <option value="2005">2005</option>  
+                    <option value="2006">2006</option>  
+                    <option value="2007">2007</option>  
+                    <option value="2008">2008</option>  
+                    <option value="2009">2009</option>  
+                    <option value="2010">2010</option>  
+                    <option value="2011">2011</option>  
+                    <option value="2012">2012</option>
+                    <option value="2013">2013</option>
+                    <option value="2014" >2014</option>  
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>    
+                    <option value="2017">2017</option>  
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>    
+                    <option value="2020">2020</option>  
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>    
+                    <option value="2023">2023</option>  
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>    
+                    <option value="2026">2026</option>  
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>    
+                    <option value="2029">2029</option>  
+                    <option value="2030">2030</option>
+                    <option value="2031">2031</option>    
+                    <option value="2032">2032</option>  
+                    <option value="2033">2033</option>
+                    <option value="2034">2034</option>    
+                    <option value="2035">2035</option>  
+                    <option value="2036">2036</option>
+                    <option value="2037">2037</option>    
+                    <option value="2038">2038</option>  
+                    <option value="2039">2039</option>
+                    <option value="2040">2040</option>    
+                    <option value="2041">2041</option>  
+                    <option value="2042">2042</option>
+                    <option value="2043">2043</option>    
+                    <option value="2044">2044</option>  
+                    <option value="2045">2045</option>
+                    <option value="2046">2046</option>    
+                    <option value="2047">2047</option>  
+                    <option value="2048">2048</option>
+                    <option value="2049">2049</option>    
+                    <option value="2050">2050</option>  
+                    </select> 
+       </td>
+        <td style="width:8%; display:none" class="monthShow">
+        截至月份：
+       </td>
+       <td style="width:12%;display:none" class="monthShow">
+        <select id="chartMouth" class="easyui-combobox"  data-options="width:80,forbidstatus:[4,3],editable:false,value:9";>  
+                    <option value="1">1</option>  
+                    <option value="2">2</option>  
+                    <option value="3">3</option>  
+                    <option value="4">4</option>  
+                    <option value="5">5</option>  
+                    <option value="6">6</option>  
+                    <option value="7">7</option>  
+                    <option value="8">8</option>  
+                    <option value="9">9</option>  
+                    <option value="10">10</option>  
+                    <option value="11">11</option>  
+                    <option value="12">12</option>
+                   </select> 
+     </td>
+     <td style="width:8%">
+       项目：
+       </td>
+          <td style="width:30%">
+       <input id="chartXM" class="easyui-combobox" data-options="url:'/ReportChart/CZXM',
+                        width:150,
+                        valueField:'Key',textField:'Name',panelWidth:200,value:'-1'
+                        " ></input>
+    </td>
+    <td style="width:42%">
+        <a href="#" class="easyui-linkbutton" id="chaxun" data-options="
+                    plain:'true',iconCls:'icon-chaxun'">查询</a>
+         <a href="#" ishow="1" class="easyui-linkbutton" id="qiehuan" data-options="
+        plain:'true',iconCls:'icon-daoru'">切换</a>
+          <a href="#" ishow="1" class="easyui-linkbutton" id="quanping" data-options="
+        plain:'true',iconCls:'icon-yichu'">全屏</a>
+         <a href="#" class="easyui-linkbutton" id="tuichu" data-options="
+        plain:'true',iconCls:'icon-tuichu'">退出</a>
+    </td>
+    </tr>
+    </table>
+    </td>
+</tr>
+
+<tr id="tr1">
+    <td colspan=2 style="width:80%;height:20px">
+        <div style="text-align:center;margin-left:0px">
+          @* <label>	执行率为</label>
+           <label style="font-size:30px;color:Red;font-weight:bolder">69.30%</label>	
+           <label>，与计划数相比</label>	
+          <label style="font-size:30px;color:Green;font-weight:bolder">-13.16%</label>*@
+        </div>
+    </td>
+</tr>
+<tr id="tr2">
+<td style="width:80%" ><div id="container" style="height: 450px">
+        </div></td>
+<td style="width:20%">
+    
+    <dl>
+    <input type="checkbox" id="check1"  checked="checked" dataIndex=0 />
+     <label >本月执行率</label>
+     
+   
+    </dl>
+     <dl>
+      <input type="checkbox"  id="check2" checked="checked" dataIndex=1  />
+    <label >计划执行率</label>
+    
+   
+    </dl>
+     <dl>
+   
+     <input type="checkbox" id="check3"  checked="checked" dataIndex=2 />
+    <label >与计划差异</label>
+    </dl>
+</td>
+</tr>
+
+<tr id="tr3" style="display:none">
+<td colspan="2" style="width:100%">
+    <table border="0" style="width:100%;height:100%;margin:0px;padding:0px">
+    <tr>
+        <td style="width:55%">
+            <div id="zhu1" style="height: 450px;width:480px"></div>
+        </td>
+        <td style="width:45%">
+            <div id="zhu2" style="height: 450px;width:480px"></div>
+        </td>
+    </tr></table>
+   
+</td> </tr>
+</table>
+ <script language="javascript" type="text/javascript">
+         //数据
+         $(function () {
+            
+             var colors = Highcharts.getOptions().colors,
+        data = [{
+            y: 55.11,
+            color: colors[0]
+        }, {
+            y: 21.63,
+            color: colors[1]
+        }, {
+            y: 11.94,
+            color: colors[2]
+
+        }, {
+            y: 7.15,
+            color: colors[3]
+        }, {
+            y: 2.14,
+            color: colors[4]
+        }];
+             data1 = [{
+                 y: 55.11,
+                 color: colors[0]
+             }, {
+                 y: 21.63,
+                 color: colors[1]
+             }, {
+                 y: -11.94,
+                 color: colors[2]
+
+             }, {
+                 y: 7.15,
+                 color: colors[3]
+             }, {
+                 y: 2.14,
+                 color: colors[4]
+             }];
+
+
+             var chart = $('#zhu1').highcharts({
+                 chart: {
+                     type: 'column'
+                 },
+                 title: {
+                     text: ''
+                 },
+
+                 xAxis: {
+                     categories: ['本年安排投资', '当年额度支出', '期末账面支出', '应收款', '今年可用额度'],
+                     labels:{
+                        rotaion:50
+                     }
+                 },
+                 yAxis: {
+                     title: {
+                         text: '金额（万元）'
+                     }
+                 },
+                 credits: {
+                     text: 'CAE'
+                 },
+                 plotOptions: {
+                     column: {
+                         dataLabels: {
+                             enabled: true,
+                             color: colors[0],
+                             style: {
+                                 fontWeight: 'bold'
+                             },
+                             formatter: function () {
+                                 return this.y;
+                             }
+                         }
+                     }
+                 },
+                 legend: {
+                   enabled:false
+                 },
+                 series: [{
+                     data: data
+                 }],
+                 exporting: {
+                     enabled: true
+                 }
+             }).highcharts();
+             var chart1 = $('#zhu2').highcharts({
+                 title: {
+                     text: ''
+                 },
+                 plotOptions: {
+                     column: {
+                         dataLabels: {
+                             enabled: true,
+                             color: colors[0],
+                             style: {
+                                 fontWeight: 'bold'
+                             },
+                             formatter: function () {
+                                 return this.y;
+                             }
+                         }
+                     }
+                 },
+                 legend: {
+                     enabled: false
+                 },
+                 credits: {
+                     text: 'CAE'
+                 },
+                 chart: {
+                     type: 'column'
+                 },
+                 xAxis: {
+                     categories: ['上月执行率', '提高比率', '当前执行率', '计划执行率', '差额']
+                 },
+                 yAxis: {
+                     title: {
+                         text: '比率（百分比）'
+                     }
+                 },
+                 tooltip: {
+                     formatter: function () {
+                         s = this.x + ':<b>' + this.y + '% </b><br>';
+                         return s;
+                     }
+                 },
+                 series: [{
+                     name: '费用名称',
+                     data: data1
+                 }],
+                 exporting: {
+                     enabled: true
+                 }
+             }).highcharts();
+         });
+</script>   
+</body>

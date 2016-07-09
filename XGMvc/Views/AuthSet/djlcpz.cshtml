@@ -1,0 +1,177 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "单据流程配置";
+}
+
+<script type="text/javascript">
+    $.TreeClick = function (node) {
+        
+        $.ajax({
+            url: '/AuthSet/GetDocByFlow',
+            data: { id: node.id.split('#')[0] },
+            cache: false,
+            async: true,
+            type: 'post',
+            datatype: 'json',
+            success: function (data) {
+                if (data) {
+                    $('#docTypeGrid').datagrid('clearSelections');
+                    var obj = eval("(" + data + ")");
+                    var rows = obj.rows;
+                    var GridRows = $('#docTypeGrid').datagrid('getData');
+                    
+                    for (var i = 0, j = GridRows.rows.length; i < j; i++) {
+                        if (rows.exist(GridRows.rows[i]["DocTypeUrl"])) {
+                            $('#docTypeGrid').datagrid('selectRecord', GridRows.rows[i]["GUID"]);
+                        }
+                    }
+                }
+                
+            }
+        });
+    }
+    $.CheckGrid = function (jq) {
+        var opts = $(jq).linkbutton('options');
+        var gridId = '#' + opts.gridId;
+        var checked = opts.checked;
+        if (checked) {
+            $(gridId).datagrid('checkAll');
+        } else {
+            $(gridId).datagrid('uncheckAll');
+        }
+    }
+    $.Save = function (jq) {
+        
+        var opts = $(jq).linkbutton('options');
+        var treeId = '#' + opts.treeId;
+        var gridId = '#' + opts.gridId;
+        var treeNode = $(treeId).tree('getSelected');
+        if (treeNode == null) {
+            $.messager.alert('提示...', '请先选中要保存的流程节点！', 'info');
+            return;
+        }
+        var selRow = $(gridId).datagrid('getChecked');
+//        if (selRow.length <= 0) {
+//            $.messager.alert('提示...', '请先选中当前流程所对应的单据类型！', 'info');
+//            return;
+//        }
+        var url = [];
+        for (var i = 0, j = selRow.length; i < j; i++) {
+            url.push(selRow[i]["DocTypeUrl"]);
+        }
+        $.ajax({
+            url: '/AuthSet/SaveDocFlow',
+            data: { id: treeNode.id.split('#')[0], version: treeNode.id.split('#')[1], url: url.join(',') },
+            cache: false,
+            async: true,
+            type: 'post',
+            datatype: 'json',
+            success: function (data) {
+                
+                if (data.isOk == true) {
+                    $.messager.alert('提示...', data.msg, 'info');
+                } else {
+                    $.messager.alert('提示...', data.msg, 'info');
+                }
+                $(gridId).datagrid('clearSelections');
+            }
+        });
+    }
+    $.CloseTab = function (jq) {
+        $.messager.confirm("提示", "正在编辑,是否退出?", function (data) {
+            if (!data) return;
+            parent.window.CloseTabs();
+        });
+    }
+    $.search = function (jq) {
+        
+        var condition = $(jq).searchbox('getValue');
+        $.ajax({
+            url: '/AuthSet/GetDocTypeByCondition',
+            data: { condition: condition },
+            cache: false,
+            async: true,
+            type: 'post',
+            datatype: 'json',
+            success: function (data) {
+                if (data) {
+                    $('#docTypeGrid').datagrid('loadData', eval("(" + data + ")"));
+                }
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('.searchbox input').removeAttr("readonly");
+    });
+    
+</script>
+<div class="easyui-layout" id="djlcpz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+
+                    <a href="#" class="easyui-linkbutton" 
+                    onclick="$.CheckGrid(this)" id="djlcpz-quanxuan" 
+                    data-options="plain:'true',iconCls:'icon-quanxuan', 
+                    scope:'djlcpz',gridId:'docTypeGrid',checked:true">全选</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" 
+                    onclick="$.CheckGrid(this)" id="djlcpz-cancel" 
+                    data-options="plain:'true',iconCls:'icon-quxiao', 
+                    scope:'djlcpz',gridId:'docTypeGrid',checked:false">全消</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" 
+                    onclick="$.Save(this)" id="djlcpz-save" 
+                    data-options="plain:'true',iconCls:'icon-baocun',
+                    treeId:'djlcpz-tree-flow',gridId:'docTypeGrid',
+                    scope:'djlcpz' ">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" 
+                    onclick="$.CloseTab(this)" id="djlcpz-close" 
+                    data-options="plain:'true',iconCls:'icon-tuichu',
+                    bindmethod:{ 'click': ['closeTab'] },
+                    scope:'djlcpz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="流程">
+                <ul class="easyui-tree" id="djlcpz-tree-flow" 
+                  data-options="
+                  url:'/Tree/GetBaseWorkFlowTree',
+                  onClick:$.TreeClick,
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'"  data-options="fit:true" style="padding-left: 10px;padding-top:5px">
+        <div data-options="region:'north',fit:true" >
+            <input id="ss" class="easyui-searchbox" data-options="searcher:function(){$.search(this)}"></input>
+        </div>
+        <div data-options="region:'center'" data-options="fit:true" style="padding-top:5px">
+             <table class="easyui-datagrid" id="docTypeGrid" 
+                                data-options="
+                                    height:550,                                   
+                                    idField:'GUID',
+                                    nowrap:false,
+                                    striped:true,
+                                    remoteSort:false,
+                                    url:'/AuthSet/GetDocTypeList'
+                                    ">
+                                <thead>
+                                    <tr>
+                                        <th data-options="field:'b-sel',width:60,checkbox:'true'"  ></th>
+                                        <th data-options="field:'GUID',hidden:'true'"  ></th>
+                                        <th data-options="field:'DocTypeName', title:'单据类型',halign:'center', align:'left', width:'150'"></th>
+                                        <th data-options="field:'DocTypeUrl', title:'URL',halign:'center', align:'left', width:'80'"></th>
+                                    </tr>
+                                            
+                                </thead>   
+             </table>
+        </div>
+        
+    </div>
+    <input class="easyui-validatebox" id="djlcpz-SS_DocType-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="djlcpz-OAO_WorkFlow-GUID" type="hidden" keyattr="1"></input>
+</div>

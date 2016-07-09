@@ -1,0 +1,427 @@
+﻿
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowNode_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowNode] DROP CONSTRAINT FK_OAO_WorkFlowNode_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowProcess_OAO_WorkFlow]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowProcess] DROP CONSTRAINT FK_OAO_WorkFlowProcess_OAO_WorkFlow
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowRoute_OAO_WorkFlow]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowRoute] DROP CONSTRAINT FK_OAO_WorkFlowRoute_OAO_WorkFlow
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowVariable_OAO_WorkFlow]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowVariable] DROP CONSTRAINT FK_OAO_WorkFlowVariable_OAO_WorkFlow
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlow_OAO_WorkFlowGroup]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlow] DROP CONSTRAINT FK_OAO_WorkFlow_OAO_WorkFlowGroup
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowNodeDealTimeCondition_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowNodeDealTimeCondition] DROP CONSTRAINT FK_OAO_WorkFlowNodeDealTimeCondition_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowNodeExecutor_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowNodeExecutor] DROP CONSTRAINT FK_OAO_WorkFlowNodeExecutor_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowNodeMessage_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowNodeMessage] DROP CONSTRAINT FK_OAO_WorkFlowNodeMessage_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowNodeRole_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowNodeRole] DROP CONSTRAINT FK_OAO_WorkFlowNodeRole_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowNodeTask_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowNodeTask] DROP CONSTRAINT FK_OAO_WorkFlowNodeTask_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowProcessNode_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowProcessNode] DROP CONSTRAINT FK_OAO_WorkFlowProcessNode_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowRoute_OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowRoute] DROP CONSTRAINT FK_OAO_WorkFlowRoute_OAO_WorkFlowNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowRoute_OAO_WorkFlowRoute]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowRoute] DROP CONSTRAINT FK_OAO_WorkFlowRoute_OAO_WorkFlowRoute
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowNodeRoleCondition_OAO_WorkFlowNodeRole]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowNodeRoleCondition] DROP CONSTRAINT FK_OAO_WorkFlowNodeRoleCondition_OAO_WorkFlowNodeRole
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowProcessNode_OAO_WorkFlowProcess]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowProcessNode] DROP CONSTRAINT FK_OAO_WorkFlowProcessNode_OAO_WorkFlowProcess
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowProcessVariable_OAO_WorkFlowProcess]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowProcessVariable] DROP CONSTRAINT FK_OAO_WorkFlowProcessVariable_OAO_WorkFlowProcess
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowProcessNodeExecutor_OAO_WorkFlowProcessNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowProcessNodeExecutor] DROP CONSTRAINT FK_OAO_WorkFlowProcessNodeExecutor_OAO_WorkFlowProcessNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowProcessNodeSelector_OAO_WorkFlowProcessNode]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowProcessNodeSelector] DROP CONSTRAINT FK_OAO_WorkFlowProcessNodeSelector_OAO_WorkFlowProcessNode
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowRouteCondition_OAO_WorkFlowRoute]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowRouteCondition] DROP CONSTRAINT FK_OAO_WorkFlowRouteCondition_OAO_WorkFlowRoute
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[FK_OAO_WorkFlowProcessVariable_OAO_WorkFlowVariable]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE [dbo].[OAO_WorkFlowProcessVariable] DROP CONSTRAINT FK_OAO_WorkFlowProcessVariable_OAO_WorkFlowVariable
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_DataProcess]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_DataProcess]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_Role]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_Role]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_User]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_User]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_UserRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_UserRole]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlow]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlow]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowDocType]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowDocType]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowGroup]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowGroup]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowNode]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowNode]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowNodeDealTimeCondition]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowNodeDealTimeCondition]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowNodeExecutor]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowNodeExecutor]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowNodeMessage]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowNodeMessage]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowNodeRole]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowNodeRole]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowNodeRoleCondition]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowNodeRoleCondition]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowNodeTask]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowNodeTask]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowProcess]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowProcess]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowProcessNode]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowProcessNode]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowProcessNodeExecutor]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowProcessNodeExecutor]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowProcessNodeSelector]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowProcessNodeSelector]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowProcessVariable]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowProcessVariable]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowRoute]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowRoute]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowRouteCondition]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowRouteCondition]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[OAO_WorkFlowVariable]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+drop table [dbo].[OAO_WorkFlowVariable]
+GO
+
+CREATE TABLE [dbo].[OAO_DataProcess] (
+	[GUID] [uniqueidentifier] NOT NULL ,
+	[DocData] [uniqueidentifier] NOT NULL ,
+	[WorkFlowProcessId] [uniqueidentifier] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_Role] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[Name] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[RoleKey] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[Version] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_User] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[Name] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[LoginName] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[Password] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[Version] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_UserRole] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[RoleId] [uniqueidentifier] NOT NULL ,
+	[UserId] [uniqueidentifier] NOT NULL ,
+	[UserVersion] [int] NOT NULL ,
+	[RoleVersion] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlow] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[Name] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NULL ,
+	[Description] [nvarchar] (100) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[State] [int] NOT NULL ,
+	[IsAutoStart] [bit] NOT NULL ,
+	[WorkFlowKey] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[Version] [int] NOT NULL ,
+	[WorkFlowGroupId] [uniqueidentifier] NOT NULL ,
+	[CreateDate] [datetime] NOT NULL ,
+	[CreatorVersion] [int] NOT NULL ,
+	[Creator] [uniqueidentifier] NOT NULL ,
+	[ModifyDate] [datetime] NULL ,
+	[Modifier] [uniqueidentifier] NULL ,
+	[ModifierVersion] [int] NULL ,
+	[PublishDate] [datetime] NULL ,
+	[Publishor] [uniqueidentifier] NULL ,
+	[PublishorVersion] [int] NULL ,
+	[AbolishDate] [datetime] NULL ,
+	[Abolishor] [uniqueidentifier] NULL ,
+	[AbolishorVersion] [int] NULL ,
+	[RecoverDate] [datetime] NULL ,
+	[Recovor] [uniqueidentifier] NULL ,
+	[RecvorVersion] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowDocType] (
+	[Guid] [uniqueidentifier] NOT NULL ,
+	[Guid_WorkFlow] [uniqueidentifier] NULL ,
+	[DocTypeUrl] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[WorkFlowVersion] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowGroup] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[Name] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NULL ,
+	[Description] [nvarchar] (100) COLLATE Chinese_PRC_CI_AS NULL ,
+	[ParentId] [uniqueidentifier] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowNode] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[Name] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NULL ,
+	[Description] [nvarchar] (100) COLLATE Chinese_PRC_CI_AS NULL ,
+	[WorkFlowId] [uniqueidentifier] NOT NULL ,
+	[WorkFlowVersion] [int] NOT NULL ,
+	[NodeTop] [int] NOT NULL ,
+	[NodeLeft] [int] NOT NULL ,
+	[NodeWidth] [int] NULL ,
+	[NodeHeight] [int] NULL ,
+	[IsFirst] [bit] NOT NULL ,
+	[IsRuntimeUser] [bit] NULL ,
+	[SubWorkFlowId] [uniqueidentifier] NULL ,
+	[SubWorkFlowVersion] [int] NULL ,
+	[NodeType] [int] NOT NULL ,
+	[Strategy] [int] NOT NULL ,
+	[CombineNodeId] [uniqueidentifier] NULL ,
+	[DealTimeRule] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowNodeDealTimeCondition] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[WorkFlowNodeId] [uniqueidentifier] NOT NULL ,
+	[Operator] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[Relation] [nvarchar] (10) COLLATE Chinese_PRC_CI_AS NULL ,
+	[IsLeftBracket] [bit] NULL ,
+	[IsRightBracket] [bit] NULL ,
+	[Quantity] [int] NOT NULL ,
+	[Measure] [int] NULL ,
+	[SortId] [int] NULL ,
+	[VariableName] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowNodeExecutor] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[ExecutorId] [uniqueidentifier] NOT NULL ,
+	[ExecutorVersion] [int] NOT NULL ,
+	[WorkFlowNodeId] [uniqueidentifier] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowNodeMessage] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[MessageSort] [int] NULL ,
+	[IsDealTime] [bit] NULL ,
+	[WorkFlowNodeId] [uniqueidentifier] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowNodeRole] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[RoleId] [uniqueidentifier] NULL ,
+	[RoleVersion] [int] NULL ,
+	[WorkFlowNodeId] [uniqueidentifier] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowNodeRoleCondition] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[WorkFlowNodeRoleId] [uniqueidentifier] NULL ,
+	[VariableName] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[Operator] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[Relation] [nvarchar] (10) COLLATE Chinese_PRC_CI_AS NULL ,
+	[IsLeftBracket] [bit] NULL ,
+	[IsRightBracket] [bit] NULL ,
+	[VarValue] [nvarchar] (100) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[SortId] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowNodeTask] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[NodeTaskId] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[NodeTaskLocation] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[Name] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[ActionPoint] [int] NOT NULL ,
+	[WorkFlowNodeId] [uniqueidentifier] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowProcess] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[ParentId] [uniqueidentifier] NULL ,
+	[ParentNodeId] [uniqueidentifier] NULL ,
+	[State] [int] NULL ,
+	[TerninateDate] [datetime] NULL ,
+	[CreateDate] [datetime] NULL ,
+	[Createor] [uniqueidentifier] NULL ,
+	[CreatorVersion] [int] NULL ,
+	[WorkFlowVersion] [int] NOT NULL ,
+	[WorkFlowId] [uniqueidentifier] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowProcessNode] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[State] [int] NOT NULL ,
+	[ReciveDate] [datetime] NULL ,
+	[SendDate] [datetime] NULL ,
+	[IsAllTaskOver] [bit] NULL ,
+	[WorkFlowNodeId] [uniqueidentifier] NOT NULL ,
+	[CombineNodeId] [uniqueidentifier] NULL ,
+	[ConmbineNodeType] [int] NULL ,
+	[WorkFlowProcessId] [uniqueidentifier] NOT NULL ,
+	[IsTaskOver] [bit] NOT NULL ,
+	[ActionResult] [int] NULL ,
+	[DocData] [uniqueidentifier] NULL ,
+	[DocTypeUrl] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[DocClassId] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowProcessNodeExecutor] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[WorkFlowProcessNodeId] [uniqueidentifier] NULL ,
+	[ReciveDate] [datetime] NULL ,
+	[SendDate] [datetime] NULL ,
+	[ExecutorId] [uniqueidentifier] NOT NULL ,
+	[ExecutorVersion] [int] NOT NULL ,
+	[IsAction] [bit] NOT NULL ,
+	[Comment] [nvarchar] (100) COLLATE Chinese_PRC_CI_AS NULL ,
+	[State] [int] NOT NULL ,
+	[ActionResult] [int] NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowProcessNodeSelector] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[WorkFlowProcessNodeId] [uniqueidentifier] NOT NULL ,
+	[SelectorId] [uniqueidentifier] NOT NULL ,
+	[SelectorVersion] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowProcessVariable] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[WorkFlowProcessId] [uniqueidentifier] NOT NULL ,
+	[WorkFlowVariableId] [uniqueidentifier] NOT NULL ,
+	[VarValue] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowRoute] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[SourceNodeId] [uniqueidentifier] NOT NULL ,
+	[TargetNodeId] [uniqueidentifier] NOT NULL ,
+	[SourceArch] [int] NULL ,
+	[TargetArch] [int] NULL ,
+	[IsReject] [bit] NULL ,
+	[Priority] [int] NULL ,
+	[WorkFlowId] [uniqueidentifier] NOT NULL ,
+	[WorkFlowVersion] [int] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowRouteCondition] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[VariableName] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[Operator] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[Relation] [nvarchar] (10) COLLATE Chinese_PRC_CI_AS NULL ,
+	[IsLeftBracket] [bit] NULL ,
+	[IsRightBracket] [bit] NULL ,
+	[VarValue] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NOT NULL ,
+	[SortId] [int] NULL ,
+	[WorkFlowRouteId] [uniqueidentifier] NOT NULL 
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[OAO_WorkFlowVariable] (
+	[Id] [uniqueidentifier] NOT NULL ,
+	[Name] [nvarchar] (20) COLLATE Chinese_PRC_CI_AS NULL ,
+	[VarValue] [nvarchar] (50) COLLATE Chinese_PRC_CI_AS NULL ,
+	[WorkFlowId] [uniqueidentifier] NOT NULL ,
+	[WorkFlowVersion] [int] NOT NULL ,
+	[VarType] [int] NULL 
+) ON [PRIMARY]
+GO
+
+--初始化工作流表数据
+insert  into dbo.OAO_WorkFlowGroup (Id,Name,DescriPtion,ParentId) values('244D61F5-137D-46D1-A660-72F15C757022','流程','流程','244D61F5-137D-46D1-A660-72F15C757022')

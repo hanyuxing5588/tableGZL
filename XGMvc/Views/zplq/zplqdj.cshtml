@@ -1,0 +1,329 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+        var ywId = "zplqdj-zplqdj-YWType", docId = "zplqdj-zplqdj-DocType";
+        $('#' + ywId).combobox({
+            onSelect: function (rec) {
+
+                var ywKey = rec.YWTypeKey, allValue = '00';
+                if (ywKey == allValue) {
+                    var opts = $('#' + docId).combobox('options');
+                    var remoteData = opts.remoteData;
+                    if (remoteData.length > 0) {
+                        $('#' + docId).combobox('loadData', remoteData);
+                        $('#' + docId).combobox('setValue', remoteData[0].GUID);
+                    }
+                    return;
+                }
+                var rowData = [];
+                var opts = $('#' + docId).combobox('options');
+                var remoteData = opts.remoteData;
+                for (var i = 0, j = remoteData.length; i < j; i++) {
+                    var row = remoteData[i];
+                    //往来要特殊处理
+                    if (ywKey == '05') {
+                        if (row.YWTypeKey.substr(0, 2) == ywKey || row.DocTypeKey == allValue) {
+                            rowData.push(row);
+                        }
+                    } else {
+                        if (ywKey == row.YWTypeKey || row.DocTypeKey == allValue) {
+                            rowData.push(row);
+                        }
+                    }
+                }
+                $('#' + docId).combobox('loadData', rowData);
+                $('#' + docId).combobox('setValue', rowData[0].GUID);
+            }
+        });
+        $('#' + docId).combobox({
+            onLoadSuccess: function (parm) {
+
+                var opts = $('#' + docId).combobox('options');
+                if ((opts.remoteData || []).length != 0) return;
+                opts.remoteData = parm;
+                if (!opts.remoteData) return;
+                if (opts.remoteData[0] && opts.remoteData[0].GUID) {
+                    $('#' + docId).combobox('select', opts.remoteData[0].GUID);
+                }
+            }
+        });
+    });
+</script>
+<body>
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+<div b-type="1" data-options="region:'north',tools:'#tbar'" style="height:51px">
+<div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">
+                   
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="zplqdj-haffirm" b-action="haffirm" gridId="zplqdj-bxdetail" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitDoc'] },
+                   bindparms:{'submitDoc':['zplqdj-CN_CheckDrawMain','@ViewData["ModelUrl"]','zplq-CN_Check','zplq-CN_CheckDrawMain','zplq-CN_CheckDrawDetail','zplq-CN_CheckDrawMains']},
+                   window:'b-window',
+                   scope:'zplqdj',
+                   iconCls:'icon-queren'">确认</a>
+
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="zplqdj-hselect" b-action="hselect" data-options=" 
+                    bindmethod:{ 'click': ['djlbSearch'] },
+                   bindparms:{'djlbSearch':['/zplq/History','zplqdj-CN_CheckDrawMain','zplqdj','zplqdjdatafilter']},
+                   scope:'zplqdj',
+                   plain:'true',iconCls:'icon-chaxun'" >查询</a>
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="zplqdj-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'zplqdj', 
+                    window:'b-window',         
+                    iconCls:'icon-quxiao'">取消</a>
+</div>
+</div>
+<div data-options="region:'west',split:'true'" style="width:270px"><div class="easyui-tabs" data-options="fit:true">
+<div title="人员">
+<ul class="easyui-tree" id="zplqdj-tree-zplqdjper" data-options="
+                  bindmethod:{'onDblClick': ['zplqdjSelect'] },
+                  bindparms:{'zplqdjSelect':['/dj/dj','zplqdj-CN_CheckDrawMain','zplqdj','zplqdjdatafilter']},
+                  url:'/Tree/GetPersonTree',
+                  method:'post'"></ul></div>
+<div title="单位">
+<ul class="easyui-tree" id="zplqdj-tree-zplqdjdw" data-options="  
+                  bindmethod:{'onDblClick': ['zplqdjSelect'] },
+                  bindparms:{'zplqdjSelect':['/dj/dj','zplqdj-CN_CheckDrawMain','zplqdj','zplqdjdatafilter']},
+                  url:'/Tree/GetDWTree',
+                  method:'post'"></ul></div>
+<div title="部门">
+<ul class="easyui-tree" id="zplqdj-tree-zplqdjdep" data-options="
+                  bindmethod:{'onDblClick': ['zplqdjSelect'] },
+                  bindparms:{'zplqdjSelect':['/dj/dj','zplqdj-CN_CheckDrawMain','zplqdj','zplqdjdatafilter']},
+                  url:'/Tree/GetDepartmentTree',
+                  method:'post'"></ul></div>
+<div title="项目">
+<ul class="easyui-tree" id="zplqdj-tree-zplqdjproject" data-options="
+                  bindmethod:{ 'onDblClick': ['zplqdjSelect'] },
+                  bindparms:{'zplqdjSelect':['/dj/dj','zplqdj-CN_CheckDrawMain','zplqdj','zplqdjdatafilter']},
+                  url:'/Tree/GetProjectTree',
+                  method:'post'"></ul></div>
+<div title="科目">
+<ul class="easyui-tree" id="zplqdj-tree-zplqdjcode" data-options="
+                  bindmethod:{'onDblClick': ['zplqdjSelect'] },
+                  bindparms:{'zplqdjSelect':['/dj/dj','zplqdj-CN_CheckDrawMain','zplqdj','zplqdjdatafilter']},
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post'"></ul></div> </div></div>
+<div b-type="1" data-options="region:'center'" >
+<div b-type="1" id="zplqdj-zplqdjdatafilter" data-options="region:'north'"   style="height:110px">
+<table border="0" style="width:100%;">
+<tr>
+    <td style="width:10%;">
+        <label for="field1">审批状态</label>
+    </td>
+    <td style="width:20%;">
+        <select id="zplqdj-zplqdj-ApproveStatus" class="easyui-combobox"  data-options="editable:false,tempValue:0"; style="width:150px;">  
+            <option value="0">全部</option>  
+             <option value="1">未审核</option>  
+             <option value="2">已审核</option>            
+             <option value="3">审核中</option>  
+        </select> 
+    </td>
+    <td style="width:10%;">
+        <label for="field1">支票状态</label>
+    </td>
+    <td style="width:20%;">
+        <select id="zplqdj-zplqdj-CheckStatus" class="easyui-combobox"  data-options="editable:false,tempValue:0"; style="width:150px;">  
+            <option value="0">全部</option>  
+            <option value="1">未领取</option>  
+            <option value="2">已领取</option>  
+        </select> 
+    </td>
+
+    <td style="width:10%;">
+        <label for="field1">提现状态</label>
+    </td>
+     <td style="width:30%;">
+        <select id="zplqdj-zplqdj-WithdrawStatus" class="easyui-combobox"  data-options="editable:false,tempValue:0"; style="width:150px;">  
+            <option value="0">全部</option>  
+            <option value="1">未提现</option>  
+            <option value="2">已提现</option>  
+        </select> 
+    </td>
+    </tr>
+<tr>
+     <td style="width:10%;">
+        <label for="field1">付款状态</label>
+    </td>
+     <td style="width:20%;">
+        <select id="zplqdj-zplqdj-PayStatus" class="easyui-combobox"  data-options="editable:false,tempValue:0"; style="width:150px;">  
+            <option  value="0">全部</option>  
+            <option  value="1">未付款</option>  
+            <option  value="2">已付款</option>  
+        </select> 
+    </td>
+    <td style="width:10%;">
+        <label for="field1">凭证状态</label>
+    </td>
+   <td style="width:20%;">
+        <select id="zplqdj-zplqdj-CertificateStatus" class="easyui-combobox"  data-options="editable:false,tempValue:0"; style="width:150px;">  
+            <option  value="0">全部</option>  
+            <option  value="1">未生成凭证</option>  
+            <option  value="2">已生成凭证</option>  
+        </select> 
+    </td>
+    <td style="width:10%;">
+        <label for="field1">作废状态</label>
+    </td>
+    <td style="width:30%;">
+        <select id="zplqdj-zplqdj-CancelStatus" class="easyui-combobox"  data-options="editable:false,tempValue:1"; style="width:150px;">  
+            <option value="0">全部</option>  
+            <option value="1">未作废</option>  
+            <option value="2">已作废</option>  
+           
+        </select> 
+    </td>
+</tr>
+<tr>
+    <td style="width:10%;">
+        <label for="field1">业务类型</label>
+    </td>
+     <td style="width:20%;">
+        <select id="zplqdj-zplqdj-YWType" class="easyui-combobox"  url="/Combo/YWTypeZP"
+            data-options="
+               editable:false,
+                valueField:'YWTypeKey',
+                textField:'YWTypeName',
+                filterField:'YWTypeKey,YWTypeName',
+                onLoadSuccess: function (parm) {
+                   $('#zplqdj-zplqdj-YWType').combobox('select','02');}" style="width:150px;">  
+                       
+        </select> 
+    </td>
+    <td style="width:10%;">
+        <label for="field1">单据类型</label>
+    </td>
+   <td style="width:20%;">
+        <select id="zplqdj-zplqdj-DocType" class="easyui-combobox" 
+            data-options="
+                url:'/Combo/DocTypeZP' ,
+                editable:false,
+                valueField:'GUID',
+                textField:'DocTypeName',
+                filterField:'DocTypeKey,DocTypeName'
+           " style="width:150px;">  
+        </select> 
+    </td>
+</tr>
+<tr>
+ <td style="width:10%;">
+        <label for="field1">报销年度</label>
+    </td>
+   <td style="width:20%;">
+        <select id="zplqdj-zplqdj-Year" class="easyui-combobox"  data-options="editable:false,tempValue:new Date().getFullYear()"; style="width:150px;">  
+            <option value="0">全部</option>  
+            <option value="2011">2011</option>  
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+            <option value="2014">2014</option>  
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>    
+            <option value="2017">2017</option>  
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>    
+            <option value="2020">2020</option>  
+            <option value="2021">2021</option>
+            <option value="2022">2022</option>    
+            <option value="2023">2023</option>  
+            <option value="2024">2024</option>
+            <option value="2025">2025</option>    
+            <option value="2026">2026</option>  
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>    
+            <option value="2029">2029</option>  
+            <option value="2030">2030</option>
+            <option value="2031">2031</option>    
+            <option value="2032">2032</option>  
+            <option value="2033">2033</option>
+            <option value="2034">2034</option>    
+            <option value="2035">2035</option>  
+            <option value="2036">2036</option>
+            <option value="2037">2037</option>    
+            <option value="2038">2038</option>  
+            <option value="2039">2039</option>
+            <option value="2040">2040</option>    
+            <option value="2041">2041</option>  
+            <option value="2042">2042</option>
+            <option value="2043">2043</option>    
+            <option value="2044">2044</option>  
+            <option value="2045">2045</option>
+            <option value="2046">2046</option>    
+            <option value="2047">2047</option>  
+            <option value="2048">2048</option>
+            <option value="2049">2049</option>    
+            <option value="2050">2050</option>  
+        </select> 
+    </td>
+   <td style="width:10%;">
+        <label for="field1">月份</label>
+    </td>
+    <td style="width:20%;">
+        <select id="zplqdj-zplqdj-Month" class="easyui-combobox"  data-options="editable:false,tempValue:new Date().getMonth() + 1"; style="width:150px;">  
+            <option value="0">全部</option>  
+            <option value="1">01</option>  
+            <option value="2">02</option>
+            <option value="3">03</option>  
+            <option value="4">04</option>  
+            <option value="5">05</option>  
+            <option value="6">06</option>
+            <option value="7">07</option>  
+            <option value="8">08</option>
+            <option value="9">09</option>  
+            <option value="10">10</option>  
+            <option value="11">11</option>  
+            <option value="12">12</option>        
+        </select> 
+    </td>
+    <td style="width:10%;">
+        <label for="field1">单据号</label>
+    </td>
+   <td style="width:30%;">
+        <input id="zplqdj-zplqdj-DocNum" class="easyui-validatebox" data-options="
+               bindmethod:{ 'keydown': ['keyboardRespFun'] },
+               bindparms:{'keyboardRespFun':['zplqdjSearch']}
+        "  style="width:150px;" />  
+
+         <input id="zplqdj-zplqdj-ModelUrl" class="easyui-validatebox" type="hidden" name="ModelUrl" value="@ViewData["ModelUrl"]"/>
+    </td>
+</tr>
+</table>
+<input class="easyui-validatebox" id="zplqdj-zplqdj-YWTypeKey" type="hidden"></input>
+</div>
+<div b-type="1" data-options="region:'center',fit:true" >
+<table style="height:400px;padding:5px"  class="easyui-datagrid"  id="zplqdj-CN_CheckDrawMain" b-type="1" 
+        data-options="
+        fitColumns:false,
+        method:'get',
+        singleSelect:true,
+        formatters:{'Total':'numberbox'},
+        checkOnSelect:true,
+        pagination:true,
+        striped: false,
+        pageSize:20,
+        pageList:[20,50,100],
+        rownumbers:true
+        ">
+        <thead>
+            <tr>
+            <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+            <th field="GUID" hidden="true"></th>
+            <th field="DocNum"align="center" width="80" >单据编号</th>                       
+            <th field="DocDate"lign="center" width="80" >报销日期</th>            
+            <th field="DepartmentName"align="center" width="80" >部门名称</th>              
+            <th field="PersonName"align="center" width="80" >报销人</th>                
+            <th field="BillCount"align="center" width="80" >附单数据</th>                
+            <th field="Total"align="right" width="80" >报销金额</th>               
+            <th field="DocMemo"align="center" width="200" >摘要</th>                  
+            <th field="YWTypeName"align="center" width="80" >业务类型</th>               
+            <th field="DocTypeName"align="center" width="80" >单据类型</th>   
+            </tr>
+        </thead>
+</table>
+</div>
+</div>
+</body>

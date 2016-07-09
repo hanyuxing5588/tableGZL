@@ -1,0 +1,282 @@
+﻿<body>
+<div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+<div b-type="1" data-options="region:'north',tools:'#tbar'" style="height:51px">
+<div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">
+                   
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="filter-haffirm1" gridId="filter-bxdetail" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['Submitfilter'] },
+                   bindparms:{'Submitfilter':['filter-BX_Main','@ViewData["ModelUrl"]']},
+                   window:'b-window',
+                   scope:'filter',
+                   iconCls:'icon-queren'">确认</a>
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="filter-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'filter', 
+                    window:'b-window',         
+                    iconCls:'icon-quxiao'">取消</a>
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="filter-selectAll"   b-action="hselectall"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['DJLBSelectAll'] },
+                    bindparms:{'DJLBSelectAll':['@ViewData["ModelUrl"]']},
+                    scope:'filter', 
+                    window:'b-window',         
+                    iconCls:'icon-quanxuan'">全选</a>
+
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="filter-unselectAll"   b-action="hunselectall"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['DJLBUnSelectAll'] },
+                    bindparms:{'DJLBUnSelectAll':['@ViewData["ModelUrl"]']},
+                    scope:'filter', 
+                    window:'b-window',         
+                    iconCls:'icon-quanxiao'">全消</a>
+</div>
+</div>
+<div data-options="region:'west',split:'true'" style="width:270px"><div class="easyui-tabs" data-options="fit:true">
+<div title="人员">
+<ul class="easyui-tree" id="filter-tree-filterper" data-options="
+                  bindmethod:{'click': ['filterSelect'] },
+                  bindparms:{'filterSelect':['/filter/filter','filter-BX_Main','filter','filterdatafilter']},
+                  url:'/Tree/GetPersonTree',
+                  method:'post',checkbox:true"></ul></div>
+<div title="科目">
+<ul class="easyui-tree" id="filter-tree-filtercode" data-options="
+                  bindmethod:{'onDblClick': ['filterSelect'] },
+                  bindparms:{'filterSelect':['/filter/filter','filter-BX_Main','filter','filterdatafilter']},
+                  url:'/Tree/GetBgCodeTree',
+                  method:'post',checkbox:true"></ul></div>
+<div title="项目">
+<ul class="easyui-tree" id="filter-tree-filterproject" data-options="
+                  bindmethod:{ 'onDblClick': ['filterSelect'] },
+                  bindparms:{'filterSelect':['/filter/filter','filter-BX_Main','filter','filterdatafilter']},
+                  url:'/Tree/GetProjectTree',
+                  method:'post',checkbox:true"></ul></div>
+<div title="功能分类">
+<ul class="easyui-tree" id="filter-tree-filterfunction" data-options="
+                  bindmethod:{ 'onDblClick': ['filterSelect'] },
+                  bindparms:{'filterSelect':['/filter/filter','filter-BX_Main','filter','filterdatafilter']},
+                  url:'/Tree/GetFunctionClassTree',
+                  method:'post',checkbox:true"></ul></div>
+<div title="单据分类">
+<ul class="easyui-tree" id="filter-tree-filterdoctype" data-options="
+                  bindmethod:{ 'onDblClick': ['filterSelect'] },
+                  bindparms:{'filterSelect':['/filter/filter','filter-BX_Main','filter','filterdatafilter']},
+                  url:'/Tree/GetDocTypeTree',
+                  method:'post',checkbox:true"></ul></div></div></div>                 
+                 
+
+<div b-type="1" data-options="region:'center'" >
+<div b-type="1" id="filter-filterdatafilter" data-options="region:'north'"   style="height:65px">
+<table border="0" style="width:100%;">
+    <tr>
+        <td style="width:10%;">
+            <label for="field1">单据编号</label>
+        </td>
+        <td style="width:20%;">
+            <input id="history-history-DocNum" class="easyui-validatebox" data-options="
+                   bindmethod:{ 'keydown': ['keyboardRespFun'] },
+                   bindparms:{'keyboardRespFun':['historySearch']}" style="width:120px;" />  
+
+             <input id="history-history-ModelUrl" class="easyui-validatebox" type="hidden" name="ModelUrl" value="@ViewData["ModelUrl"]"/>
+        </td>
+        <td style="width:10%;">
+            <label for="field1">开始日期</label>
+        </td>
+        <td style="width:20%;">
+            <input class="easyui-datebox" id="history-history-StartDate" data-options="width:120,required:false,value:'@ViewData["startDate"]',
+                bindmethod: { 'onSelect': ['setAssociate'] }">
+            </input>
+        </td>
+        <td style="width:10%;">
+            <label for="field1">结束日期</label>
+        </td>
+        <td style="width:20%;">
+            <input class="easyui-datebox" id="history-history-EndDate" data-options="width:120,required:false,value:'@ViewData["currentDate"]',
+                bindmethod: { 'onSelect': ['setAssociate'] }">
+            </input>
+        </td>
+    </tr>
+    <tr>
+        <td style="width:10%;">
+            <label for="field1">金额(起)</label>
+        </td>
+         <td style="width:20%;">
+            <input class="easyui-validatebox" id="" style="width:120px;" data-options="required:false">
+            </input>
+        </td>
+         <td style="width:10%;">
+            <label for="field1">--金额(止)</label>
+        </td>
+         <td style="width:20%;">
+            <input class="easyui-validatebox" id="" style="width:120px;" data-options="required:false">
+            </input>
+        </td>
+        <td style="width:10%;">
+            <input type="checkbox" class="easyui-checkbox"  id="" data-options="forbidstatus:[-1]">显示明细</input>
+        </td>
+        <input id="filter-list-ApproveStatus"  type="hidden" class="validatebox" value="0"/>
+        <input id="filter-list-CheckStatus" type="hidden" class="validatebox" value="0"/>
+        <input id="filter-list-WithdrawStatus" type="hidden" class="validatebox" value="0"/>
+        <input id="filter-list-PayStatus" type="hidden" class="validatebox" value="0"/>
+        <input id="filter-list-CertificateStatus" type="hidden" class="validatebox" value="0"/>
+        <input id="filter-list-CancelStatus" type="hidden" class="validatebox" value="0"/>
+    </tr>
+</table>
+</div>
+<div b-type="1" data-options="region:'center',fit:true"  >
+<table cellspacing="0" cellpadding="0" style="width:100%;border:1px solid">
+    <tr>
+        <td style="width:30%;line-height:22px;text-align:center;background-color: #ECE9D8;">审批状态</td>
+        <td style="width:30%;line-height:22px;text-align:center;background-color: #ECE9D8;">支票状态</td>
+        <td style="width:30%;line-height:22px;text-align:center;background-color: #ECE9D8;">提现状态</td>
+    </tr>
+    <tr>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-1"   
+            data-options="forbidstatus:[1],
+            bindmethod:{ 'onClick': ['setValueAndAssociat'] },
+            bindparms:{
+                'setValueAndAssociat':{
+                    GroupControl:['filter-4','filter-7','filter-10'],
+                    target:'filter-list-ApproveStatus'
+            }}
+           ">全部</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-2" data-options="forbidstatus:[1],
+                bindmethod:{ 'onClick': ['setValueAndAssociat'] },
+                bindparms:{
+                'setValueAndAssociat':{
+                    GroupControl:['filter-5','filter-8'],
+                    target:'filter-list-CheckStatus'
+                }}
+               
+            ">全部</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-3" data-options="forbidstatus:[1]">全部</input><br />
+        </td>
+    </tr>
+    <tr>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-4" val='1' data-options="
+                forbidstatus:[1],
+                bindmethod:{ 'onClick': ['setValueAndAssociat1'] },
+                bindparms:{
+                    'setValueAndAssociat1':{
+                        setControlsGroup:['filter-4','filter-7','filter-10'],
+                        GroupID:'filter-1',
+                        target:'filter-list-ApproveStatus'
+                }}
+            ">已审核</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-5"  val='1' data-options="forbidstatus:[1],
+             bindmethod:{ 'onClick': ['setValueAndAssociat2'] },
+                bindparms:{
+                'setValueAndAssociat2':{
+                    setControlsGroup:['filter-8'],
+                    GroupID:'filter-2',
+                    target:'filter-list-CheckStatus'
+                }}
+            ">未领取</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-6" data-options="forbidstatus:[1]">已提现</input><br />
+        </td>
+    </tr>
+    <tr>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-7" val='2' data-options="
+                  forbidstatus:[1],
+                bindmethod:{ 'onClick': ['setValueAndAssociat1'] },
+                bindparms:{
+                    'setValueAndAssociat1':{
+                        setControlsGroup:['filter-4','filter-7','filter-10'],
+                        GroupID:'filter-1',
+                        target:'filter-list-ApproveStatus'
+                }}
+            ">未审核</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-8" val='2' data-options="forbidstatus:[1],
+             bindmethod:{ 'onClick': ['setValueAndAssociat2'] },
+                bindparms:{
+                'setValueAndAssociat2':{
+                    setControlsGroup:['filter-5'],
+                    GroupID:'filter-2',
+                    target:'filter-list-CheckStatus'
+                }}">已领取</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-9" data-options="forbidstatus:[1]">未提现</input><br />
+        </td>
+    </tr>
+    <tr>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-10" val='3' data-options="
+                  forbidstatus:[1],
+                bindmethod:{ 'onClick': ['setValueAndAssociat1'] },
+                bindparms:{
+                    'setValueAndAssociat1':{
+                        setControlsGroup:['filter-4','filter-7','filter-10'],
+                        GroupID:'filter-1',
+                        target:'filter-list-ApproveStatus'
+                }}
+            ">审核中</input>
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+        </td>
+    </tr>
+     <tr>
+         <td style="width:30%;line-height:22px;text-align:center;background-color: #ECE9D8;border-top:1px solid;">付款状态</td>
+         <td style="width:30%;line-height:22px;text-align:center;background-color: #ECE9D8;border-top:1px solid;">凭证状态</td>
+         <td style="width:30%;line-height:22px;text-align:center;background-color: #ECE9D8;border-top:1px solid;">预算类型</td>
+     </tr>
+      <tr>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-11" data-options="">全部</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-12" data-options="">全部</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="" data-options="">全部</input><br />
+        </td>
+    </tr>
+    <tr>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-13" data-options="">已付款</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-14" data-options="">已生成凭证</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-15" data-options="">基本支出</input><br />
+        </td>
+    </tr>
+    <tr>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-16" data-options="">未付款</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"  id="filter-17" data-options="">未生成凭证</input><br />
+        </td>
+        <td style="width:30%;border-bottom: 1px solid #ECE9D8;">
+            <input type="checkbox" class="easyui-checkbox"   id="filter-18" data-options="">项目支出</input><br />
+        </td>
+    </tr>
+</table>    
+</div>
+</div>
+</body>

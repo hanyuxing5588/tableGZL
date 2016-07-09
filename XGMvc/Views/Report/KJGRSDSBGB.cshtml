@@ -1,0 +1,220 @@
+﻿ <style>
+    #bmgzxmhz-DepartmentName
+    {
+        
+    }
+ </style>
+ <script type="text/javascript">
+     $.formatNum = function (s1) {
+         var p = /(\d+)(\d{3})/;
+         s1 = s1 ? s1 : 0.00;
+         s1 = parseFloat(s1).toFixed(2);
+         while (p.test(s1)) {
+             s1 = s1.replace(p, "$1,$2");
+         }
+         return s1;
+     }
+     $(document).ready(function () {
+         $('#gssbb_grid').datagrid({
+             height: $('body').height() - 260,
+             width: $('body').width()
+         })
+         $('#bmgzxmhz-tuichu').bind('click', function () {
+             parent.window.CloseTabs();
+         })
+
+         $('#bmgzxmhz-select').bind('click', function () {
+             GetData();
+         })
+      
+
+         $('#bmgzxmhz-shuchu').bind('click', function () {
+             ExportExcel();
+         })
+         var d = new Date();
+         var year = d.getFullYear();
+         var month = d.getMonth()+1;
+         $('#bmgzxmhz-SA-Year').combobox('setValue', year);
+         $('#bmgzxmhz-SA-EndMonth').combobox('setValue', month);
+     })
+     var ExportExcel = function () {
+         var l = $('#bmgzxmhz_grid').datagrid('getRows');
+         if (l <= 1) {
+             $.messager.alert('系统提示', '没有要输出的数据！');
+             return;
+         }
+         var year = $('#bmgzxmhz-SA-Year').combobox('getValue');
+         var emonth = $('#bmgzxmhz-SA-EndMonth').combobox('getValue');
+         var planID = 1; // $('#bmgzxmhz-SAPlan').combobox('getValue');
+         var parmas = $.format("Year={0}&Month={1}&PlanId={2}", year, emonth, planID);
+         window.open("/Report/ExportKJGRSDSBGBReport?" + parmas);
+     }
+     function GetData() {
+        var year = $('#bmgzxmhz-SA-Year').combobox('getValue');
+        var emonth = $('#bmgzxmhz-SA-EndMonth').combobox('getValue');
+        var planID = 1; // $('#bmgzxmhz-SAPlan').combobox('getValue');
+        $('#bmgzxmhz_grid').datagrid('loading');
+        $.ajax({
+            url: "/Report/GetLoadKJGRSDSBGBData",
+            data: { Year: year, Month: emonth, PlanId: planID },
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $('#bmgzxmhz_grid').datagrid('loaded');
+                $.messager.alert("错误", $.view.warning, 'error');
+            },
+            success: function (data) {
+                $('#bmgzxmhz_grid').datagrid('loaded');
+                $('#bmgzxmhz_grid').datagrid('loadData', data);
+            }
+        });
+
+    }
+   
+</script>
+<body>
+    <div class="easyui-layout" id="bmgzxmhz-dataregion" data-options="fit:true" z="1">
+       <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" b-type="1"  class="easyui-linkbutton" id="bmgzxmhz-shuchu"
+                data-options="plain:'true',iconCls:'icon-shuchu',                 
+                forbidstatus:[-1]">输出</a>
+            <a href="#" class="easyui-linkbutton" id="bmgzxmhz-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  scope:'bmgzxmhz',
+                  forbidstatus:[-1]">查询</a>           
+            <a href="#" class="easyui-linkbutton" id="bmgzxmhz-tuichu"
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'bmgzxmhz'">退出</a>
+            </div>
+        </div>
+        <div data-options="region:'center'">
+            <div class="easyui-layout" data-options="fit:true">
+            <div b-type="1" id="bmgzxmhz-historydatafilter" data-options="region:'north',height:110" style="width: 100%; margin: 0px; padding: 0px;">
+              
+                <table border="0" style="height: 40px; padding: 0px; margin: 0">
+                    <tr>
+                        <td>
+                            <label for="field1" style="width:80px;">报税年</label>
+                        </td>
+                        <td>
+                            <select id="bmgzxmhz-SA-Year" class="easyui-combobox"  data-options="editable:false"; style="width:80px;">  
+                                <option value="2011">2011</option>  
+                                <option value="2012">2012</option>
+                                <option value="2013">2013</option>
+                                <option value="2014">2014</option>  
+                                <option value="2015">2015</option>
+                                <option value="2016">2016</option>    
+                                <option value="2017">2017</option>  
+                                <option value="2018">2018</option>
+                                <option value="2019">2019</option>    
+                                <option value="2020">2020</option>  
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>    
+                                <option value="2023">2023</option>  
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>    
+                                <option value="2026">2026</option>  
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>    
+                                <option value="2029">2029</option>  
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>    
+                                <option value="2032">2032</option>  
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>    
+                                <option value="2035">2035</option>  
+                                <option value="2036">2036</option>
+                                <option value="2037">2037</option>    
+                                <option value="2038">2038</option>  
+                                <option value="2039">2039</option>
+                                <option value="2040">2040</option>    
+                                <option value="2041">2041</option>  
+                                <option value="2042">2042</option>
+                                <option value="2043">2043</option>    
+                                <option value="2044">2044</option>  
+                                <option value="2045">2045</option>
+                                <option value="2046">2046</option>    
+                                <option value="2047">2047</option>  
+                                <option value="2048">2048</option>
+                                <option value="2049">2049</option>    
+                                <option value="2050">2050</option>  
+                            </select> 
+                        </td>
+
+                         <td>
+                            <label for="field1"  style="width:80px;">报税月</label>
+                        </td>
+                        <td>
+                            <select id="bmgzxmhz-SA-EndMonth" class="easyui-combobox"  data-options="editable:false"; style="width:80px;">  
+                                <option value="1">1</option>  
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>  
+                                <option value="5">5</option>
+                                <option value="6">6</option>    
+                                <option value="7">7</option>  
+                                <option value="8">8</option>
+                                <option value="9">9</option>    
+                                <option value="10">10</option>  
+                                <option value="11">11</option>  
+                                <option value="12">12</option>  
+                            </select> 
+                        </td>         
+                                    
+                                     
+                    </tr>
+                </table>   
+                           
+                <div style="width: 100%;">
+                <table border="0" style="height: 20px; width: 100%; padding: 0px; margin: 0">
+                    <tr>
+                        <td colspan="18" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                            个人所得税基础信息表（A表）
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            </div>
+          
+            <div data-options="region:'center'">
+                <table class="easyui-edatagrid" id="bmgzxmhz_grid"  data-options="
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:true,
+                                            checkOnSelect:true,
+                                            editable:false,
+                                            scope:'ysbz',
+                                            single:false,
+                                            forbidstatus:[4,3]
+                                            ">
+                      <thead>
+                        <tr>
+                            <th field="XH" width="30px;" align="center" halign="center">
+                                序号
+                            </th>
+                             <th field="PersonName" width="120px;" align="center" halign="center">
+                                姓名
+                            </th>
+                            <th field="GJ" width="80;" align="center" halign="center" >
+                                国籍（地区）                            </th>                           
+                            <th field="SFZJType" width="160px;" align="right" halign="center">
+                                身份证件类型
+                            </th>
+                            <th field="IDCard" width="150px;" align="right" halign="center">
+                                身份证件号码                            </th>
+                            <th field="ReMark" width="150px;" align="right" halign="center">
+                                是否残疾烈属孤老
+                            </th>                            
+                           
+                        </tr>
+                    </thead>
+                   
+                </table>
+            </div>
+            </div>
+        </div>
+       
+</div>
+</body>

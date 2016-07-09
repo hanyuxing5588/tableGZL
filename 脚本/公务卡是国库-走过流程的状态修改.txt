@@ -1,0 +1,14 @@
+
+UPDATE  dbo.BX_Main
+SET     DocState = 999
+WHERE   GUID IN (
+        SELECT  guid
+        FROM    dbo.BX_MainView
+        WHERE   DocTypeUrl = 'gwkbxd'
+                AND GUID IN (
+                SELECT  DataId
+                FROM    dbo.OAO_WorkFlowProcessData
+                WHERE   Url = 'gwkbxd'
+                        AND ProcessId IN ( SELECT   Id
+                                           FROM     dbo.OAO_WorkFlowProcess
+                                           WHERE    State = 1 ) ) )

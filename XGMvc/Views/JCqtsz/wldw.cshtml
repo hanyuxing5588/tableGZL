@@ -1,0 +1,338 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "汇款审批单-收款单位界面";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var comId = 'filterDataId', treeId = 'wldw-tree-per';
+        $('#' + comId).combobox({
+            onSelect: function (rec) {
+                $.ajax({
+                    url: '/Tree/GetCustomerTree',
+                    data: { ctype: rec.value },      //根据选择的值跟后台匹配，作为条件
+                    dataType: "JSON",
+                    type: "POST",
+                    error: function (xmlhttprequest, textStatus, errorThrown) {
+                        $messager.alert("错误", "超时！", "error");
+                    },
+                    success: function (data) {
+                        if (!data || data == null) return;
+                        $('#' + treeId).tree('loadData', data);
+                    }
+                });
+
+            }
+        });
+    });
+
+</script>
+<div class="easyui-layout" id="wldw-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            @* <a href="#" class="easyui-linkbutton" id="wldw-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'wldw',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/wldw',['wldw-BX_Main-moneychinese','wldw-BX_Main-moneyunmber']]}">打印</a> *@
+            <a href="#" class="easyui-linkbutton" id="wldw-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc1'] },scope:'wldw',status:'1',
+                   bindparms:{'newDoc1':['/JCqtsz/WlDWNew']},
+                   forbidstatus:[1,2,3]">新增</a> <a href="#" class="easyui-linkbutton" id="wldw-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'wldw-BX_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'wldw',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> <a href="#" class="easyui-linkbutton" id="wldw-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'wldw-BX_Main-DocState',
+                   bindmethod:{ 'click': ['delRow1'] },scope:'wldw',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> <a href="#" class="easyui-linkbutton" id="wldw-save"
+                       data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc1'] },
+                   bindparms:{'saveDoc':['/JCqtsz/WlDWSave','wldw-examine']},scope:'wldw',status:'4',
+                   forbidstatus:[4]">保存</a> <a href="#" class="easyui-linkbutton" id="wldw-examine"
+                       data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine1'] },
+                   bindparms:{
+                       'examine1':
+                           {
+                                'validatebox':[
+                                    'wldw-SS_Customer-CustomerKey',
+                                    'wldw-SS_Customer-CustomerName',
+                                    'wldw-SS_Customer-CustomerBankName',
+                                    'wldw-SS_Customer-CustomerBankNumber'
+                                    ]
+                            }
+                      
+                        },
+                   scope:'wldw',forbidstatus:[3,4]">校验</a> @*   <a href="#" class="easyui-linkbutton" id="wldw-tingyong"
+                   data-options="plain:'true',iconCls:'icon-tingyong',docState:'wldw-BX_Main-DocState',
+                   forbidstatus:[1,2,3]">停用</a>
+                      <a href="#" class="easyui-linkbutton" id="wldw-qiyong"
+                   data-options="plain:'true',iconCls:'icon-qiyong',docState:'wldw-BX_Main-DocState',
+                   forbidstatus:[1,2,3]">启用</a>*@ <a href="#" class="easyui-linkbutton" id="wldw-cancel"
+                       data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'wldw',forbidstatus:[4],
+                    window:'b-window',
+                    bindmethod:{ 'click': ['wldwCancel'] }">取消</a> 
+                    @*<a href="#" class="easyui-linkbutton"
+                        id="wldw-sumbit" data-options="
+                    window:'b-window',
+                    plain:'true',iconCls:'icon-queding', scope:'wldw',forbidstatus:[4],
+                    bindmethod:{ 'click': ['wldwSubmit'] }">确定</a>*@ 
+                    @* <a href="#" class="easyui-linkbutton"
+                   id="wldw-dingwei" data-options="plain:'true',iconCls:'icon-chaxun',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/wldw','history-BX_Main','history']},
+                    window:'b-window',scope:'wldw'">定位</a> *@ @* <a href="#" class="easyui-linkbutton" id="wldw-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'wldw',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   *@ <a href="#" class="easyui-linkbutton" id="wldw-close" data-options="plain:'true',iconCls:'icon-tuichu',  window:'b-window',
+                   bindmethod:{ 'click': ['wldwCancle'] },
+                   scope:'wldw'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 280px">
+        <select id="filterDataId" class="easyui-combobox" data-options="editable:false" name="dept"
+            style="width: 198px;">
+            <option value="0">全部</option>
+            <option value="1">客户</option>
+            <option value="2">供应商</option>
+        </select>
+        <ul class="easyui-tree" id="wldw-tree-per" data-options="
+                associate:{
+                    'wldw-SS_Customer-GUID':['GUID'],
+                    'wldw-SS_Customer-CustomerKey':['CustomerKey'],
+                    'wldw-SS_Customer-CustomerName':['CustomerName'],
+                    'wldw-SS_Customer-CustomerAddress':['CustomerAddress'],
+                     'wldw-SS_Customer-CustomerBankName':['CustomerBankName'],
+                    'wldw-SS_Customer-CustomerBankNumber':['CustomerBankNumber'],
+                    'wldw-SS_Customer-CustomerTelephone':['CustomerTelephone'],
+                    'wldw-SS_Customer-CustomerLikeMan':['CustomerLikeMan'],
+                     'wldw-SS_Customer-CustomerFax':['CustomerFax'],
+                    'wldw-SS_Customer-CustomerPostcode':['CustomerPostcode'],
+                    'wldw-SS_Customer-CustomerWebsite':['CustomerWebsite'],
+                    'wldw-SS_Customer-IsVendor':['IsVendor'],
+                    'wldw-SS_Customer-IsCustomer':['IsCustomer']
+                  },
+                bindmethod:{'onDblClick': ['setAssociate'] },
+                url:'/Tree/GetCustomerTree',
+                forbidstatus:[1],
+                method:'post'
+                ">
+        </ul>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="wldw-abandonedStatus" statuscontrolid="wldw-BX_Main-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        外来单位档案</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-CustomerKey">
+                        <font color="red">*</font>单位编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="wldw-SS_Customer-CustomerKey" maxlength="20"
+                        data-options="forbidstatus:[4,3],required:false" style="width: 176px"></input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerName">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="wldw-SS_Customer-CustomerName" maxlength="200"
+                        style="width: 176px" data-options="forbidstatus:[4,3],required:false"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-CustomerBankName">
+                        <font color="red">*</font>开户银行</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="wldw-SS_Customer-CustomerBankName" maxlength="100"
+                        style="width: 176px" data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerBankNumber">
+                        <font color="red">*</font>银行账号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="wldw-SS_Customer-CustomerBankNumber" maxlength="50"
+                        style="width: 176px" data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label for="field1" id="lbl-CustomerAddress">
+                        &nbsp;单位地址</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="wldw-SS_Customer-CustomerAddress" maxlength="50"
+                        style="width: 176px" data-options="forbidstatus:[4,3],required:false"> </input>
+                </td>
+                <td style="width: 60px" id="lbl-CustomerPostcode">
+                    <label>
+                        &nbsp;邮政编码</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" validtype="zipcode" invalidmessage="邮政编码格式不正确[100000]"
+                        style="width: 176px" id="wldw-SS_Customer-CustomerPostcode" data-options="forbidstatus:[4,3],required:false">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerLikeMan">
+                        &nbsp;联系人</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="wldw-SS_Customer-CustomerLikeMan" maxlength="50"
+                        style="width: 176px" data-options="forbidstatus:[4,3],required:false"> </input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerTelephone">
+                        &nbsp;联系电话</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" validtype="tel_phone" invalidmessage="联系电话格式不正确[13000000000|010-0000000|0000000]"
+                        id="wldw-SS_Customer-CustomerTelephone" style="width: 176px" data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerWebsite">
+                        &nbsp;公司网站</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" validtype="url" invalidmessage="url格式不正确[http://www.example.com]"
+                        id="wldw-SS_Customer-CustomerWebsite" maxlength="200" style="width: 176px" data-options="forbidstatus:[4,3]"></input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerFax">
+                        &nbsp;公司传真</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" validtype="faxno" invalidmessage="公司传真不正确[000-0000000]"
+                        id="wldw-SS_Customer-CustomerFax" style="width: 176px" data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label id="lbl-IsCustomer">
+                        &nbsp;是否客户</label>
+                </td>
+                <td>
+                    <input type="checkbox" class="easyui-checkbox"  id="wldw-SS_Customer-IsCustomer" style="width: 176px" data-options="forbidstatus:[4,3]"></input>
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-IsVendor">
+                        &nbsp;是否供应商</label>
+                </td>
+                <td>
+                    <input type="checkbox" class="easyui-checkbox"  id="wldw-SS_Customer-IsVendor" style="width: 176px" data-options="forbidstatus:[4,3]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    @*   <table class="easyui-edatagrid" id="wldw-SS_Customer" data-options="
+                    orderNum:'wldw-SS_Customer-OrderNum',
+                    requireCol:[
+                        'wldw-SS_Customer-CustomerKey',
+                        'wldw-SS_Customer-CustomerName',
+                        'wldw-SS_Customer-CustomerBankName',
+                        'wldw-SS_Customer-CustomerBankNumber'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:265,
+                    width:575,
+                    scope:'wldw',
+                    single:true,
+                    formatters:{'wldw-CN_PaymentNumber-IsCustomer':'boolbox','wldw-CN_PaymentNumber-IsVendor':'boolbox'},
+                    rownumbers:true,
+                    forbidstatus:[4,3]
+                    ">
+                        <thead>
+                            <tr>
+                                <th field="wldw-SS_Customer-GUID" hidden="true">
+                                </th>
+                               <th  field="wldw-SS_Customer-CustomerKey" title="单位编码" width="90" sortable="false"
+                                    align="center" editor="{
+                                    type:'text'}">
+                                    单位编码
+                                </th>
+                               <th field="wldw-SS_Customer-CustomerName" title="单位名称" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    单位名称
+                                </th>
+                                <th  field="wldw-SS_Customer-CustomerBankName" title="开户银行" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    开户银行
+                                </th>
+                               <th field="wldw-SS_Customer-CustomerBankNumber" title="银行账号" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                   银行账号
+                                </th>
+                                <th  field="wldw-SS_Customer-CustomerAddress" title="单位地址" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    单位地址
+                                </th>
+                               <th field="wldw-SS_Customer-CustomerPostcode" title="邮政编码" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    邮政编码
+                                </th>
+                                <th  field="wldw-SS_Customer-CustomerLikeMan" title="联系人" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    联系人
+                                </th>
+                               <th field="wldw-SS_Customer-CustomerTelephone" title="联系电话" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    联系电话
+                                </th>
+                                <th  field="wldw-SS_Customer-CustomerWebsite" title="公司网站" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    公司网站
+                                </th>
+                               <th field="wldw-SS_Customer-CustomerEmail" title="电子邮箱" width="90" sortable="false"
+                                    align="center" editor="{type:'text'}">
+                                    电子邮箱 
+                                </th>
+                                <th field="wldw-SS_Customer-CustomerFax" width="120" title="公司传真" sortable="false" align="center"
+                                    editor="{type:'text'}">
+                                    公司传真
+                                </th>
+                                <th field="wldw-CN_PaymentNumber-IsCustomer" title="是否客户" sortable="false" align="center"
+                                    width="80" editor="{type:'booleanbox'}">
+                                    是否客户
+                                </th>
+                                <th field="wldw-CN_PaymentNumber-IsVendor" title="是否供应商" sortable="false" align="center"
+                                    width="80" editor="{type:'booleanbox'}">
+                                    是否供应商
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>*@
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="wldw-SS_Customer-GUID" type="hidden" keyattr="1"></input>
+</div>
+<label id="wldw-extendregion" style="display: none">
+    <input id="wldw-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>

@@ -1,0 +1,328 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "待办任务";
+}
+<script type="text/javascript">
+//    window.Refresh = function () {
+//        $('#dbrw-grid-2').datagrid('reload');
+//    };
+    $.extend($.fn.linkbutton.methods, {
+        alterStatus: function (jq, status) {
+            return jq.each(function () {
+                if (!status) return;
+                var opts = $(this).linkbutton('options');
+                var forbidArr = opts.forbidstatus;
+                if (forbidArr && (forbidArr.exist(status))) {
+                    $(this).linkbutton('disabled');
+                }
+                else {
+                    $(this).linkbutton('enabled');
+                }
+            });
+        },
+        brush: function () {
+            debugger
+            var opts = $(this).linkbutton('options');
+            var parms = $(this).linkbutton('getParms', 'brush');
+            var tabId, gridId1, gridId2, gridId;
+            if (!parms) return;
+            tabId = '#' + parms[0], gridId1 = '#' + parms[1], gridId2 = '#' + parms[2];
+            var tab = $(tabId).tabs('getSelected');
+            var index = $(tabId).tabs('getTabIndex', tab);
+            var url = "";
+            if (index == 0) {
+                url = "/dbrw/GetDocDataWithNoFlow";
+                gridId = gridId1;
+            } else {
+                url = "/dbrw/GetDataForTask";
+                gridId = gridId2;
+            }
+            var YWType, DocType, DocNum;
+            YWType = $('#dbrw-YWType').combobox('getValue');
+            DocType = $('#dbrw-DocType').combobox('getValue');
+            DocNum = $('#dbrw-DocNum').val();
+            $(gridId).datagrid('loading');
+            $.ajax({
+                url: url,
+                data: { YWTypeKey: YWType, DocTypeId: DocType, DocNum: DocNum },
+                cache: false,
+                async: true,
+                type: 'post',
+                datatype: 'json',
+                success: function (data) {
+                    $(gridId).datagrid('loaded');
+                    $(gridId).datagrid('loadData', data);
+                }
+            });
+
+        },
+        openDoc: function () {
+
+            var opts = $(this).linkbutton('options');
+            var parms = $(this).linkbutton('getParms', 'openDoc');
+            var tabId, gridId1, gridId2, gridId;
+            if (!parms) return;
+            tabId = '#' + parms[0], gridId1 = '#' + parms[1], gridId2 = '#' + parms[2];
+            var tab = $(tabId).tabs('getSelected');
+            var index = $(tabId).tabs('getTabIndex', tab);
+            if (index == 0) {
+                gridId = gridId1;
+            } else {
+                gridId = gridId2;
+            }
+            var selRow = $(gridId).datagrid('getSelected');
+            if (selRow == null || selRow.length < 1) {
+                $.messager.alert('提示...', '请选择操作数据！', 'info');
+                return;
+            }
+            var processID = selRow["ProcessID"];
+            var processNodeID = selRow["ProcessNodeID"];
+            var nodeLevel = selRow["NodeLevel"];
+            var nodeType = selRow["NodeType"];
+            var docId = selRow["DocId"];
+            var docScope = selRow["Scope"];
+            $.ajax({
+                url: '/Home/GetViewParameters',
+                data: { processID: processID, processNodeID: processNodeID, nodeLevel: nodeLevel, nodeType: nodeType, docId: docId, docScope: docScope },
+                cache: false,
+                async: true,
+                type: 'post',
+                datatype: 'json',
+                success: function (data) {
+                    if (!data || data.Msg) {
+                        $.messager.alert('提示', '打开待办任务出错，请刷新列表');
+                    } else {
+
+                        parent.window.openTabs(data.MenuName, data.Url, data.DataId, 4, '', data);
+                    }
+                }
+            });
+
+        },
+        //启用、提交、退回的公共方法
+        commonSubmit: function () {
+
+            var opts = $(this).linkbutton('options');
+            var parms = $(this).linkbutton('getParms', 'commonSubmit');
+            var url, gridId;
+            if (!parms) return;
+            url = parms[0], gridId = '#' + parms[1];
+
+            var selRow = $(gridId).datagrid('getSelected');
+            if (selRow == null || selRow.length < 1) {
+                $.messager.alert('提示...', '请选择操作数据！', 'info');
+                return;
+            }
+            var docid, scope, classid;
+            docid = selRow["DocId"];
+            scope = selRow["Scope"];
+            classid = selRow["ClassId"];
+            $.ajax({
+                url: url,
+                data: { "DocId": docid, "scope": scope, "ClassId": classid },
+                dataType: "json",
+                type: "POST",
+                traditional: true,
+                success: function (data) {
+                    if (data.isSuceess == true) {
+                        $('#dbrw-grid-2').datagrid('reload');
+                        $.messager.alert('提示...', data.msg, 'info');
+                    }
+                }
+            });
+        }
+    });
+    $.extend($.fn.datagrid.defaults, {
+        onDblClickRow: function (rowIndex, rowData) {
+            $('#dbrw-remove').trigger('click');
+        }
+    });
+    $(function () {
+        
+        var tabId = '#dbrw-tabs';
+        //默认选中第二个tab标签
+        var ele = $('#dbrw-tabs .tabs-header .tabs-wrap ul.tabs li:eq(1)');
+        var $tabTitle = $('#tabSearchCondition');
+        $($tabTitle).attr('style', '');
+        $($tabTitle).attr('style', 'position: relative;left: 80px;top: -10px;');
+        $($tabTitle).find('table tbody tr td').attr('style', 'width:auto;line-height:18px;');
+        $($tabTitle).find('table tbody tr td:even').attr('style', 'padding:2px;width:auto;line-height:18px;color:#000;font-weight:normal');
+        $(ele).find('a span').last().append($tabTitle);
+        $(tabId).tabs({
+            onSelect: function (title, index) {
+                if (index == 0) {
+                    $tabTitle.hide();
+                } else {
+                    $tabTitle.show();
+                }
+
+                $("[id^='dbrw'].easyui-linkbutton").linkbutton('alterStatus', index + "");
+                var opts = $('#dbrw-grid-2').datagrid('options');
+                opts.url = '/dbrw/GetDataForTask';
+                opts.queryParams = {
+                    YWTypeKey: $('#dbrw-YWType').combobox('getValue'),
+                    DocTypeId: $('#dbrw-DocType').combobox('getValue'),
+                    DocNum: $('#dbrw-DocNum').numberbox('getValue')
+                }
+
+            }
+        });
+
+    });
+</script>
+<div class="easyui-layout" id="dbrw-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="dbrw-qiyong" 
+                   data-options="plain:'true',iconCls:'icon-qiyong',
+                   bindmethod:{ 'click':['commonSubmit'] },scope:'dbrw',
+                   bindparms:{'commonSubmit':['/dbrw/CommitDocFlow','dbrw-grid-1']},
+                   forbidstatus:[1,2]">启用</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="dbrw-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',
+                   bindmethod:{ 'click': ['commonSubmit'] },scope:'dbrw',
+                   bindparms:{'commonSubmit':['/dbrw/CommitDocFlow','dbrw-grid-2']},
+                   forbidstatus:[0,2]">提交</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="dbrw-jujue" data-options="plain:'true',iconCls:'icon-tuihui',
+                   bindmethod:{ 'click': ['commonSubmit'] },scope:'dbrw',
+                   bindparms:{'commonSubmit':['/dbrw/SendBackDocFlow','dbrw-grid-2']},
+                   forbidstatus:[0,2]">退回</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="dbrw-remove" 
+                   data-options="plain:'true',iconCls:'icon-shuju',
+                   bindmethod:{ 'click': ['openDoc'] },
+                   bindparms:{'openDoc':['dbrw-tabs','dbrw-grid-1','dbrw-grid-2']},
+                   scope:'dbrw',forbidstatus:[2]">数据</a>
+
+                   <a href="#" class="easyui-linkbutton" id="dbrw-shuaxin" 
+                   data-options="plain:'true',iconCls:'icon-shuaxin',
+                   bindmethod:{ 'click': ['brush'] },
+                   bindparms:{'brush':['dbrw-tabs','dbrw-grid-1','dbrw-grid-2']},
+                   scope:'dbrw',forbidstatus:[2]">刷新</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="dbrw-tuichu" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },forbidstatus:[2],
+                   scope:'dbrw'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <div id="dbrw-tabs" class="easyui-tabs" data-options="fit:true">  
+            <div title="待启动流程" >
+                <table class="easyui-datagrid" id="dbrw-grid-1"
+                    data-options="
+                        fit:true,
+                        singleSelect:true,
+                        url:'/dbrw/GetDocDataWithNoFlow',
+                        striped:true,
+                        method:'post'">
+		            <thead>
+			            <tr>
+                            <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+                            <th data-options="field:'DocId', hidden:'true'"></th>
+                            <th data-options="field:'Scope', hidden:'true'"></th>
+                            <th data-options="field:'ClassId', hidden:'true'"></th>
+				            <th data-options="field:'DocTypeName',width:150,align:'left',halign:'center'">单据类型</th>
+				            <th data-options="field:'DocNum',width:80,align:'right',halign:'center'">单据编号</th>
+                            <th data-options="field:'StrDocDate',width:120,align:'center',halign:'center'">单据日期</th>
+                            <th data-options="field:'CreatePerson',width:80,align:'left',halign:'center'">创建人</th>
+                            <th data-options="field:'DWName',width:120,align:'left',halign:'center'">单位</th>
+				            <th data-options="field:'DeptmentName',width:150,align:'left',halign:'center'">部门</th>
+				            <th data-options="field:'Remark',width:150,align:'left',halign:'center'">备注</th>
+			            </tr>
+		            </thead>
+	            </table>
+            </div>  
+            <div title="待办流程" data-options="selected:true">
+                <table class="easyui-datagrid" id="dbrw-grid-2"
+                    data-options="
+                        fit:true,
+                        singleSelect:true,
+                        striped:true,
+                        method:'post'">
+		            <thead data-options="frozen:true">
+			            <tr>
+                            <th field="b-sel" data-options="width:100,checkbox:'true'"></th>
+                            <th data-options="field:'DocId', hidden:'true'"></th>
+                            <th data-options="field:'Scope', hidden:'true'"></th>
+                            <th data-options="field:'ClassId', hidden:'true'"></th>
+                            <th data-options="field:'ProcessID', hidden:'true'"></th>
+                            <th data-options="field:'ProcessNodeID', hidden:'true'"></th>
+                            <th data-options="field:'NodeType', hidden:'true'"></th>
+                            <th data-options="field:'NodeLevel', hidden:'true'"></th>
+				            <th data-options="field:'NodeName',width:120,align:'left',halign:'center'">当前节点名称</th>
+				            <th data-options="field:'DocNum',width:80,align:'right',halign:'center'">单据编号</th>
+                            <th data-options="field:'DeptmentName',width:150,align:'left',halign:'center'">部门名称</th>
+                            <th data-options="field:'SumMoney',width:100,align:'right',halign:'center',
+                                formatter: function (value, row, index) {
+                                   return $.isNumeric(value) ? new Number(value).formatThousand(value) : '0.00'
+                               }">金额</th>
+                            <th data-options="field:'CreatePerson',width:80,align:'left',halign:'center'">人员</th>
+			            </tr>
+		            </thead>
+		            <thead>
+			            <tr>
+                            @*<th data-options="field:'unitcost', hidden:'true'">上级节点名称</th>
+                            <th data-options="field:'unitcost', hidden:'true'">上级操作人</th>*@
+				            <th data-options="field:'StrAcceptDate',width:160,align:'center',halign:'center'">接收时间</th>
+				            <th data-options="field:'ProjectName',width:120,align:'left',halign:'center'">项目名称</th>
+                            <th data-options="field:'ProjectKey',width:80,align:'left',halign:'center'">项目编码</th>
+                            <th data-options="field:'BGStepName',width:80,align:'left',halign:'center'">预算步骤名称</th>
+                            <th data-options="field:'BGTypeName',width:80,align:'left',halign:'center'">预算类型名称</th>
+                            <th data-options="field:'StrProcessDate',width:160,align:'center',halign:'center'">流程启动时间</th>
+                            <th data-options="field:'WorkFlowName',width:90,align:'left',halign:'center'">流程名称</th>
+			            </tr>
+		            </thead>
+	            </table>
+            </div>  
+        </div> 
+    </div>
+</div>
+<div style="display:none;" id="tabSearchCondition">
+    <table border="0" style="width:650px;height: 35px;">
+        <tr>
+            <td >
+                <label style="width:40px">业务类型</label>
+            </td>
+            <td >
+                <select id="dbrw-YWType" class="easyui-combobox" url="/Combo/YWTypeDBRW" 
+                    data-options="
+                        editable:false,
+                        width:150,
+                        valueField:'YWTypeKey',
+                        textField:'YWTypeName',
+                        filterField:'YWTypeKey,YWTypeName',
+                        onLoadSuccess: function (parm) {
+                            $('#dbrw-YWType').combobox('select', parm[0].YWTypeKey);
+                        }">
+                </select>
+            </td>
+            <td 
+                <label style="width:40px">单据类型</label>
+            </td>
+            <td >
+                <select id="dbrw-DocType" class="easyui-combobox" url="/Combo/DocTypeDBRW" data-options="
+                    editable:false,
+                    width:150,
+                    valueField:'GUID',
+                    textField:'DocTypeName',
+                    filterField:'DocTypeKey,DocTypeName',
+                    onLoadSuccess: function (parm) {
+                            $('#dbrw-DocType').combobox('select', parm[0].GUID);
+                        }">
+                </select>
+            </td>
+            <td style="width: 10%;">
+                <label style="width:40px">单据号</label>
+            </td>
+            <td>
+                <input class="easyui-validatebox" id="dbrw-DocNum" maxlength="10" ></input>
+            </td>
+        </tr>
+    </table>
+</div>

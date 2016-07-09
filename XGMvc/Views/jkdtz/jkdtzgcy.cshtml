@@ -1,0 +1,865 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "借款填制单";
+}
+<link href="../../Content/css/table.css" rel="stylesheet" type="text/css" />
+<script src="../../Content/commonjs/setControlWidth.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $.extend($.fn.datebox.methods, {
+        setData: function (jq, hs) {
+            return jq.each(function () {
+                
+                var opts = $(this).datebox('options');
+                var status = $.view.getStatus(opts.scope);
+                var idAttr = $(this).attr('id').split('-');
+                if (!idAttr) return;
+                if (hs) {
+                    var a = hs[idAttr[1]], b,orgdate;
+                    var flag = opts.mark;
+                    if (a && a.hasOwnProperty(idAttr[2])) {
+                        b = a[idAttr[2]];
+                        orgdate = a[idAttr[2]];
+                        if (b) {
+                            var getHour = 0;
+                            var vals = b.split('-');
+                            if (b.indexOf(':') > 0) {
+                                var darr = b.split(' ');
+                                vals = darr[0].split('-');
+                                getHour = darr[1].split(':')[0]; //小时
+                            }
+                            if (vals[1].length < 2) {
+                                vals[1] = "0" + vals[1];
+                            }
+                            if (vals[2].length < 2) {
+                                vals[2] = "0" + vals[2];
+                            }
+                            b = vals.join('-');
+
+                            //改动  
+                            if (status != '2' && status != '4' && flag) {
+                                $('#serverDate').val(orgdate);
+                                var days = opts.days;
+                                if (getHour < 12) {//12点之前2天时间
+                                    days = 2;
+                                }
+                                b = $.fn.datebox.methods["dateAdd"].call(this, b,days);
+                            }
+
+                        }
+                        $(this).datebox('setText', b);
+                        $(this).datebox('setValue', b);
+                        return;
+                    }
+                    return;
+                }
+                var val = opts.tempValue ? opts.tempValue : '';
+                $(this).datebox('setText', val);
+                $(this).datebox('setValue', val);
+            });
+        },
+        dateAdd: function (sdate, days) {
+            
+            var dateTemp = sdate.split('-');
+            var nDate = new Date(dateTemp[1] + '-' + dateTemp[2] + '-' + dateTemp[0]);
+            var millSeconds = Math.abs(nDate) + (days * 24 * 60 * 60 * 1000);
+            var rDate = new Date(millSeconds);
+            var year = rDate.getFullYear();
+            var month = rDate.getMonth() + 1;
+            if (month < 10) month = "0" + month;
+            var date = rDate.getDate();
+            if (date < 10) date = "0" + date;
+            return (year + "-" + month + "-" + date);
+        }
+    });
+    $.extend($.fn.linkbutton.methods, {
+        examineAfter: function (jq, status, callback) {
+            if (status == 3) {
+                callback();
+                return;
+            }
+            //基恩
+            var mNumber = $('#jkdtz-WL_Main-moneyunmber').val().replace(/,/g, '')
+            if (mNumber < 3000) {
+                $.messager.alert('提示', '用款金额少于3000,请直接到财务办理借款!');
+                return;
+            }
+            //获取到单据日期的值
+            var sdate = $('#jkdtz-WL_Main-DocDate').datebox('getValue');
+            var dateTemp = sdate.split('-');
+            var nDate = new Date(dateTemp[1] + '-' + dateTemp[2] + '-' + dateTemp[0]);
+            var temp = 24 * 60 * 60 * 1000;
+            var serverDate = $('#serverDate').val();
+            var dArr = serverDate.split(' ');
+            var dateTemp1 = dArr[0].split('-');
+            var nDate1 = new Date(dateTemp1[1] + '-' + dateTemp1[2] + '-' + dateTemp1[0]);
+
+            var a = Math.abs((Math.abs(nDate1) - Math.abs(nDate))) / temp;
+            
+            var sd = new Date(serverDate);
+            var getHour = sd.getHours();
+            if (getHour >= 12) {//过12点后提前三天预约
+                if (a >= 3) {
+                    $.messager.confirm("提示", "已过12点，距用款事项3日内单据不能修改,是否确认约款？", function (data) {
+                        if (!data) {
+                            return;
+                        }
+                        callback();
+                    });
+                } else {
+                    $.messager.alert('提示', '已过12点，预约款项请提前三天办理。', 'info');
+                }
+            }
+            else {
+                if (a >= 2) {
+                    $.messager.confirm("提示", "距用款事项2日内单据不能修改,是否确认约款？", function (data) {
+                        if (!data) {
+                            return;
+                        }
+                        callback();
+                    });
+                } else {
+                    $.messager.alert('提示', '预约款项请提前两天办理。', 'info');
+                }
+            }
+
+        }
+    });
+
+    $(document).ready(function () {
+        //这个不能放在结尾，放在结尾借款人列表错位
+        var gridid = "jkdtz-WL_Detail";
+        $.setControl("divWest", gridid);
+
+    });
+</script>
+<div class="easyui-layout" id="jkdtz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'jkdtz',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/jkd',['jkdtz-WL_Main-moneychinese','jkdtz-WL_Main-moneyunmber']]}">打印</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'jkdtz',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/jkd',['jkdtz-WL_Main-moneychinese','jkdtz-WL_Main-moneyunmber']]}">预览</a> 
+
+
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'jkdtz',status:'1',
+                   bindparms:{'newDoc':['/jkdtz/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="jkdtz-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'jkdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'jkdtz',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="jkdtz-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'jkdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'jkdtz',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="jkdtz-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['jkdtz-WL_Detail']},
+                   scope:'jkdtz',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['jkdtz-WL_Detail']},scope:'jkdtz',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['jkdtz-WL_Detail']},scope:'jkdtz',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   @*<a href="#" class="easyui-linkbutton" 
+                   id="jkdtz-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/jkdtz','jkdtz-WL_Detail','parti']},scope:'jkdtz',
+                   forbidstatus:[3]">明细</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="jkdtz-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/jkdtz','jkdtz-WL_Detail','parti']},scope:'jkdtz', forbidstatus:[3]">明细</a>
+                   
+                  <a href="#" class="easyui-linkbutton" id="jkdtz-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/jkdtz','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'jkdtz',
+                    forbidstatus:[4,3]">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="jkdtz-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                     configUrl:{
+                            'jkdtz-WL_Main-GUID_DW':'combogrid',
+                            'jkdtz-WL_Main-GUID_Department':'combogrid',
+                            'jkdtz-WL_Main-DocDate':'datebox'
+                      },
+                     configShowData:{
+                        'jkdtz-WL_Main-DWKey':'validatebox',
+                        'jkdtz-WL_Main-GUID_DW':'combogrid'
+                     },
+                     bindparms:{'BudgetStatistics':['/BudgetStatistics/jkdtz','/BudgetStatistics/BudgetStatistics','BudgetStatistics-BG_Main','BudgetStatistics'
+                     ]},
+                     window:'b-window',
+                     scope:'jkdtz',forbidstatus:[4,3]">预算</a> 
+                   
+                  <a href="#" class="easyui-linkbutton" id="jkdtz-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'jkdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['jkdtz-WL_Main-DocState','9']},scope:'jkdtz',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'jkdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['jkdtz-WL_Main-DocState','6']},scope:'jkdtz',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>*@
+
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-examine"
+                   data-options="plain:true,iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{
+                    'examine':
+                        {
+                            'datagrid':['jkdtz-WL_Detail'],
+                            'validatebox':['jkdtz-WL_Main-DocMemo'],
+                            'datebox':['jkdtz-WL_Main-DocDate'],
+                            'combogrid':['jkdtz-WL_Main-GUID_Person','jkdtz-WL_Main-GUID_DW','jkdtz-WL_Main-GUID_Department']
+                        },
+                    'bubbleExamine':
+                        {
+                         'datebox':['jkdtz-WL_Main-DocDate'],
+                          'numberbox':['jkdtz-WL_Main-BillCount']
+                        }
+                    },
+                   scope:'jkdtz',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'jkdtz',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="jkdtz-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/jkdtz/Save','jkdtz-examine']},
+                   
+                   scope:'jkdtz',status:'4',mark:true,@*[mark]这个标志只用于借款单填制*@
+                   forbidstatus:[4]">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="jkdtz-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'jkdtz-WL_Main-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/jkdtz/CommitFlow']},scope:'jkdtz',
+                   forbidstatus:[1,2,3]">提交</a>
+                      <a href="#" class="easyui-linkbutton" id="jkdtz-sendBackProcess"
+                   data-options="plain:'true',iconCls:'icon-tuihui',docState:'jkdtz-BX_Main-DocState',
+                   bindmethod:{ 'click': ['sendBack'] },
+                   scope:'jkdtz',
+                   forbidstatus:[1,2,3]">退回</a>
+                   <a href="#" class="easyui-linkbutton"
+                   id="jkdtz-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/jkdtz','history-WL_Main','history']},
+                   historyBtnId:'history-hselect',
+                   window:'b-window',scope:'jkdtz'">历史</a> 
+
+                   <a href="#" class="easyui-linkbutton"
+                   id="jkdtz-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },
+                   bindparms:{'viewProcess':['/Process/jkdtz','/Process/processGCY','jkdtz-process','process']},
+                   window:'b-window',scope:'jkdtz',
+                   forbidstatus:[1,2,3]">流程</a>
+
+                @*   <a href="#" class="easyui-linkbutton" id="jkdtz-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', scope:'jkdtz',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>*@
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="jkdtz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'jkdtz'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="人员">
+                <ul class="easyui-tree" id="jkdtz-tree-per" data-options="associate:{
+                    'jkdtz-WL_Main-GUID_Person':['GUID','PersonName'],
+                    'jkdtz-WL_Main-GUID_DW':['GUID_DW','DWName'],
+                    'jkdtz-WL_Main-GUID_Department':['GUID_Department','DepartmentName']
+                  },
+                  gridassociate:{
+                        'gridId':'jkdtz-WL_Detail',
+                        'map':{
+                           'jkdtz-WL_Detail-GUID_Person':['GUID','PersonName'],
+                           'jkdtz-WL_Detail-GUID_Department':['GUID_Department','DepartmentName']
+                        }
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="jkdtz-tree-dep" data-options="
+                associate:{
+                    'jkdtz-WL_Main-GUID_DW':['DWName','DWName'],
+                    'jkdtz-WL_Main-GUID_Department':['GUID','DepartmentName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                        'gridId':'jkdtz-WL_Detail',
+                  'map':{
+                           'jkdtz-WL_Detail-GUID_Department':['GUID','DepartmentName']
+                        }
+                  },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="单位">
+                <ul class="easyui-tree" id="jkdtz-tree-dw" data-options="
+                associate:{
+                    'jkdtz-WL_Main-GUID_DW':['GUID','DWName']
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  url:'/Tree/GetDWTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+         
+            <div title="项目" data-options="selected:true">
+                <ul class="easyui-tree" id="jkdtz-tree-project" data-options="gridassociate:{
+                    'gridId':'jkdtz-WL_Detail',
+                    'map':{
+                        'jkdtz-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                        'jkdtz-WL_Detail-ProjectKey':['ProjectKey','ProjectKey'],
+                        'jkdtz-WL_Detail-GUID_ProjectKey':['GUID','ProjectName'],
+                        'jkdtz-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                        @*'jkdtz-CN_PaymentNumber-PaymentNumber':['clear'] *@
+                        'jkdtz-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                        'jkdtz-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table  id="table" style="width:100%; padding: 0; margin: 0;border:0;">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="jkdtz-abandonedStatus" statusControlID="jkdtz-WL_Main-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        现金约款单</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" id="lbl-DocNum" style="width:60px">
+                        <font color="red">*</font>约款单号</label>
+                </td>
+                <td  class="tdValue">
+                    <input class="easyui-validatebox" id="jkdtz-WL_Main-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"></input>
+                </td>
+                <td class="tdText">
+                    <label for="field1" id="lbl-DocDate" style="width:60px">
+                        <font color="red">*</font>用款日期</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-datebox" id="jkdtz-WL_Main-DocDate" data-options="forbidstatus:[4,3], scope:'jkdtz',required:false,
+                      @*  bindmethod: { 'onCloseEx': ['setAssociate']  },*@
+                       
+                        days:3,mark:true @*这个标志只用于借款单填制*@
+
+                    "></input>
+                </td>
+                <td class="tdText">
+                    <label id="lbl-GUID_Person" style="width:60px">
+                        <font color="red">*</font>约款人</label>
+                </td>
+                <td class="tdValue">
+                    <select class="easyui-combogrid" id="jkdtz-WL_Main-GUID_Person" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_Department',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'PersonKey',title:'人员编码',width:'100'},
+                            {field:'PersonName',title:'人员名称',width:'100'},
+                            {field:'DepartmentName',title:'部门名称',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                            ]],                        
+                        panelWidth:500,
+                        
+                        method:'post',
+                        remoteUrl:'/Combogrid/Person',
+                        idField:'GUID',
+                        textField:'PersonName',
+                        filterField:'PersonKey,PersonName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] },
+                        remoteSort:false,
+                        forbidstatus:[4,3],
+                        required:false,
+                        singleSelect:true,
+                        editable:true,
+                        sortName:'PersonKey',
+                        pagination:true,
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                          editable:false,
+                        rownumbers:true,
+                        associate:
+                            {
+                                'jkdtz-WL_Main-GUID_DW':['GUID_DW'],
+                                'jkdtz-WL_Main-GUID_Department':['GUID_Department']
+                            }">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" id="lbl-GUID_DW" style="width:60px">
+                        <font color="red">*</font>单位名称</label>
+                </td>
+                <td colspan="3">
+                    <select class="easyui-combogrid" id="jkdtz-WL_Main-GUID_DW" 
+                    data-options="
+                        columns:[[
+                           {field:'GUID',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'100'},
+                            {field:'DWName',title:'单位名称',width:'200'}
+                            ]],
+                        bindmethod: { 'onSelect': ['setAssociate'] },                        
+                        panelWidth:325,
+                        editable:false,
+                        method:'post',
+                        required:false,
+                        filterField:'DWKey,DWName',
+                        remoteUrl:'/Combogrid/DW',
+                        idField:'GUID',
+                        textField:'DWName',
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText" id="lbl-GUID_Department">
+                    <label style="width:60px">
+                        <font color="red">*</font>部门名称</label>
+                </td>
+                <td class="tdValue">
+                    <select class="easyui-combogrid" 
+                        id="jkdtz-WL_Main-GUID_Department" 
+                        data-options="
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DepartmentKey',title:'部门编码',sortable:true,width:'60'},
+                            {field:'DepartmentName',title:'部门名称',sortable:true,width:'200'},
+                            {field:'DWName',title:'所属单位名称',width:'130'}]],                        
+                        panelWidth:420,
+                        editable:false,
+                        method:'post',
+                        delay:1500,
+                        remoteUrl:'/Combogrid/Department',
+                        idField:'GUID',
+                        textField:'DepartmentName',
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }, 
+                        filterField:'DepartmentKey,DepartmentName',
+                        associate:{'jkdtz-WL_Main-GUID_DW':['GUID_DW']},
+                        required:false,
+                        forbidstatus:[4,3]">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label id="lbl-DocMemo" style="width:60px">
+                        <font color="red">*</font>用途</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="jkdtz-WL_Main-DocMemo"  style="width:97%;background-color:#FFFFCC"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td class="tdText">
+                    <label id="lbl-BillCount" style="width:60px">
+                        附单数据</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-numberbox" id="jkdtz-WL_Main-BillCount" maxlength="2" 
+                        data-options="forbidstatus:[4,3],min:0,max:99" style="background-color:#FFFFCC"></input>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6"   >
+                    <table class="easyui-edatagrid" id="jkdtz-WL_Detail"  data-options="
+                    orderNum:'jkdtz-WL_Detail-OrderNum',
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    forbidstatus:[4,3],
+                    height:150,
+                    rownumbers:true,
+                    scope:'jkdtz',
+                    single:false,
+                    formatters:{'jkdtz-CN_PaymentNumber-IsGuoKu':'boolbox','jkdtz-WL_Detail-Total_WL':'numberbox'},
+                    disableColMap:{
+                            'jkdtz-CN_PaymentNumber-IsGuoKu':['jkdtz-CN_PaymentNumber-GUID_FunctionClass']
+                    },
+                    copyField:[
+                         'jkdtz-WL_Detail-ProjectKey',
+                         'jkdtz-WL_Detail-GUID_ProjectKey',
+                         'jkdtz-WL_Detail-ActionDate',
+                         'jkdtz-WL_Detail-WLTypeName',
+                         'jkdtz-WL_Detail-GUID_SettleType',
+                         'jkdtz-WL_Detail-GUID_Department',
+                         'jkdtz-WL_Detail-GUID_Person',
+                         'jkdtz-CN_PaymentNumber-IsGuoKu',
+                         'jkdtz-CN_PaymentNumber-GUID_FunctionClass',
+                         'jkdtz-CN_PaymentNumber-GUID_BGResource',
+                         'jkdtz-WL_Detail-GUID_BGType'
+                    ],
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['jkdtz','jkdtz-WL_Detail','jkdtz-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    fieldformula:[
+                        {name:'csum',field:'jkdtz-WL_Detail-Total_WL',target:['jkdtz-WL_Main-moneyunmber','jkdtz-WL_Main-moneychinese']},
+                          {name:'cconcat',field:'jkdtz-WL_Detail-ActionMemo',target:['jkdtz-WL_Main-ActionMemo']}
+                    ]">
+                        <thead>
+                            <tr> 
+                                <th field="jkdtz-CN_PaymentNumber-ExtraCode" hidden="true"></th> @*附加码*@
+                                <th field="jkdtz-CN_PaymentNumber-FinanceCode" hidden="true"></th> @*财政码*@
+                                <th field="jkdtz-CN_PaymentNumber-EconomyClassKey" hidden="true"></th> @*经济分类码*@
+                                <th field="jkdtz-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>@*支出类型码*@
+                                <th field="jkdtz-CN_PaymentNumber-BGSourceKey" hidden="true"></th>@*预算来源码*@
+                                <th field="jkdtz-CN_PaymentNumber-BGType" hidden="true"></th>@*预算类型码*@
+                                                       
+                                <th field="jkdtz-WL_Detail-GUID_BGCode" hidden="true">
+                                </th>
+                                <th field="jkdtz-WL_Detail-GUID_ProjectKey" hidden="true">
+                                </th>
+                                <th field="jkdtz-WL_Detail-ProjectKey" hidden="true">
+                                </th>
+                                <th field="jkdtz-WL_Detail-GUID" hidden="true">
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-GUID" hidden="true">
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-IsProject" hidden="true">
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-GUID_BGResource" hidden="true"></th>
+                                <th field="jkdtz-WL_Detail-GUID_BGType" hidden="true"></th>
+
+                               <th  field="jkdtz-WL_Detail-ActionDate" title="发生时间" width="90" sortable="false"
+                                    align="center" >
+                                    发生时间
+                                </th>
+                               <th field="jkdtz-WL_Detail-ActionMemo" width="120" title="摘要" hidden="true" sortable="false" align="center" 
+                                    editor="text">
+                                    摘要
+                                </th>
+                                <th field="jkdtz-WL_Detail-Total_WL" title="往来金额" sortable="false" align="right"
+                                    width="180" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    用款金额
+
+                                </th>
+                              <th field="jkdtz-WL_Detail-GUID_WLType" title="往来类型" hidden="true" sortable="false" width="230" align='center'
+                               editor="{
+                                          type:'combogrid',
+                                          options:{
+                                            panelWidth:350,width:520,
+                                            remoteUrl:'/Combogrid/WLType',
+                                            method:'get',
+                                            readonly:true,
+                                            idField:'GUID',
+                                            sortName:'WLTypeKey',
+                                            textField:'WLTypeName',
+                                            filterField:'WLTypeKey,WLTypeName',
+                                            forbidstatus:[-1],
+                                            columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'WLTypeKey',title:'往来编码',width:'100'},
+                                              {field:'WLTypeName',title:'往来类型',width:'225'}
+                                            ]]
+                                          }
+                                      }">
+                                    往来类型
+                                </th>
+                                <th field="jkdtz-WL_Detail-GUID_SettleType" hidden="true" title="结算方式" sortable="false" align="center"
+                                    width="90" 
+                                    editor="{
+                                          type:'combogrid',
+                                          options:{
+                                            panelWidth:225,width:520,
+                                            remoteUrl:'/Combogrid/SettleType',
+                                            method:'get',
+                                            idField:'GUID',
+                                            sortName:'SettleTypeKey',
+                                            textField:'SettleTypeName',
+                                            filterField:'SettleTypeKey,SettleTypeName',
+                                            columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'SettleTypeKey',title:'结算方式编码',width:'100'},
+                                              {field:'SettleTypeName',title:'结算方式名称',width:'100'}
+                                            ]]
+                                          }
+                                      }">
+                                    结算方式
+                                </th>
+                                
+                                <th field="jkdtz-WL_Detail-GUID_Cutomer" hidden="true" width="200" title="客户名称" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:300,width:500,
+                                        remoteUrl:'/Combogrid/Customer',
+                                        method:'get',
+                                        idField:'GUID',
+                                        sortName:'CustomerKey',
+                                        textField:'CustomerName',
+                                        filterField:'CustomerKey,CustomerName',
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'CustomerKey',title:'客户编码',width:'100'},
+                                            {field:'CustomerName',title:'客户名称',width:'175'}
+                                        ]]
+                                   }
+                                }">
+                                    客户名称
+                                </th>
+                                <th field="jkdtz-WL_Detail-GUID_Department" hidden="true" title="部门名称" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:405,  
+                                      width:520,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      columns:[[
+                                            {field:'GUID',title:'名称',width:'60',hidden:true},
+                                            {field:'DepartmentKey',title:'部门编码',width:'80'},
+                                            {field:'DepartmentName',title:'部门名称',width:'150'},
+                                            {field:'DWName',title:'单位名称',width:'150'}
+                                        ]]
+                                        }
+                                }">
+                                    部门名称
+                                </th>
+                                <th field="jkdtz-WL_Detail-GUID_Person" hidden="true" title="人员名称" sortable="false" align="center"
+                                    width="100" editor="{
+                                          type:'combogrid',
+                                          options:{
+                                            panelWidth:490,
+                                            width:475,
+                                            remoteUrl:'/Combogrid/Person',
+                                            method:'get',
+                                            idField:'GUID',
+                                            textField:'PersonName',
+                                            filterField:'PersonKey,PersonName',
+                                            bindmethod: { 'onSelect': ['setAssociate'] },     
+                                            columns:[[
+                                              {field:'GUID',title:'GUID',hidden:true},
+                                              {field:'PersonKey',title:'人员编码',width:'80'},
+                                              {field:'PersonName',title:'人员名称',width:'90'},
+                                              {field:'DepartmentName',title:'部门名称',width:'150'},
+                                              {field:'DWName',title:'单位名称',width:'140'}
+                                            ]]
+                                          }
+                                    }">
+                                    人员名称
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-IsGuoKu" hidden="true" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="jkdtz-CN_PaymentNumber-PaymentNumber" hidden="true" title="财政支付令" sortable="false" align="center"
+                                    width="120" editor="
+                                    {
+                                        type:'searchbox',
+                                        options:{
+                                        'particulars':['/particulars/jkdtz','jkdtz-WL_Detail','parti'],
+                                        'window':'b-window'
+                                        }
+                                    }">
+                                    财政支付令</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="tdText">
+                    <label style="width:60px">
+                        用款金额(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="jkdtz-WL_Main-moneychinese"  style=" width:97%"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td class="tdText">
+                    <label style="width:60px">
+                        (小写)</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-numberbox" id="jkdtz-WL_Main-moneyunmber"  
+                        data-options="
+                        setNotValue:true,
+                        precision:2,
+                        groupSeparator:',',
+                        decimalSeparator:'.',
+                        forbidstatus:[-1]
+                        ">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" style="width:60px">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="jkdtz-WL_Main-GUID_Maker" 
+                        data-options="remoteUrl:'/Combo/Operator',                       
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td class="tdText">
+                    <label style="width:60px">
+                        修改人</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-combobox" 
+                        id="jkdtz-WL_Main-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',                        
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText">
+                    <label for="field1" style="width:60px">
+                        制单日期</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-datebox" id="jkdtz-WL_Main-MakeDate" data-options="forbidstatus:[-1]"></input>
+                </td>
+                <td class="tdText">
+                    <label for="field1" style="width:60px">
+                        提交日期</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-datebox" id="jkdtz-WL_Main-SubmitDate" data-options="forbidstatus:[-1]"></input>
+                </td>
+                <td class="tdText">
+                    <label style="width:60px">
+                        修改日期</label>
+                </td>
+                <td class="tdValue">
+                    <input class="easyui-datebox" id="jkdtz-WL_Main-ModifyDate" data-options="forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+               <td colspan="6">
+                  <div  style="padding:10px">
+                      <font color="red">
+                      注意事项:<br>
+                      1.现金用款事项请严格遵守相关规定；<br>
+                      2.优先保障预约款项，未提前预约的用款事项将视情况协调处理；<br>
+                      3.如遇节假日，请提前办理。
+
+                      </font>
+                  </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="jkdtz-WL_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="jkdtz-WL_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="jkdtz-WL_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="jkdtz-WL_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="jkdtz-WL_Main-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="jkdtz-WL_Main-OAOTS" type="hidden"></input>
+    <input class="easyui-validatebox" id="serverDate" type="hidden"></input>
+    
+</div>
+<label id="jkdtz-extendregion" style="display: none">
+    <input id="jkdtz-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="jkdtz-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="jkdtz-WL_Main-DWKey" />
+</div>
+  
+<iframe id="printIframe" style="display: none"></iframe>
+
+<script>
+    (function () { 
+         var d = $('#table').width();
+         if (window.attachEvent) {
+             if (d > 1000) {
+                 d = d - 50;
+             }
+         }
+         $('#jkdtz-WL_Detail').datagrid({
+            width:d-250
+         });
+    })()
+</script>
+
+
+
+

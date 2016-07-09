@@ -1,0 +1,72 @@
+﻿<body>
+    <div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+        <div b-type="1" data-options="region:'north',tools:'#tbar'" style="height: 51px">
+            <div id='tbar' b-type="1" style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="history-haffirm" b-action="haffirm" gridId="history-bxdetail" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitHistory'] },
+                   bindparms:{'submitHistory':['history-BG_Detail','@ViewData["ModelUrl"]']},
+                   window:'b-window',
+                   scope:'history',
+                   iconCls:'icon-queren'">浏览</a> <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="history-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'history', 
+                    window:'b-window',         
+                    iconCls:'icon-quxiao'">取消</a>
+            </div>
+        </div>
+        <div b-type="1" data-options="region:'center'">
+            <div b-type="1" data-options="region:'center',fit:true">
+                <table style="height: 500px; padding: 5px" class="easyui-edatagrid" id="history-BG_Detail"
+                    b-type="1" data-options="
+                        fitColumns:false,
+                        method:'get',
+                        singleSelect:true,
+                        checkOnSelect:true,
+                        pagination:true,
+                        url:'/ysbz/History',
+                        striped: false,
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true
+                        ">
+                    <thead>
+                        <tr>
+                            <th field="b-sel" data-options="width:100,checkbox:'true'">
+                            </th>
+                            <th field="GUID" hidden="true">
+                            </th>
+                            <th field="DocNum" align="center" width="120">
+                                单据编码
+                            </th>
+                            <th field="BGSetupName" lign="center" width="100">
+                                预算设置
+                            </th>
+                            <th field="ProjectName" align="center" width="140">
+                                项目名称
+                            </th>
+                            <th field="ProjectKey" align="center" width="100">
+                                项目编码
+                            </th>
+                            <th field="BGStepName" align="center" width="100">
+                                预算步骤
+                            </th>
+                            <th field="BGTypeName" align="center" width="90">
+                                预算类型
+                            </th>
+                            <th field="DepartmentName" align="center" width="120">
+                                部门
+                            </th>
+                            <th field="Maker" align="center" width="100">
+                                制单人
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+</body>

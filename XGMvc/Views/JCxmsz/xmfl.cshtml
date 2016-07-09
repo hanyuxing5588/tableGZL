@@ -1,0 +1,513 @@
+﻿
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<script type="text/javascript" language="javascript">
+    $(document).ready(function () {
+        $("#SS_ProjectClass-showStop").bind("click", function (e) {
+            var type = 0;
+            var b = $(this).attr("checked");
+            if (b || b == "checked") {
+                type = 2;
+            }
+            //           else if (b == undefined) {
+            //                type = 0;
+            //            }
+            var url = '/JCxmsz/AllRetrievexmfl';
+            $.ajax({
+                url: url,
+                data: { "type": type },
+                async: false, //同步
+                dataType: "json",
+                type: "POST",
+                traditional: true,
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                },
+                success: function (data) {
+                    $.view.loadData("xmfl", data);
+                }
+            });
+            $.RefeshTree(type);
+        });
+    });
+    //刷新树
+    $.RefeshTree= function (type) {
+        $('#xmfl-tree-project').tree({
+            url: '/Tree/GetJCProjectTree?type='+type
+        });
+    }
+
+    $.extend($.fn.linkbutton.methods, {
+        beforeSave: function (jq, status) {
+            
+            var checked = $("#xmfl-SS_ProjectClass-IsStop").attr("checked");
+            var opts = $(this).linkbutton("options");
+            if (!checked && $.CheckParentIsStop()) {
+                opts.isConfirm = true;
+            }
+            else {
+                opts.isConfirm = false;
+            }
+            if (jq == "2" || status == "2") {
+
+                if (checked && $.checkChildHasIsStop()) {
+                    $.messager.alert("提示", "此项有未停用的子项，不能停用！");
+                    return false;
+                }
+
+            }
+        }
+    });
+    //检查父项是否有停用的项
+    $.CheckParentIsStop = function () {
+        
+        var bIsStop = false;
+        var treeObj = $("#xmfl-tree-project");
+        var select = treeObj.tree("getSelected");
+        var parentNode = treeObj.tree("getParent", select.target);
+
+        var cyclingParent = function (target) {
+            var pNode = treeObj.tree("getParent", target);
+            if (pNode) {
+                var isStop = pNode.attributes["IsStop"];
+                if (isStop && isStop.toLowerCase() == "true") {
+                    bIsStop = true;
+                    return bIsStop;
+                }
+                cyclingParent(pNode.target);
+            }
+        };
+        if (parentNode) {
+            
+            var isStop = parentNode.attributes["IsStop"];
+            if (isStop && isStop.toLowerCase() == "true") {
+                bIsStop = true;
+                return bIsStop;
+            }
+            cyclingParent(parentNode.target);
+        }
+
+        return bIsStop;
+    }
+    //检查子项是否已经全部停用,如果有一个没有停用这父项不能停用 返回True
+    $.checkChildHasIsStop = function () {
+        
+        var bHasIsStop = false;//是否有未停用
+        var treeObj = $("#xmfl-tree-project");
+        var select = treeObj.tree("getSelected");
+        var childNode = treeObj.tree("getChildren", select.target);
+
+        var cyclingChild = function (target) {
+            var cNode = treeObj.tree("getChildren", target);
+            if (cNode) {
+                for (var i = 0; i < cNode.length; i++) {
+                    var isStop = cNode[i].attributes["IsStop"];
+                    if (isStop && isStop.toLowerCase() == "false") {
+                        bHasIsStop = true;
+                        return bHasIsStop;
+                    }
+                }
+            }
+        }
+
+        if (childNode) {
+            for (var i = 0; i < childNode.length; i++) {
+                var isStop = childNode[i].attributes["IsStop"];
+                if (isStop && isStop.toLowerCase() == "false") {
+                    bHasIsStop = true;
+                    return bHasIsStop;
+                }
+                cyclingChild(childNode[i].target);
+            }
+        }
+        return bHasIsStop;
+    }
+
+</script>
+<div class="easyui-layout" id="xmfl-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            @*<a href="#" class="easyui-linkbutton" id="xmfl-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'xmfl',forbidstatus:[1,2,3],
+                   window:'xmfl-b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/xmfl']}">打印</a> *@ 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="xmfl-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{'click':['newStatus']},scope:'xmfl',status:'1',                        
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmfl-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   treeId:['xmfl-tree-project'],
+                   bindmethod:{'click':['setStatusexamine']},scope:'xmfl',status:'2',                       
+                   forbidstatus:[1,2,3]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmfl-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   treeId:['xmfl-tree-project'],
+                   bindmethod:{ 'click': ['setStatusexamine'] },scope:'xmfl',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmfl-tingyong"
+                       data-options="plain:'true',iconCls:'icon-tingyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['xmfl-SS_ProjectClass-IsStop','1','xmfl-tree-project']},
+                  forbidstatus:[1,2,3]">停用</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="xmfl-qiyong"
+                      data-options="plain:'true',iconCls:'icon-qiyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['xmfl-SS_ProjectClass-IsStop','0','xmfl-tree-project']},
+                  forbidstatus:[1,2,3]">启用</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="xmfl-save"
+                      data-options="plain:'true',iconCls:'icon-baocun',
+                   JCDA:true,
+                   isConfirm:'',
+                   confirmMsg:'父项有未启动项，确定要启动吗？',
+                   treeId:['xmfl-tree-project'],
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCxmsz/Savexmfl']},
+                   scope:'xmfl',status:'4',forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="xmfl-cancel" data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'xmfl',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="xmfl-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'xmfl'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="项目分类">
+                <ul class="easyui-tree" id="xmfl-tree-project" data-options="
+                msg:'项目分类',
+                m:'SS_ProjectClass',
+                  associate:{
+                                'xmfl-SS_ProjectClass-PKey':['PKey','PKey'],
+                                'xmfl-SS_ProjectClass-PName':['PName'],
+                                'xmfl-SS_ProjectClass-PGUID':['PGUID'],
+                                'xmfl-SS_ProjectClass-ProjectClassKey':['ProjectClassKey','ProjectClassKey'],
+                                'xmfl-SS_ProjectClass-ProjectClassName':['ProjectClassName'],
+                                'xmfl-SS_ProjectClass-GUID':['GUID'],
+                                'xmfl-SS_ProjectClass-BeginYear':['BeginYear'],
+                                'xmfl-SS_ProjectClass-StopYear':['StopYear'],
+                                'xmfl-SS_ProjectClass-IsStop':['IsStop']
+                  },
+                  associateEX:{
+                     'xmfl-SS_ProjectClass-PKey':['PKey','PKey'],
+                                'xmfl-SS_ProjectClass-PName':['PName'],
+                                'xmfl-SS_ProjectClass-PGUID':['PGUID']
+                  },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  url:'/Tree/GetJCProjectTree',
+                  forbidstatus:[3],
+                  retStatus:'4',
+                  customBindFirst:true,
+                  IsDocStatusAssociate:true,
+                  method:'post',
+                  scope:'xmfl'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true" >
+        <table id="table" border="0" style="width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="4" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        项&nbsp;目&nbsp;分&nbsp;类</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-ProjectClassKey">
+                        <font color="red">*</font>项目分类编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="xmfl-SS_ProjectClass-ProjectClassKey" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-ProjectClassName">
+                        <font color="red">*</font>项目分类名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="xmfl-SS_ProjectClass-ProjectClassName" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PKey">
+                        &nbsp;上级分类编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="xmfl-SS_ProjectClass-PKey" data-options="                          
+                           method:'post',
+                           panelWidth:'255',
+                           filterField:'ProjectClassKey,ProjectClassName',
+                           remoteUrl:'/Combogrid/ProjectClass',
+                           idField:'GUID',
+                           textField:'ProjectClassKey',
+                           sortName:'ProjectClassKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'PGUID',hidden:'true'},
+                            {field:'ProjectClassKey',title:'项目分类编码',width:'80'},
+                            {field:'ProjectClassName',title:'项目分类名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'xmfl-SS_ProjectClass-PName':['GUID','ProjectClassName'],
+                            'xmfl-SS_ProjectClass-PGUID':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PName">
+                        &nbsp;上级分类名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="xmfl-SS_ProjectClass-PName" data-options="
+                           panelWidth:'255',                           
+                           method:'post',
+                           filterField:'ProjectClassKey,ProjectClassName',
+                           remoteUrl:'/Combogrid/ProjectClass',
+                           idField:'GUID',
+                           textField:'ProjectClassName',
+                           sortName:'ProjectClassKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'PGUID',hidden:'true'},
+                                {field:'ProjectClassKey',title:'项目分类编码',width:'80'},
+                                {field:'ProjectClassName',title:'项目分类名称',width:'150'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'xmfl-SS_ProjectClass-PKey':['ProjectClassKey','ProjectClassKey'],
+                                 'xmfl-SS_ProjectClass-PGUID':['GUID']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTD2L">
+                    <label for="field1" id="lbl-BeginYear">
+                        &nbsp;项目分类启用年度</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select id="xmfl-SS_ProjectClass-BeginYear" class="easyui-combobox"  data-options="forbidstatus:[4,3], editable:false">  
+                        <option value="0">全部</option>  
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                        <option value="2005">2005</option>
+                        <option value="2006">2006</option>
+                        <option value="2007">2007</option>
+                        <option value="2008">2008</option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+                    </select> 
+                </td>
+                <td class="tdTextTD2L">
+                    <label for="field1" id="lbl-StopYear">
+                        &nbsp;项目分类停用年度</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select id="xmfl-SS_ProjectClass-StopYear" class="easyui-combobox"  data-options="forbidstatus:[4,3], editable:false">  
+                        <option value="0">全部</option>  
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                        <option value="2005">2005</option>
+                        <option value="2006">2006</option>
+                        <option value="2007">2007</option>
+                        <option value="2008">2008</option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+                    </select> 
+                </td>
+            </tr>
+            <tr>
+                <td  class="tdTextTr2" style=" text-align: right;">
+                    <input type="checkbox" class="easyui-checkbox" id="xmfl-SS_ProjectClass-IsStop" data-options="forbidstatus:[4,3]"></input>&nbsp;
+                </td>
+                <td>
+                    是否停用
+                </td>
+                <td class="tdTextTr2" style="text-align: right;">
+                    <input type="checkbox" class="easyui-checkbox" id="SS_ProjectClass-showStop" data-options="forbidstatus:[1,2]"></input>&nbsp;
+                </td>
+                <td class="tdValueTr2">
+                    显示停用记录
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table class="easyui-edatagrid" id="xmfl-SS_ProjectClass" data-options="
+                    fitColumns:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:400,                   
+                    scope:'xmfl',
+                    pagination:true,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true,
+                    formatters:{'xmfl-SS_ProjectClass-IsStop':'boolbox'},
+                    forbidstatus:[-1]
+                       ">
+                        <thead>
+                            <tr>
+                                <th field="GUID" hidden="true">
+                                </th>
+                                <th field="xmfl-SS_ProjectClass-ProjectClassKey" title="项目分类编码" width="120" sortable="false"
+                                    align="left">
+                                    项目分类编码
+                                </th>
+                                <th field="xmfl-SS_ProjectClass-ProjectClassName" title="项目分类名称" sortable="false"
+                                    align="left" width="195">
+                                    项目分类名称
+                                </th>
+                                <th field="xmfl-SS_ProjectClass-PKey" title="上级分类编码" sortable="false" align="left"
+                                    width="120">
+                                    上级分类编码
+                                </th>
+                                <th field="xmfl-SS_ProjectClass-PName" width="190" title="上级分类名称" sortable="false"
+                                    align="left">
+                                    上级分类名称
+                                </th>
+                                <th field="xmfl-SS_ProjectClass-BeginYear" title="项目分类启用日期" sortable="false" align="left"
+                                    width="120">
+                                    项目分类启用日期
+                                </th>
+                                <th field="xmfl-SS_ProjectClass-StopYear" title="项目分类停用日期" sortable="false" align="left"
+                                    width="120">
+                                    项目分类停用日期
+                                </th>
+                                <th field="xmfl-SS_ProjectClass-IsStop" title="是否停用" sortable="false" align="left"
+                                    width="80" editor="{type:'booleanbox',forbidstatus:[-1]}">
+                                    是否停用
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="xmfl-SS_ProjectClass-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="xmfl-SS_ProjectClass-PGUID" type="hidden" keyattr="1"></input>
+</div>
+<label id="xmfl-extendregion" style="display: none">
+    <input id="xmfl-status" type="text"></input>
+    <input id="initscope" type="text" value="xmfl"></input>
+    <input id="initController" type="text" value="JCxmsz"></input>
+    <input id="initstatus" type="text" value="4"></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="xmfl-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+    (function () {
+        var datagridId = "xmfl-SS_ProjectClass";
+        var rowColCount = 4;
+        $.setControl("divWest", datagridId,rowColCount);
+    })();
+</script>

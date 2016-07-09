@@ -1,0 +1,81 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SK_MainView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[SK_MainView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：SK_MainView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-1-24
+//功    能：收款视图信息
+//修改内容：添加了dbo.SS_DocTypeView.DocTypeUrl字段
+*/
+
+CREATE  VIEW dbo.SK_MainView
+AS
+SELECT dbo.SK_Main.GUID, dbo.SK_Main.DocNum, dbo.SK_Main.GUID_DW, 
+      dbo.SS_DW.DWKey, dbo.SS_DW.DWName, dbo.SK_Main.GUID_Department, 
+      dbo.SS_Department.DepartmentKey, dbo.SS_Department.DepartmentName, 
+      dbo.SK_Main.GUID_Person, dbo.SS_Person.PersonKey, 
+      dbo.SS_Person.PersonName, dbo.SK_Main.GUID_Project, dbo.SS_Project.ProjectKey, 
+      dbo.SS_Project.ProjectName, dbo.SK_Main.DocDate, dbo.SK_Main.GUID_Maker, 
+      dbo.SS_Operator.OperatorName AS Maker, dbo.SK_Main.GUID_Modifier, 
+      SS_Operator_1.OperatorName AS Modifier, dbo.SK_Main.MakeDate, 
+      dbo.SK_Main.ModifyDate, dbo.SK_Main.SubmitDate, dbo.SK_Main.GUID_YWType, 
+      dbo.SS_YWType.YWTypeKey, dbo.SS_YWType.YWTypeName, 
+      dbo.SK_Main.GUID_DocType, dbo.SS_DocTypeView.DocTypeKey, 
+      dbo.SS_DocTypeView.DocTypeName, dbo.SK_Main.GUID_UIType, 
+      dbo.SS_UIType.UITypeKey, dbo.SS_UIType.UITypeName, 
+      dbo.SK_Main.GUID_Customer, dbo.SS_Customer.CustomerKey, 
+      dbo.SS_Customer.CustomerName, dbo.SS_Customer.CustomerAddress, 
+      dbo.SS_Customer.CustomerBankName, dbo.SS_Customer.CustomerBankNumber, 
+      dbo.SS_Customer.CustomerTelephone, dbo.SS_Customer.CustomerFax, 
+      dbo.SK_Main.GUID_SettleType, dbo.SS_SettleType.SettleTypeKey, 
+      dbo.SS_SettleType.SettleTypeName, dbo.SS_SettleType.IsCash, 
+      dbo.SS_SettleType.IsCheck, dbo.SS_SettleType.IsBill, 
+      dbo.SK_Main.GUID_PaymentNumber, dbo.SK_Main.ContractNumber, 
+      dbo.SK_Main.BillCount, dbo.SK_Main.DocMemo, dbo.SK_Main.Total_SK, 
+      dbo.SK_Main.GUID_SKType, dbo.SS_SKType.SKTypeKey, 
+      dbo.SS_SKType.SKTypeName, dbo.SS_SKType.SRWLTypeClassID, 
+      dbo.SS_SKType.GUID_SRWLType, dbo.SS_SKType.IsDefault, dbo.SS_SKType.IsStop, 
+      dbo.SK_Main.DocState, dbo.SS_DocTypeView.DocTypeUrl,dbo.SK_Main.ApproveState
+FROM dbo.SK_Main LEFT OUTER JOIN
+      dbo.SS_SKType ON 
+      dbo.SK_Main.GUID_SKType = dbo.SS_SKType.GUID LEFT OUTER JOIN
+      dbo.SS_YWType ON 
+      dbo.SK_Main.GUID_YWType = dbo.SS_YWType.GUID LEFT OUTER JOIN
+      dbo.SS_DocTypeView ON 
+      dbo.SK_Main.GUID_DocType = dbo.SS_DocTypeView.GUID LEFT OUTER JOIN
+      dbo.SS_UIType ON 
+      dbo.SK_Main.GUID_UIType = dbo.SS_UIType.GUID LEFT OUTER JOIN
+      dbo.SS_Customer ON 
+      dbo.SK_Main.GUID_Customer = dbo.SS_Customer.GUID LEFT OUTER JOIN
+      dbo.SS_Operator ON 
+      dbo.SK_Main.GUID_Maker = dbo.SS_Operator.GUID LEFT OUTER JOIN
+      dbo.SS_SettleType ON 
+      dbo.SK_Main.GUID_SettleType = dbo.SS_SettleType.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.SK_Main.GUID_Modifier = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.SS_Project ON 
+      dbo.SK_Main.GUID_Project = dbo.SS_Project.GUID LEFT OUTER JOIN
+      dbo.SS_Person ON 
+      dbo.SK_Main.GUID_Person = dbo.SS_Person.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.SK_Main.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.SK_Main.GUID_DW = dbo.SS_DW.GUID
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+
+

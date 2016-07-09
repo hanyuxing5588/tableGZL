@@ -1,0 +1,84 @@
+﻿
+div.fieldset {
+	margin: 10px 0px; padding: 20px 10px; color:#73B304; border: 1px solid rgb(175, 225, 76);
+}
+div.fieldset span.legend {
+	font: 700 14px/normal Arial, Helvetica, sans-serif; padding: 3px; top: -20px; color: rgb(115, 179, 4); position: relative; font-size-adjust: none; font-stretch: normal; background-color: rgb(255, 255, 255);
+}
+div.flash {
+	border-color: rgb(217, 228, 255);  width: 510px; height:80px; overflow-y:scroll; -moz-border-radius-topleft: 5px; -webkit-border-top-left-radius: 5px; -moz-border-radius-topright: 5px; -webkit-border-top-right-radius: 5px; -moz-border-radius-bottomleft: 5px; -webkit-border-bottom-left-radius: 5px; -moz-border-radius-bottomright: 5px; -webkit-border-bottom-right-radius: 5px;
+}
+input[disabled] {
+	border: 1px solid rgb(204, 204, 204);
+}
+/*
+label {
+	width: 150px; text-align: right; margin-right: 5px; display: block;
+}*/
+#btnSubmit1 {
+	margin: 0px 0px 0px 155px;
+}
+.uploaddt {
+	font: 10pt/normal Helvetica, Arial, sans-serif; vertical-align: top; font-size-adjust: none; font-stretch: normal;
+}
+.progressWrapper {
+	width: 357px; overflow: hidden;
+}
+.progressContainer {
+	margin: 5px; padding: 4px; border: 1px solid rgb(232, 232, 232); overflow: hidden; background-color: rgb(247, 247, 247);
+	position:relative;
+}
+/*hanyx*/
+.progressContainerA
+{
+   position:absolute;
+   float:left;
+   width:16px;
+   height:16px;
+   display:inline;
+   right:0;
+   top:13px;
+   background-image:url('../upload/cancel.gif');
+}
+.message {
+	margin: 1em 0px; padding: 10px 20px; border: 1px solid rgb(255, 221, 153); overflow: hidden; background-color: rgb(255, 255, 204);
+}
+.red {
+	border: 1px solid rgb(181, 0, 0); background-color: rgb(255, 235, 235);
+}
+.green {
+	border: 1px solid rgb(221, 240, 221); background-color: rgb(235, 255, 235);
+}
+.blue {
+	border: 1px solid rgb(206, 226, 242); background-color: rgb(240, 245, 255);
+}
+.progressName {
+	width: 323px; height: 14px; text-align: left; color: rgb(85, 85, 85); overflow: hidden; font-size: 8pt; font-weight: 700; white-space: nowrap;
+}
+.progressBarInProgress {
+	width: 0%; height: 2px; font-size: 0px; margin-top: 2px; background-color: blue;
+}
+.progressBarComplete {
+	width: 0%; height: 2px; font-size: 0px; margin-top: 2px; background-color: blue;
+}
+.progressBarError {
+	width: 0%; height: 2px; font-size: 0px; margin-top: 2px; background-color: blue;
+}
+.progressBarComplete {
+	width: 100%; visibility: hidden; background-color: green;
+}
+.progressBarError {
+	width: 100%; visibility: hidden; background-color: red;
+}
+.progressBarStatus {
+	width: 337px; text-align: left; font-family: Arial; font-size: 7pt; margin-top: 2px; white-space: nowrap;
+}
+a.progressCancel {
+	background-position: -14px 0px; width: 14px; height: 14px; font-size: 0px; float: right; display: block; background-image: url("../images/cancelbutton.gif"); background-repeat: no-repeat;
+}
+a.progressCancel:hover {
+	
+}
+.swfupload {
+	vertical-align: top;
+}

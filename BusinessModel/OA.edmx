@@ -1,0 +1,283 @@
+﻿<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx" Version="2.0">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="OAModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2000" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="OAModelStoreContainer">
+          <EntitySet Name="OA_FileTemp" EntityType="OAModel.Store.OA_FileTemp" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="OA_Notice" EntityType="OAModel.Store.OA_Notice" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="OA_NoticeAnnex" EntityType="OAModel.Store.OA_NoticeAnnex" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="OA_OfficeFile" EntityType="OAModel.Store.OA_OfficeFile" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SS_OfficeFileType" EntityType="OAModel.Store.SS_OfficeFileType" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="SS_OfficeFileTypeView" EntityType="OAModel.Store.SS_OfficeFileTypeView" store:Type="Views" store:Schema="dbo" store:Name="SS_OfficeFileTypeView">
+            <DefiningQuery>SELECT 
+      [SS_OfficeFileTypeView].[GUID] AS [GUID], 
+      [SS_OfficeFileTypeView].[FileTypeKey] AS [FileTypeKey], 
+      [SS_OfficeFileTypeView].[FileTypeName] AS [FileTypeName], 
+      [SS_OfficeFileTypeView].[PGUID] AS [PGUID], 
+      [SS_OfficeFileTypeView].[PKey] AS [PKey], 
+      [SS_OfficeFileTypeView].[PName] AS [PName]
+      FROM [dbo].[SS_OfficeFileTypeView] AS [SS_OfficeFileTypeView]</DefiningQuery>
+          </EntitySet>
+        </EntityContainer>
+        <EntityType Name="OA_FileTemp">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="200" />
+          <Property Name="FileBody" Type="image" />
+          <Property Name="OrderNum" Type="int" />
+          <Property Name="Visible" Type="bit" />
+          <Property Name="GUID_OfficeFileType" Type="uniqueidentifier" />
+          <Property Name="FileKey" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="OA_Notice">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="OrderNum" Type="int" Nullable="false" />
+          <Property Name="NoticeDate" Type="datetime" />
+          <Property Name="Notice" Type="nvarchar" MaxLength="500" />
+          <Property Name="Title" Type="varchar" MaxLength="200" />
+          <Property Name="overdue" Type="bit" />
+          <Property Name="EndDate" Type="datetime" />
+          <Property Name="isPop" Type="bit" />
+        </EntityType>
+        <EntityType Name="OA_NoticeAnnex">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="GUID_Notice" Type="uniqueidentifier" />
+          <Property Name="Annex" Type="image" />
+          <Property Name="AnnexName" Type="nvarchar" MaxLength="300" />
+        </EntityType>
+        <EntityType Name="OA_OfficeFile">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FileName" Type="nvarchar" MaxLength="200" />
+          <Property Name="FileBody" Type="image" />
+          <Property Name="OrderNum" Type="int" />
+          <Property Name="Visible" Type="bit" />
+          <Property Name="GUID_OfficeFileType" Type="uniqueidentifier" />
+          <Property Name="FileKey" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="SS_OfficeFileType">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FileTypeKey" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="FileTypeName" Type="nvarchar" MaxLength="50" />
+          <Property Name="PGUID" Type="uniqueidentifier" />
+        </EntityType>
+        <!--生成过程中发现错误:
+      警告 6002: 表/视图“baoth_cnp1.dbo.SS_OfficeFileTypeView”未定义主键。已推断出该键，并将定义创建为只读的表/视图。
+      -->
+        <EntityType Name="SS_OfficeFileTypeView">
+          <Key>
+            <PropertyRef Name="GUID" />
+            <PropertyRef Name="FileTypeKey" />
+          </Key>
+          <Property Name="GUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="FileTypeKey" Type="nvarchar" Nullable="false" MaxLength="50" />
+          <Property Name="FileTypeName" Type="nvarchar" MaxLength="50" />
+          <Property Name="PGUID" Type="uniqueidentifier" />
+          <Property Name="PKey" Type="nvarchar" MaxLength="50" />
+          <Property Name="PName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="OAModel" Alias="Self">
+        <EntityContainer xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:b="http://schemas.microsoft.com/ado/2009/02/edm/annotation" Name="OAEntities" a:TypeAccess="Public" b:LazyLoadingEnabled="true">
+          <EntitySet Name="OA_Notice" EntityType="OAModel.OA_Notice" />
+          <EntitySet Name="OA_NoticeAnnex" EntityType="OAModel.OA_NoticeAnnex" />
+          <EntitySet Name="OA_OfficeFile" EntityType="OAModel.OA_OfficeFile" />
+          <EntitySet Name="SS_OfficeFileType" EntityType="OAModel.SS_OfficeFileType" />
+          <EntitySet Name="OA_FileTemp" EntityType="OAModel.OA_FileTemp" />
+          <EntitySet Name="SS_OfficeFileTypeView" EntityType="OAModel.SS_OfficeFileTypeView" />
+        </EntityContainer>
+        <EntityType Name="OA_Notice">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="Int32" Name="OrderNum" Nullable="false" />
+          <Property Type="DateTime" Name="NoticeDate" />
+          <Property Type="String" Name="Notice" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Title" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Type="Boolean" Name="overdue" />
+          <Property Type="DateTime" Name="EndDate" />
+          <Property Type="Boolean" Name="isPop" />
+        </EntityType>
+        <EntityType Name="OA_NoticeAnnex">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="Guid" Name="GUID_Notice" />
+          <Property Type="Binary" Name="Annex" MaxLength="Max" FixedLength="false" />
+          <Property Type="String" Name="AnnexName" MaxLength="300" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="OA_OfficeFile">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="String" Name="FileName" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Type="Binary" Name="FileBody" MaxLength="Max" FixedLength="false" />
+          <Property Type="Int32" Name="OrderNum" />
+          <Property Type="Boolean" Name="Visible" />
+          <Property Type="Guid" Name="GUID_OfficeFileType" />
+          <Property Type="String" Name="FileKey" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="SS_OfficeFileType">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="String" Name="FileTypeKey" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="FileTypeName" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="PGUID" />
+        </EntityType>
+        <EntityType Name="OA_FileTemp">
+          <Key>
+            <PropertyRef Name="GUID" />
+          </Key>
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="String" Name="FileName" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Type="Binary" Name="FileBody" MaxLength="Max" FixedLength="false" />
+          <Property Type="Int32" Name="OrderNum" />
+          <Property Type="Boolean" Name="Visible" />
+          <Property Type="Guid" Name="GUID_OfficeFileType" />
+          <Property Type="String" Name="FileKey" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="SS_OfficeFileTypeView">
+          <Key>
+            <PropertyRef Name="GUID" />
+            <PropertyRef Name="FileTypeKey" />
+          </Key>
+          <Property Type="Guid" Name="GUID" Nullable="false" />
+          <Property Type="String" Name="FileTypeKey" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="FileTypeName" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="Guid" Name="PGUID" />
+          <Property Type="String" Name="PKey" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="PName" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs" Space="C-S">
+        <EntityContainerMapping StorageEntityContainer="OAModelStoreContainer" CdmEntityContainer="OAEntities">
+          <EntitySetMapping Name="OA_Notice">
+            <EntityTypeMapping TypeName="OAModel.OA_Notice">
+              <MappingFragment StoreEntitySet="OA_Notice">
+                <ScalarProperty Name="isPop" ColumnName="isPop" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="overdue" ColumnName="overdue" />
+                <ScalarProperty Name="Title" ColumnName="Title" />
+                <ScalarProperty Name="Notice" ColumnName="Notice" />
+                <ScalarProperty Name="NoticeDate" ColumnName="NoticeDate" />
+                <ScalarProperty Name="OrderNum" ColumnName="OrderNum" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OA_NoticeAnnex">
+            <EntityTypeMapping TypeName="OAModel.OA_NoticeAnnex">
+              <MappingFragment StoreEntitySet="OA_NoticeAnnex">
+                <ScalarProperty Name="AnnexName" ColumnName="AnnexName" />
+                <ScalarProperty Name="Annex" ColumnName="Annex" />
+                <ScalarProperty Name="GUID_Notice" ColumnName="GUID_Notice" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OA_OfficeFile">
+            <EntityTypeMapping TypeName="OAModel.OA_OfficeFile">
+              <MappingFragment StoreEntitySet="OA_OfficeFile">
+                <ScalarProperty Name="FileKey" ColumnName="FileKey" />
+                <ScalarProperty Name="GUID_OfficeFileType" ColumnName="GUID_OfficeFileType" />
+                <ScalarProperty Name="Visible" ColumnName="Visible" />
+                <ScalarProperty Name="OrderNum" ColumnName="OrderNum" />
+                <ScalarProperty Name="FileBody" ColumnName="FileBody" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SS_OfficeFileType">
+            <EntityTypeMapping TypeName="OAModel.SS_OfficeFileType">
+              <MappingFragment StoreEntitySet="SS_OfficeFileType">
+                <ScalarProperty Name="PGUID" ColumnName="PGUID" />
+                <ScalarProperty Name="FileTypeName" ColumnName="FileTypeName" />
+                <ScalarProperty Name="FileTypeKey" ColumnName="FileTypeKey" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OA_FileTemp">
+            <EntityTypeMapping TypeName="OAModel.OA_FileTemp">
+              <MappingFragment StoreEntitySet="OA_FileTemp">
+                <ScalarProperty Name="FileKey" ColumnName="FileKey" />
+                <ScalarProperty Name="GUID_OfficeFileType" ColumnName="GUID_OfficeFileType" />
+                <ScalarProperty Name="Visible" ColumnName="Visible" />
+                <ScalarProperty Name="OrderNum" ColumnName="OrderNum" />
+                <ScalarProperty Name="FileBody" ColumnName="FileBody" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="SS_OfficeFileTypeView">
+            <EntityTypeMapping TypeName="OAModel.SS_OfficeFileTypeView">
+              <MappingFragment StoreEntitySet="SS_OfficeFileTypeView">
+                <ScalarProperty Name="PName" ColumnName="PName" />
+                <ScalarProperty Name="PKey" ColumnName="PKey" />
+                <ScalarProperty Name="PGUID" ColumnName="PGUID" />
+                <ScalarProperty Name="FileTypeName" ColumnName="FileTypeName" />
+                <ScalarProperty Name="FileTypeKey" ColumnName="FileTypeKey" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!--
+EF Designer content (DO NOT EDIT MANUALLY BELOW HERE)
+-->
+  <edmx:Designer>
+    <edmx:Connection>
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly"/>
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+        <DesignerProperty Name="ValidateOnBuild" Value="true"/>
+        <DesignerProperty Name="EnablePluralization" Value="True"/>
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True"/>
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <edmx:Diagram Name="OA" >
+        <edmx:EntityTypeShape EntityType="OAModel.OA_Notice" Width="1.5" PointX="0.75" PointY="0.75" Height="2.2966927083333331" />
+        <edmx:EntityTypeShape EntityType="OAModel.OA_NoticeAnnex" Width="1.5" PointX="2.75" PointY="0.75" Height="1.6222135416666674" />
+        <edmx:EntityTypeShape EntityType="OAModel.OA_OfficeFile" Width="2.75" PointX="1.25" PointY="3.125" Height="2.1280729166666656" />
+        <edmx:EntityTypeShape EntityType="OAModel.SS_OfficeFileType" Width="4.75" PointX="4.75" PointY="0.75" Height="1.6222135416666657" />
+        <edmx:EntityTypeShape EntityType="OAModel.OA_FileTemp" Width="1.5" PointX="5.75" PointY="3.75" Height="2.1280729166666674" />
+        <edmx:EntityTypeShape EntityType="OAModel.SS_OfficeFileTypeView" Width="1.5" PointX="0.75" PointY="6.75" Height="1.9594531249999818" />
+      </edmx:Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

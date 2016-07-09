@@ -1,0 +1,17 @@
+--SELECT * FROM dbo.BX_CollectMain WHERE DocNum='2015040064'
+--SELECT * FROM dbo.BX_CollectDetail WHERE GUID_BXCOLLECTMain='852707AB-7930-4296-A72D-AE28A88B2020'
+
+--SELECT * FROM dbo.BX_CollectDetailView WHERE GUID_BXCOLLECTMain='852707AB-7930-4296-A72D-AE28A88B2020'
+
+
+--SELECT * FROM dbo.SS_ComparisonMainView WHERE ExteriorDataBase='102' 
+--SELECT * FROM dbo.SS_ComparisonDetail  WHERE GUID_ComparisonMain='A427FAE5-B5C9-41B0-AEC8-10BB61C6127B' AND  Comparisontype='Project'
+
+SELECT ProjectKey,* FROM dbo.BX_DetailView 
+WHERE
+ ProjectKey  IN (SELECT ExteriorKey FROM dbo.SS_ComparisonDetail  WHERE GUID_ComparisonMain='A427FAE5-B5C9-41B0-AEC8-10BB61C6127B' AND  Comparisontype='Project'
+)
+AND
+ ProjectKey<>''
+AND
+ GUID IN (SELECT GUID_BXDetail FROM dbo.BX_CollectDetailView WHERE GUID_BXCOLLECTMain='852707AB-7930-4296-A72D-AE28A88B2020')

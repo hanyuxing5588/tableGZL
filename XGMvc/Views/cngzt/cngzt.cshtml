@@ -1,0 +1,497 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "出纳工作台";
+}
+<script src="../../Scripts/cn/hx.js?r=7" type="text/javascript"></script>
+<div class="easyui-layout" id="cngzt-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="cngzt-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'cngzt',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/jkxx',['cngzt-BX_Main-moneychinese','cngzt-BX_Main-moneyunmber']]}">
+                打印</a> <a href="#" class="easyui-linkbutton" id="cngzt-xuandan" data-options="plain:'true',iconCls:'icon-xuandan',
+                    bindmethod:{ 'click': ['selectDoc'] },
+                    bindparms:{'selectDoc':['/cngzt/selectDoc','history']},
+                    window:'b-window',scope:'cngzt'">选单</a> <a href="#" class="easyui-linkbutton" id="cngzt-save"
+                        data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/jkxx/Save','cngzt-examine']},scope:'cngzt',status:'4',
+                   forbidstatus:[4]">保存</a> <a href="#" class="easyui-linkbutton" id="cngzt-borrow" data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/jkxx','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'cngzt'">借款单</a> <a href="#" class="easyui-linkbutton" id="cngzt-yichu"
+                        data-options="plain:'true',iconCls:'icon-yichu',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/jkxx','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'cngzt'">移除</a> <a href="#" class="easyui-linkbutton" id="cngzt-close"
+                        data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'cngzt'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true"
+        z="1">
+        <div class="easyui-layout" data-options="fit:true">
+            <!--banner-->
+            <div data-options="region:'north',split:true" style="height: 50px; width: 100%;">
+                <table border="0" style="height: 50px; width: 100%; padding: 0; margin: 0">
+                    <tr>
+                        <td style="height: 50px;">
+                            <div style="font-size: x-large; text-align: center;">
+                                出纳工作台</div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div data-options="region:'center'" style="width: 100%" data-options="fit:true">
+                <!--center-->
+                <div class="easyui-layout" data-options="fit:true">
+                    <div data-options="region:'center'" style="width: 100%" data-options="fit:true">
+                        <div class="easyui-layout" data-options="fit:true">
+                            <div data-options="region:'north',split:true" style="height: 198px">
+                                <div class="easyui-layout" data-options="fit:true">
+                                    <div data-options="region:'west',split:false, border:false" style="width: 600px;
+                                        overflow: hidden">
+                                        <table border="0" style="height: 195px; width: 350px; padding: 0; margin: 0">
+                                            <tr>
+                                                <td style="height: 15px;">
+                                                    合计金额
+                                                    <input class="easyui-numberbox" id="" style="width: 176px" data-options="precision:2,forbidstatus:[4],groupSeparator:',',max:99999999.99"></input>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="height: 100%">
+                                                    <table class="easyui-edatagrid" id="cngzt-BX_Detail" style="overflow: auto" data-options="
+                                                        orderNum:'cngzt-BX_Detail-OrderNum',
+                                                        requireCol:[
+                       
+                                                        ],
+                                                        fitColumns:false,
+                                                        pagination:false,
+                                                        method:'get',
+                                                        singleSelect:true,
+                                                        checkOnSelect:true,
+                                                        height:157,
+                                                        width:592,
+                                                        rownumbers:true,
+                                                        scope:'cngzt',
+                                                        single:false,
+                                                        forbidstatus:[4,3],
+                                                        copyField:[
+                       
+                                                        ]
+                                                       ">
+                                                        <thead>
+                                                            <tr>
+                                                                <th field="xjtq-CN_CashDetail-GUID" hidden="true">
+                                                                </th>
+                                                                <th field="xjtq-CN_CashDetail-GUID_Person" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-BX_Detail-GUID_Person" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-CN_PaymentNumber-GUID" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-CN_PaymentNumber-IsProject" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                                                </th>
+                                                                <th field="cngzt-CN_CashDetail-GUID_BankAccount" title="银行名称" width="180" sortable="false"
+                                                                    align="center" editor="{
+                                                                        type:'combogrid',
+                                                                         options:{
+                                                                         gridassociate:{gridId:'xjtq-CN_CashDetail',
+                                                                         map:{
+                                                                            'xjtq-CN_CashDetail-BankAccountNo':['BankAccountNo','BankAccountNo']
+                                                                            }
+                                                                         },
+                                                                         bindmethod: { 'onSelect': ['setAssociate'] },     
+                                                                         width:255,
+                                                                         panelWidth:275,
+                                                                         remoteUrl:'/Combogrid/BankAccount',
+                                                                         method:'get',
+                                                                         idField:'GUID',
+                                                                         filterField:'BankAccountNo,BankAccountName',
+                                                                         textField:'BankAccountName',
+                                                                         sortName:'BankAccountNo',
+                                                                         columns:[[
+                                                                                {field:'GUID',hidden:'true'},
+                                                                                {field:'BankAccountNo',title:'银行账号',width:'150'},
+                                                                                {field:'BankAccountName',title:'银行名称',width:'100'}
+                                                                          ]]
+                                                                        }
+                                                                    }">
+                                                                    银行名称
+                                                                </th>
+                                                                <th field="cngzt-BX_Detail-Total_CN" title="金额" sortable="false" align="center" width="100"
+                                                                    editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                                                    金额
+                                                                </th>
+                                                                <th field="cngzt-CN_PaymentNumber-PaymentNumber" title="财政支付码" sortable="false" align="center"
+                                                                    width="160" editor="
+                                                                    {
+                                                                        type:'searchbox',
+                                                                        options:{
+                                                                        'particulars':['/particulars/cngzt','cngzt-BX_Detail','parti'],
+                                                                        'window':'b-window'
+                                                                        }
+                                                                    }">
+                                                                    财政支付码
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div data-options="region:'center',split:false, border:false" style="overflow: hidden"
+                                        fit="true">
+                                        <table border="0" style="height: 195px; padding: 0; margin: 0">
+                                            <tr>
+                                                <td style="height: 25px; font-size: x-large; color: #0054E3;">
+                                                    借款信息
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="height: 100%">
+                                                    <table border="0" style="height: 148px; padding: 0; margin: 0">
+                                                        <tr>
+                                                            <td style="width: 70px; height: 25px;">
+                                                                <div style="float: right;">
+                                                                    借款人员</div>
+                                                            </td>
+                                                            <td field="cngzt-PersonName">
+                                                                <input class="easyui-validdatebox" id="" style="width: 176px"></input>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width: 70px; height: 25px;">
+                                                                <div style="float: right; margin-left: 10px;">
+                                                                    借款部门</div>
+                                                            </td>
+                                                            <td field="cngzt-DepartmentName">
+                                                                <input class="easyui-validdatebox" id="" style="width: 176px"></input>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width: 70px; height: 25px;">
+                                                                <div style="float: right; margin-left: 15px;">
+                                                                    借款单位</div>
+                                                            </td>
+                                                            <td field="cngzt-DWName">
+                                                                <input class="easyui-validdatebox" id="" style="width: 176px"></input>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="width: 70px; height: 25px;">
+                                                                <div style="float: right; margin-left: 15px;">
+                                                                    借款余额</div>
+                                                            </td>
+                                                            <td field="cngzt-Total_XX">
+                                                                <input class="easyui-numberbox" id="" style="width: 176px" data-options="precision:2,forbidstatus:[4],groupSeparator:',',max:99999999.99"></input>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div data-options="region:'west',split:false, border:false" style="width: 600px;
+                                overflow: hidden">
+                                <table border="0" style="height: 185px; width: 350px; padding: 0; margin: 0">
+                                    <tr>
+                                        <td style="height: 25px;">
+                                            <div style="font-size: x-large; color: #0054E3;">
+                                                借方单据</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 100%">
+                                            <table class="easyui-edatagrid" id="cngzt-BX_Detail" style="overflow: auto" data-options="
+                                             orderNum:'cngzt-BX_Detail-OrderNum',
+                                            requireCol:[
+                       
+                                            ],
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:true,
+                                            checkOnSelect:true,
+                                            height:158,
+                                            width:590,
+                                            rownumbers:true,
+                                            scope:'cngzt',
+                                            single:false,
+                                            forbidstatus:[4,3],
+                                            copyField:[
+                       
+                                            ]
+                                            ">
+                                                <thead frozen="true">
+                                                    <tr>
+                                                        <th field="cngzt-DocNum" title="单号" sortable="false" align="center" width="80px">
+                                                            单据号
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <thead>
+                                                    <tr>
+                                                        <th field="cngzt-DocTypeName" title="单据类型" sortable="false" align="center" width="80px">
+                                                            单据类型
+                                                        </th>
+                                                        <th field="cngzt-DocDate" title="单据日期" sortable="false" align="center" width="60px">
+                                                            单据日期
+                                                        </th>
+                                                        <th field="cngzt-PersonName" title="人员" sortable="false" align="center" width="80px">
+                                                            报销人
+                                                        </th>
+                                                        <th field="cngzt-DepartmentName" title="部门" sortable="false" align="center" width="100px">
+                                                            部门
+                                                        </th>
+                                                        <th field="cngzt-Total_XX" title="金额" sortable="false" align="center" width="80px">
+                                                            金额
+                                                        </th>
+                                                        @*<th field="cngzt-DocMemo" title="摘要" sortable="false" align="center" width="100px">
+                                                            摘要
+                                                        </th>*@
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div data-options="region:'center',split:false,border:false" style="overflow: hidden">
+                                <table border="0" style="height: 185px; width: 350px; padding: 0; margin: 0">
+                                    <tr>
+                                        <td style="height: 25px;">
+                                            <div style="font-size: x-large; color: #0054E3;">
+                                                贷方单据</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="height: 100%">
+                                            <table class="easyui-edatagrid" id="cngzt-BX_Detail" style="overflow: auto" data-options="
+                                             orderNum:'cngzt-BX_Detail-OrderNum',
+                                            requireCol:[
+                       
+                                            ],
+                                            fitColumns:false,
+                                            pagination:false,
+                                            method:'get',
+                                            singleSelect:true,
+                                            checkOnSelect:true,
+                                            height:158,
+                                            width:640,
+                                            rownumbers:true,
+                                            scope:'cngzt',
+                                            single:false,
+                                            forbidstatus:[4,3],
+                                            copyField:[
+                       
+                                            ]
+                                            ">
+                                                <thead>
+                                                    <tr>
+                                                        <th field="cngzt-DocNum" title="单号" sortable="false" align="center" width="80px">
+                                                            单据号
+                                                        </th>
+                                                        <th field="cngzt-DocTypeName" title="单据类型" sortable="false" align="center" width="80px">
+                                                            单据类型
+                                                        </th>
+                                                        <th field="cngzt-DocDate" title="单据日期" sortable="false" align="center" width="80px">
+                                                            单据日期
+                                                        </th>
+                                                        <th field="cngzt-PersonName" title="人员" sortable="false" align="center" width="80px">
+                                                            报销人
+                                                        </th>
+                                                        <th field="cngzt-DepartmentName" title="部门" sortable="false" align="center" width="100px">
+                                                            部门
+                                                        </th>
+                                                        <th field="cngzt-Total_XX" title="金额" sortable="false" align="center" width="80px">
+                                                            金额
+                                                        </th>
+                                                        @*<th field="cngzt-DocMemo" title="摘要" sortable="false" align="center" width="100px">
+                                                            摘要
+                                                        </th>*@
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-options="region:'south',split:true,border:false" style="height: 195px;
+                        overflow: hidden">
+                        <table border="0" style="height: 150px; width: 600; padding: 0; margin: 0">
+                            <tr>
+                                <td style="height: 30px;">
+                                    <table border="0" style="padding: 0px; margin: 0px;">
+                                        <tr>
+                                            <td style="width: 100px; height: 30px;">
+                                                <div style="font-size: x-large; color: #0054E3;">
+                                                    会计凭证</div>
+                                            </td>
+                                            <td style="width: 60px;">
+                                                <div style="float: right;">
+                                                    对方帐套</div>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validdatebox" id="" width="176" />
+                                            </td>
+                                            <td style="width: 75px;">
+                                                <div style="float: right;">
+                                                    对方帐套年度</div>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validdatebox" id="" width="176" />
+                                            </td>
+                                            <td style="width: 70px;">
+                                                <div style="float: right;">
+                                                    会计期间</div>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validdatebox" id="" width="176" />
+                                            </td>
+                                            <td style="width: 70px;">
+                                                <div style="float: right;">
+                                                    对方凭证号</div>
+                                            </td>
+                                            <td>
+                                                <input class="easyui-validdatebox" id="" width="176" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table class="easyui-edatagrid" id="cngzt-" style="overflow: auto" data-options="
+                                     orderNum:'cngzt-BX_Detail-OrderNum',
+                                        requireCol:[
+                       
+                                        ],
+                                        fitColumns:false,
+                                        pagination:false,
+                                        method:'get',
+                                        singleSelect:true,
+                                        checkOnSelect:true,
+                                        height:147,
+                                        width:1242,
+                                        rownumbers:true,
+                                        scope:'cngzt',
+                                        single:false,
+                                        forbidstatus:[4,3],
+                                        copyField:[
+                       
+                                        ]
+                                        ">
+                                        <thead>
+                                            <tr>
+                                                <th field="xjtq-CN_CashDetail-GUID" hidden="true">
+                                                </th>
+                                                <th field="xjtq-CN_CashDetail-GUID_Person" hidden="true">
+                                                </th>
+                                                <th field="cngzt-BX_Detail-GUID_Person" hidden="true">
+                                                </th>
+                                                <th field="cngzt-CN_PaymentNumber-GUID" hidden="true">
+                                                </th>
+                                                <th field="cngzt-CN_PaymentNumber-IsProject" hidden="true">
+                                                </th>
+                                                <th field="cngzt-CN_PaymentNumber-GUID_EconomyClass" hidden="true">
+                                                </th>
+                                                <th field="cngzt-CN_PaymentNumber-GUID_FunctionClass" hidden="true">
+                                                </th>
+                                                <th field="cngzt-CN_PaymentNumber-GUID_ExpendType" hidden="true">
+                                                </th>
+                                                <th field="cngzt-CN_PaymentNumber-GUID_BGResource" hidden="true">
+                                                </th>
+                                                @*<th field="cngzt-OrderNum" title="行号" sortable="false" align="center" width="100px;">
+                                                    行号
+                                                </th>*@
+                                                <th field="cngzt-PZMemo" title="凭证摘要" sortable="false" align="center" width="100px;">
+                                                    凭证摘要
+                                                </th>
+                                                <th field="cngzt-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                                                    width="160" editor="
+                                                                    {
+                                                                        type:'searchbox',
+                                                                        options:{
+                                                                        'particulars':['/particulars/cngzt','cngzt-BX_Detail','parti'],
+                                                                        'window':'b-window'
+                                                                        }
+                                                                    }">
+                                                                    财政支付令
+                                                                </th>
+                                                <th field="cngzt-AccountTitleKey" title="科目编码" sortable="false" align="center" width="100px;">
+                                                    科目编码
+                                                </th>
+                                                <th field="cngzt-AccountTitleName" title="科目名称" sortable="false" align="center" width="100px;">
+                                                    科目名称
+                                                </th>
+                                                <th field="cngzt-Total_PZTrue" title="借方金额" sortable="false" align="center" width="100px;">
+                                                    借方金额
+                                                </th>
+                                                <th field="cngzt-Total_PZFalse" title="贷方金额" sortable="false" align="center" width="80px;">
+                                                    贷方金额
+                                                </th>
+                                                <th field="cngzt-DepartmentName" title="部门" sortable="false" align="center" width="100px;">
+                                                    部门
+                                                </th>
+                                                <th field="cngzt-ProjectKey" title="项目编码" sortable="false" align="center" width="100px;">
+                                                    项目编码
+                                                </th>
+                                                <th field="cngzt-ProjectName" title="项目名称" sortable="false" align="center" width="150px;">
+                                                    项目名称
+                                                </th>
+                                                <th field="cngzt-CustomerName" title="往来单位" sortable="false" align="center" width="150px;">
+                                                    往来单位
+                                                </th>
+                                                <th field="cngzt-PersonName" title="人员" sortable="false" align="center" width="100px;">
+                                                    人员名称
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input class="easyui-validatebox" id="cngzt-BX_Main-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="cngzt-BX_Main-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="cngzt-BX_Main-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="cngzt-BX_Main-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="cngzt-BX_Main-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="cngzt-BX_Main-OAOTS" type="hidden"></input>
+</div>
+<label id="cngzt-extendregion" style="display: none">
+    <input id="cngzt-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus"
+type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text"
+value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="cngzt-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="cngzt-BX_Main-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

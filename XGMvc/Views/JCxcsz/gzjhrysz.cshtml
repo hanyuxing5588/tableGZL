@@ -1,0 +1,318 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "工资计划人员设置";
+}
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<script src="../../Scripts/jc/gzjhrysz.js" type="text/javascript"></script>
+<div class="easyui-layout" id="gzjhrysz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                    <a href="#" class="easyui-linkbutton" id="gzjhrysz-edit" 
+                    data-options="plain:'true',iconCls:'icon-xiugai',
+                    treeId:['gzjhrysz-tree-gpro'],
+                    gridId:['gzjhrysz-SA_PlanPersonSet'],
+                    bindmethod:{'click':['setStatusexamine']},scope:'gzjhrysz',status:'2',                       
+                    forbidstatus:[2]">修改</a>
+                    
+                    <a href="#" class="easyui-linkbutton" id="gzjhrysz-quanxuan"
+                    data-options="plain:'true',iconCls:'icon-quanxuan', 
+                    scope:'gzjhrysz',
+                    gridId:['gzjhrysz-SA_PlanPersonSet'],
+                    quanxuan:true,
+                    forbidstatus:[4],
+                    bindmethod:{ 'click': ['TreeChecked']}
+                    ">全选</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="gzjhrysz-quanxiao" 
+                    data-options="plain:'true',iconCls:'icon-quanxiao', 
+                    scope:'gzjhrysz',
+                    forbidstatus:[4],
+                    gridId:['gzjhrysz-SA_PlanPersonSet'],
+                    bindmethod:{ 'click': ['TreeChecked'] }">全消</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="gzjhrysz-save" 
+                    data-options="plain:'true',iconCls:'icon-baocun',
+                    JCDA:true,
+                    NewIdStatus:'1',
+                    treeId:['gzjhrysz-tree-gpro'],
+                    bindmethod:{ 'click': ['saveDoc'] },
+                    bindparms:{'saveDoc':['/JCxcsz/Savegzjhrysz']},
+                    scope:'gzjhrysz',status:'1',
+                    forbidstatus:[4]
+                    ">保存</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="gzjhrysz-cancel" 
+                    data-options="plain:'true',iconCls:'icon-quxiao', 
+                    scope:'gzjhrysz',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                    
+                    <a href="#" class="easyui-linkbutton" id="gzjhrysz-close" 
+                    data-options="plain:'true',iconCls:'icon-tuichu',
+                    bindmethod:{ 'click': ['closeTab'] },
+                    scope:'gzjhrysz'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="工资计划">
+                <ul class="easyui-tree" id="gzjhrysz-tree-gpro" data-options="
+                  msg:'工资计划',
+                  m:'SA_Plan',
+                  associate:{
+                    'gzjhrysz-SA_Plan-GUID':['GUID'],
+                    'gzjhrysz-SA_PlanPersonSet-GUID_SS_Person':['GUID_SS_Person'],
+                    'gzjhrysz-SA_PlanPersonSet-GUID_SA_Plan':['GUID_SA_Plan'],
+                    'gzjhrysz-SA_PlanPersonSet-GUID_SS_Bank':['GUID_SS_Bank'],
+                    'gzjhrysz-SA_Plan-PlanKey':['PlanKey'],
+                    'gzjhrysz-SA_Plan-PlanName':['PlanName'],
+                    'gzjhrysz-SA_Plan-PlanDate':['PlanDate'],
+                    'gzjhrysz-SA_Plan-GUID_SA_PlanArea':['GUID_SA_PlanArea'],
+                    'gzjhrysz-SA_Plan-BankName':['BankName'],
+                    'gzjhrysz-gzjhryszModel-GUID_SA_Plan':['GUID_SA_Plan'],
+                    'gzjhrysz-gzjhryszModel-GUID_SS_Person':['GUID_SS_Person'],
+                    'gzjhrysz-gzjhryszModel-GUID_SS_Bank':['GUID_SS_Bank']
+                  },
+                  gridassociate:{
+                      'gridId':'gzjhrysz-SA_PlanPersonSet',
+                      'associateId':'gzjhrysz-gzjhryszModel-GUID_SA_Plan',           
+                      'map': {
+                            'gzjhrysz-gzjhryszModel-GUID_SA_Plan':['GUID']
+                        }
+                  },
+                  checkbox:false,
+                  bindmethod:{'onClick': ['setAss'] },
+                  forbidstatus:[3],
+                  url:'/Tree/GetJCPlanTree',
+                  scope:'gzjhrysz',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <table border="0" id="table" style="padding: 0; margin: 0; width:100%">
+            <tr>
+                <td colspan="4" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        工资计划人员设置</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field1" id="lbl-PlanKey">
+                        工资计划编号</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="gzjhrysz-SA_Plan-PlanKey" 
+                        data-options="forbidstatus:[-1]"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field" id="lbl-PlanName">
+                        工资计划名称</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-validatebox" id="gzjhrysz-SA_Plan-PlanName" 
+                        data-options="forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field" id="lbl-PlanDate">
+                        计划开始时间</label>
+                </td>
+                <td class="tdValueTr2">
+                    <input class="easyui-datebox" id="gzjhrysz-SA_Plan-PlanDate" data-options="width:185,forbidstatus:[-1],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field" id="lbl-GUID_SA_PlanArea">
+                        工资计划区间</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="gzjhrysz-SA_Plan-GUID_SA_PlanArea" data-options="
+                                           panelWidth:245,
+                                           width:185,
+                                           method:'post',
+                                           scope:'gzjhrysz',
+                                           filterField:'PlanAreaKey,PlanAreaName',
+                                           sortName:'PlanAreaKey',
+                                           remoteUrl:'/Combogrid/PlanArea',
+                                           idField:'GUID',
+                                           textField:'PlanAreaName',
+                                           columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'PlanAreaKey',title:'工资计划区间编码',width:'110'},
+                                                {field:'PlanAreaName',title:'工资计划区间名称',width:'110'}
+                                           ]],
+                                           
+                                           forbidstatus:[-1]
+                                           ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdTextTr2">
+                    <label for="field" id="lbl-ItemType">
+                        设置方式</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combobox" id="gzjhrysz-SA_Plan-ItemType" 
+                        data-options="
+                            panelHeight:100,
+                            forbidstatus:[4,3],
+                            bindmethod:{'onSelect': ['onSel']}
+                            ">
+                        <option value="1">逐一设置</option>
+                        <option value="2">批量设置</option>
+                    </select>
+                </td>
+                <td class="tdTextTr2">
+                    <label for="field" id="lbl-BankName">
+                        银行信息</label>
+                </td>
+                <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="gzjhrysz-SA_Plan-BankName" data-options="
+                                           panelWidth:245,
+                                           width:185,
+                                           method:'post',
+                                           scope:'SA_Plan',
+                                           treeId:['gzjhrysz-tree-gpro'],
+                                           filterField:'BankKey,BankName',
+                                           sortName:'BankKey',
+                                           remoteUrl:'/Combogrid/Bank',
+                                           idField:'GUID',
+                                           textField:'BankName',
+                                           columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'BankKey',title:'银行编码',width:'110'},
+                                                {field:'BankName',title:'银行名称',width:'110'}
+                                           ]],
+                                           bindmethod:{'onClickRow': ['BankInfo'] },
+                                           forbidstatus:[-1]
+                                           ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4">
+                    <table class="easyui-edatagrid" id="gzjhrysz-SA_PlanPersonSet"
+                        data-options="
+                        orderNum:'gzjhrysz-SA_PlanPersonSet-OrderNum',
+                            method:'get',
+                            single:false,
+                            scope:'gzjhrysz',
+                            singleSelect:true,
+                            checkOnSelect:false,
+                            selectOnCheck:false,
+                            pagination:true,
+                            pageSize:500,
+                            pageList:[50,100,400,500],
+                            forbidstatus:[4],
+                            savePage:true
+                        ">
+                        <thead>
+                            <tr>
+                               
+                                <th field="gzjhrysz-gzjhryszModel-GUID" hidden="true">
+                                </th>
+                                <th field="gzjhrysz-gzjhryszModel-GUID_SA_Plan" hidden="true">
+                                </th>
+                                <th field="gzjhrysz-gzjhryszModel-GUID_SS_Person" hidden="true">
+                                </th>
+                                <th field="gzjhrysz-gzjhryszModel-GUID_SS_Bank" hidden="true">
+                                </th>
+                                <th field="GUID" hidden="true"></th>
+                                 <th field="b-sel"  data-options="width:60, checkbox:true">
+                                </th>
+                                <th field="gzjhrysz-gzjhryszModel-PersonKey"  title="人员编码" width="100" sortable="false"
+                                    align="left">
+                                    人员编码
+                                </th>
+                                <th field="gzjhrysz-gzjhryszModel-PersonName" title="人员名称" sortable="false" align="left"
+                                    width="150">
+                                    人员名称
+                                </th>
+                                <th field="gzjhrysz-gzjhryszModel-BankKey" title="银行编码" sortable="false" align="left"
+                                    width="100" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:250,  
+                                      remoteUrl:'/Combogrid/Bank',
+                                      method:'get',
+                                      idField:'BankKey',
+                                      textField:'BankKey',
+                                      filterField:'BankKey,BankName',
+                                      sortName:'BankKey',
+                                      forbidstatus:[4],
+                                      gridassociate:{
+                                            gridId:'gzjhrysz-SA_PlanPersonSet',
+                                      map:{
+                                            'gzjhrysz-gzjhryszModel-BankName':['BankName','BankName'],
+                                            'gzjhrysz-gzjhryszModel-GUID_SS_Bank':['GUID']
+                                      }},
+                                      bindmethod: { 'onCloseEx': ['setAssociate'] },  
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'GUIGUID_SS_BankD',title:'GUID_SS_Bank',hidden:true},
+                                          {field:'BankKey',title:'银行编码',width:'75'},
+                                          {field:'BankName',title:'银行名称',width:'150'}
+                                        ]]
+                                      }
+                                    }">
+                                    银行编码
+                                </th>
+                                <th field="gzjhrysz-gzjhryszModel-BankName" title="银行名称" sortable="false" align="left"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:250,  
+                                      remoteUrl:'/Combogrid/Bank',
+                                      method:'get',
+                                      idField:'BankName',
+                                      textField:'BankName',
+                                      filterField:'BankKey,BankName',
+                                      sortName:'BankKey',
+                                      forbidstatus:[4],
+                                      gridassociate:{
+                                            gridId:'gzjhrysz-SA_PlanPersonSet',
+                                      map:{
+                                            'gzjhrysz-gzjhryszModel-BankKey':['GUID','BankKey'],
+                                            'gzjhrysz-gzjhryszModel-GUID_SS_Bank':['GUID']
+                                      }},
+                                      bindmethod: { 'onCloseEx': ['setAssociate'] },  
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'GUID_SS_Bank',title:'GUID_SS_Bank',hidden:true},
+                                          {field:'BankKey',title:'银行编码',width:'75'},
+                                          {field:'BankName',title:'银行名称',width:'150'}
+                                        ]]
+                                      }
+                                    }">
+                                    银行名称
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="gzjhrysz-SA_Plan-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="gzjhrysz-SA_PlanPersonSet-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="gzjhrysz-SA_PlanPersonSet-GUID_SA_Plan" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="gzjhrysz-SA_PlanPersonSet-GUID_SS_Person" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="gzjhrysz-SA_PlanPersonSet-GUID_SS_Bank" type="hidden" keyattr="1"></input>
+
+</div>
+<label id="gzjhrysz-extendregion" style="display: none">
+    <input id="gzjhrysz-status" type="text"></input>
+    <input id="initscope" type="text" value="gzjhrysz"></input>
+    <input id="initstatus" type="text" value="4"></input>
+    <input id="initController" type="text" value="JCxcsz"></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="gzjhrysz-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

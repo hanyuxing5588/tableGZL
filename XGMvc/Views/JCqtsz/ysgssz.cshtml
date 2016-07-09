@@ -1,0 +1,130 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "预算公式设置";
+}
+<script src="../../Scripts/jc/gsset.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $.ClickTree1 = function (node, tree2Id) {
+        var data = $('#' + tree2Id).tree('getRoots');
+        var lastConut = data.length - 1;
+        var arry = [];
+        for (var i = 0, j = data.length; i < j; i++) {
+            var currNode = data[i];
+            arry.push(currNode.attributes.GUID_Item);
+        }
+        var node1 = data[lastConut];
+        if (!arry.exist(node.id)) {
+            $('#' + tree2Id).tree('insert', {
+                after: node1.target,
+                data: {
+                    id: node.id,
+                    text: node.text,
+                    attributes: {
+                        GUID: "",
+                        GUID_Item: node.id,
+                        ItemFormula: "",
+                        ItemName: node.text,
+                        m: "BG_Item",
+                        valid: "1"
+                    }
+                }
+            });
+        }
+    };
+</script>
+<style type="text/css">
+    .btnCustom a span span.l-btn-text
+    {
+        padding-top: 0px !important;
+        font-weight: bold;
+    }
+    .btnCustom a
+    {
+        position: relative;
+        top: 3px;
+        left: 5px;
+        height: 24px;
+    }
+</style>
+<div class="easyui-layout" id="ysgssz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+                   <a href="#" class="easyui-linkbutton" id="ysgssz-save" 
+                   data-options="
+                   plain:'true',
+                   iconCls:'icon-baocun',
+                   url:'/Formula/YSSave/'"
+                   onclick="$.SaveDoc(this)" >保存</a> 
+
+                   <a href="#" class="easyui-linkbutton"  id="ysgssz-close" 
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'ysgssz'">退出</a>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 500px">
+        <div id="gssz-tab" class="easyui-tabs" data-options="fit:true">
+            @{
+                var temp = ViewData["TabsName"] as List<string>;
+                var temp1 = ViewData["TabsGuid"] as List<Guid>;
+                var tree1 = "gssz-tree-gpro";
+                var tree2 = "gssz-tree";
+                var formula = "formula";
+            }
+            @for (int i = 0, j = temp.Count; i < j; i++)
+            {
+                <div title=@temp[i] style="float:left">
+                    <div class="easyui-layout" data-options="fit:true">
+                        <div data-options="region:'west',split:'true'" style="width: 250px">
+                            <ul class="easyui-tree" id="@tree1@i" 
+                                data-options="
+                                    url:'/Tree/GetSalarySetupTree',
+                                    onDblClick:function(node){
+                                        $.ClickTree1(node,'@tree2@i');
+                                    },
+                                     onLoadSuccess:function(node, data){
+                                        $.InitItemGuid2NameDic(data);
+                                    }
+                                " >
+                            </ul>
+                        </div>
+                        <div data-options="region:'center',split:'true'" style="width: 250px">
+                           <div class="btnCustom" style="margin:0 0 10px 0;">
+                                <a href="#" class="easyui-linkbutton" data-options="width:40,dirc:'up',setValueId:'@tree2@i'" id="up" onclick="$.ControlDirection(this)" >↑</a>
+                                <a href="#" class="easyui-linkbutton" data-options="width:40,dirc:'down',setValueId:'@tree2@i'" id="down" onclick="$.ControlDirection(this)" >↓</a>
+                                <a href="#" class="easyui-linkbutton" data-options="width:40,setValueId:{tree:'@tree2@i'},msg:'预算条目被公式引用，不可删除！',url:'/Formula/YSIsCanDelete/'" id="del" onclick="$.deleteDoc(this)" >删除</a>
+                                <a href="#" class="easyui-linkbutton" data-options="width:40,setValueId:{content:'contentId',formula:'formulaId',tree:'@tree2@i',buttons:['add', 'sub', 'mult', 'div', 'left', 'right', 'save', 'cancle']}" id="@formula@i" onclick="$.ControlEnable(this)" >公式</a>
+                            </div>
+                            <ul class="easyui-tree" id="@tree2@i" 
+                                data-options="
+                                    Id:'@temp1[i]',
+                                    url:'/Tree/GetSalarySetupByContions?tabName=@temp[i]',
+                                    onClick:function(node){
+                                        $.ClickTree2.call(this,node,'titleId','contentId');
+                                    },
+                                    onLoadSuccess:function(node, data){
+                                        $.TreeSelected(this);
+                                    }
+                                " >
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div data-options="region:'center',split:'true',fit:true" style="width: 300px">
+            <div data-options="region:'north'" style="height: 30px" class="btnCustom">
+                <a href="#" class="easyui-linkbutton" id="add" onclick="$.OperatorSymbol(this)" data-options="width:40,symbol:'+',setValueId:'contentId'">+</a> 
+                <a href="#" class="easyui-linkbutton" id="sub" onclick="$.OperatorSymbol(this)" data-options="width:40,symbol:'-',setValueId:'contentId'">-</a> 
+                <a href="#" class="easyui-linkbutton" id="mult" onclick="$.OperatorSymbol(this)" data-options="width:40,symbol:'*',setValueId:'contentId'">*</a> 
+                <a href="#" class="easyui-linkbutton" id="div" onclick="$.OperatorSymbol(this)" data-options="width:40,symbol:'/',setValueId:'contentId'">/</a> 
+                <a href="#" class="easyui-linkbutton" id="left" onclick="$.OperatorSymbol(this)" data-options="width:40,symbol:'(',setValueId:'contentId'">(</a> 
+                <a href="#" class="easyui-linkbutton" id="right" onclick="$.OperatorSymbol(this)" data-options="width:40,symbol:')',setValueId:'contentId'">)</a> 
+                <a href="#" class="easyui-linkbutton" id="save"  onclick="$.ControlSave(this)" data-options="width:40,setValueId:{content:'',formula:'',tree:'',buttons:['add', 'sub', 'mult', 'div', 'left', 'right', 'save', 'cancle']},storeNode:''">保存</a> 
+                <a href="#" class="easyui-linkbutton" id="cancle" data-options="width:40,setValueId:{content:'',formula:'',buttons:['add', 'sub', 'mult', 'div', 'left', 'right', 'save', 'cancle'],storeNode:''}" onclick="$.ControlDisable(this)">取消</a> 
+            </div>
+            <div data-options="region:'center',split:'true',fit:true" style="width: 300px">
+                <input class="easyui-validatebox" id="titleId" readonly="readonly" style="background:#EFEFEF;width:720px;color:Red;" />
+                <textarea id="contentId" rows="34" cols="100"></textarea>
+           </div>
+    </div>
+</div>

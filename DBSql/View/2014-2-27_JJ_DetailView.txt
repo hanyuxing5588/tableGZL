@@ -1,0 +1,70 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[JJ_DetailView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[JJ_DetailView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：JJ_DetailView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-1-27
+//功    能：基金明细视图信息
+*/
+
+CREATE  VIEW dbo.JJ_DetailView
+AS
+SELECT dbo.JJ_Detail.GUID, dbo.JJ_Detail.GUID_JJType, dbo.SS_JJType.JJTypeKey, 
+      dbo.SS_JJType.JJTypeName, dbo.JJ_Detail.Total_JJ, dbo.JJ_Detail.OAOTS, 
+      dbo.JJ_Detail.GUID_Person, dbo.SS_Person.PersonKey, 
+      dbo.SS_Person.PersonName, dbo.JJ_Detail.GUID_Department, 
+      dbo.SS_Department.DepartmentKey, dbo.SS_Department.DepartmentName, 
+      dbo.JJ_Detail.GUID_Project, dbo.SS_Project.ProjectKey, dbo.SS_Project.ProjectName,
+      dbo.SS_Project.GUID_ProjectClass,dbo.SS_ProjectClass.ProjectClassKey,dbo.SS_ProjectClass.ProjectClassName, 
+      dbo.JJ_Detail.GUID_SettleType, dbo.SS_SettleType.SettleTypeKey, 
+      dbo.SS_SettleType.SettleTypeName, dbo.JJ_Detail.GUID_PaymentNumber, 
+      dbo.JJ_Detail.IsDC, dbo.JJ_Detail.DocState, dbo.JJ_Detail.MakeDate, 
+      dbo.JJ_Detail.ModifyDate, dbo.JJ_Detail.GUID_JJ_Main, dbo.JJ_Detail.GUID_Maker, 
+      SS_Operator_1.OperatorName AS Maker, dbo.JJ_Detail.GUID_Modifier, 
+      dbo.SS_Operator.OperatorName AS Modifier, dbo.JJ_Detail.Total_Plan, 
+      dbo.JJ_Detail.FeeMemo, dbo.JJ_Detail.GUID_Cutomer, 
+      dbo.SS_Customer.CustomerKey, dbo.SS_Customer.CustomerName, 
+      dbo.SS_SettleType.IsCash, dbo.SS_SettleType.IsCheck, 
+      dbo.SS_SettleType.IsBill,dbo.JJ_Detail.GUID_BGType, dbo.BG_Type.BGTypeKey, 
+      dbo.BG_Type.BGTypeName
+FROM dbo.JJ_Detail LEFT OUTER JOIN
+      dbo.SS_Customer ON 
+      dbo.JJ_Detail.GUID_Cutomer = dbo.SS_Customer.GUID LEFT OUTER JOIN
+      dbo.SS_Operator ON 
+      dbo.JJ_Detail.GUID_Modifier = dbo.SS_Operator.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.JJ_Detail.GUID_Maker = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.SS_SettleType ON 
+      dbo.JJ_Detail.GUID_SettleType = dbo.SS_SettleType.GUID LEFT OUTER JOIN
+      dbo.SS_Project ON 
+      dbo.JJ_Detail.GUID_Project = dbo.SS_Project.GUID LEFT OUTER JOIN
+      dbo.SS_ProjectClass ON
+      dbo.SS_Project.GUID_ProjectClass=dbo.SS_ProjectClass.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.JJ_Detail.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_Person ON 
+      dbo.JJ_Detail.GUID_Person = dbo.SS_Person.GUID LEFT OUTER JOIN
+      dbo.SS_JJType ON dbo.JJ_Detail.GUID_JJType = dbo.SS_JJType.GUID LEFT OUTER JOIN	 
+	  dbo.BG_Type ON 
+      dbo.JJ_Detail.GUID_BGType = dbo.BG_Type.GUID 
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+
+
+

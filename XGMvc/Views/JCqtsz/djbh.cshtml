@@ -1,0 +1,265 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "单据编号";
+}
+<script type="text/javascript">
+    $.extend($.view, {
+        init: function (scope, status, dataguid) {
+            if (scope && status) {
+                status = status + "";
+                var id = "[id^='" + scope + "-'].easyui-linkbutton";
+                switch (status) {
+                    case "1": //新建
+                        //设置页面编辑状态
+                        
+                        LoadData();
+                        break;
+                    case "2": //修改
+                    case "3": //删除
+                    case "4": //浏览
+
+                        var data = $.view.retrieveDoc(dataguid, scope);
+                        if (data) {
+                            $.view.loadData(scope, data);
+                        }
+                        $.view.setViewEditStatus(scope, status);
+                        $.view.cancelObj = { data: data, status: status };
+                        break;
+                }
+            }
+        }
+    })
+
+    // 函数区域
+    function myCancel() {
+        $('#tree').hide();
+        var cancel = $.view.cancelObj;
+        if (!cancel.data) cancel.data = [];
+        $.view.clearView("djbh");
+        $.view.loadData("djbh", cancel.data);
+        $.view.setViewEditStatus("djbh", cancel.status);
+    }
+    function mySave() {
+        
+        var StateInput = document.getElementById("djbh-status");
+        var state = StateInput.getAttribute("value");
+        var data = $.view.retrieveData("djbh", "dataregion", true);
+        $.ajax({
+            url: "/JCqtsz/SaveNumberRule",
+            data: { "status": "2", "m": JSON.stringify(data.m), "d": JSON.stringify(data.d) },
+            dataType: "json",
+            type: "POST",
+            traditional: true,
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", textStatus, 'error');
+            },
+            success: function (data) {
+                if (data && data.result == "success") {
+                    $.view.setStatus('djbh', "4");
+                    $.view.loadData('djbh', data);
+
+                    $.view.setViewEditStatus('djbh', "4");
+                    $.view.cancelObj = { data: data, status: 4 };
+                    $.messager.alert(data.s.t, data.s.m, data.s.i);
+                    $('#tree').hide();
+                }
+                else {
+                    if (!data.s) return;
+                    $.messager.alert(data.s.t, data.s.m, data.s.i);
+                }
+            }
+        });
+    }
+    function myModify() {
+        
+        var opts = $('#djbh-edit').linkbutton('options');
+        $.view.curPageState = opts.status;
+        $('#djbh-edit').linkbutton('setWholeStatus');
+        $('#djbh-edit').linkbutton('saveStatus');
+        $('#tree').show();
+    }
+    function LoadData() {
+        $.ajax({
+            url: '/JCqtsz/GetRule',
+            data: {},
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", '网络超时,请重新登录', 'error');
+            },
+            success: function (data) {
+                if (data.result != "success") {
+                    
+                    $.messager.alert('提示', data.msg);
+                } else {
+                    
+                    $.view.clearView("djbh", "dataregion");
+                    $.view.curPageState = 4;
+                    $.view.loadData("djbh", data);
+                    $.view.setViewEditStatus("djbh", "4");
+                    $.view.cancelObj = { data: data, status: "4" };
+                }
+            }
+        });
+    }
+</script>
+<div class="easyui-layout" id="djbh-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                 <a href="#" class="easyui-linkbutton" id="djbh-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'djbh-BX_Main-DocState',
+                   scope:'djbh',status:'2',
+                   forbidstatus:[1,2,3]" onclick ="javascript:myModify()">修改</a> <a href="#" class="easyui-linkbutton" id="djbh-cancel"
+                       data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'djbh',forbidstatus:[4],
+                    window:'b-window'" onclick="javascript:myCancel()">取消</a> <a href="#" class="easyui-linkbutton" id="djbh-save"
+                       data-options="plain:'true',iconCls:'icon-baocun',scope:'djbh',status:'4',
+                   forbidstatus:[4]" onclick="javascript:mySave()">保存</a>   <a href="#" class="easyui-linkbutton" id="djbh-close" data-options="plain:'true',iconCls:'icon-tuichu',  window:'b-window',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'djbh'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true',hidden:true" style="width: 280px;display:none" id="tree">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="编号规则" data-options="selected:true">
+                <ul class="easyui-tree" id="djbh-tree-DocNum" data-options="
+                  forbidstatus:[4,3,2],
+                  url:'/Tree/GetDocNum',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 600px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        单据编号生成设置</div>
+                </td>
+            </tr>
+            <tr>  
+                <td>
+                    <input class="easyui-checkbox" id="djbh-SS_DocNumber-IsYear" maxlength="20"
+                        data-options="forbidstatus:[4,3],required:false"  type="checkbox"></input>
+                </td>
+                <td>
+                     启用年
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerName">
+                        年号排序</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="djbh-SS_DocNumber-Order_Year" maxlength="200"
+                        style="width: 176px" data-options="forbidstatus:[4,3],min:1,max:4,required:false"> </input>
+                </td>
+
+                <td style="width: 80px">
+                    <label id="lbl-CustomerName">
+                        年格式位数</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="djbh-SS_DocNumber-YearFormat" maxlength="200"
+                        style="width: 176px" data-options="forbidstatus:[4,3],required:false"> </input>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input class="easyui-checkbox" id="djbh-SS_DocNumber-IsMonth" 
+                         data-options="forbidstatus:[4,3],required:false" type="checkbox"></input>
+                </td>
+                <td>
+                    启用月
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerBankNumber">
+                        月排序</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" id="djbh-SS_DocNumber-Order_Month" maxlength="20"
+                        style="width: 176px" data-options="forbidstatus:[4,3],min:1,max:4,required:false" ></input>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input class="easyui-checkbox" id="djbh-SS_DocNumber-IsDW" 
+                        data-options="forbidstatus:[4,3],required:false" type="checkbox"> </input>
+                </td>
+                <td>
+                    启用单位
+                </td>
+                <td style="width: 60px" id="lbl-CustomerPostcode">
+                    <label>
+                        单位排序</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" 
+                        style="width: 176px" id="djbh-SS_DocNumber-Order_DW" data-options="forbidstatus:[4,3],min:1,max:4,required:false">
+                    </input>
+                </td>
+                <td>
+                    <input class="easyui-checkbox" id="djbh-SS_DocNumber-IsDWKey" data-options="forbidstatus:[4,3],required:false" type="checkbox"> </input>
+                </td>
+                <td>
+                    是否使用单位编号
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input class="easyui-checkbox" id="djbh-SS_DocNumber-IsYWType" data-options="forbidstatus:[4,3],required:false" type="checkbox"> </input>
+                </td>
+                <td>
+                    启用业务
+                </td>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerTelephone">
+                        业务排序</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" 
+                        id="djbh-SS_DocNumber-Order_YWType" style="width: 176px" data-options="forbidstatus:[4,3],min:1,max:4,required:false"></input>
+                </td>
+                <td>
+                    <input class="easyui-checkbox" id="djbh-SS_DocNumber-IsYWTypeKey" data-options="forbidstatus:[4,3],required:false" type="checkbox"> </input>
+                </td>
+                <td>
+                    是否启用业务编号
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 80px">
+                    <label id="lbl-CustomerWebsite">
+                        自动编号长度</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" 
+                        id="djbh-SS_DocNumber-AutoNumberLong" maxlength="200" style="width: 176px" data-options="forbidstatus:[4,3],min:1,max:10"></input>
+                </td>
+                <td style="width: 100px">
+                    <label id="lbl-CustomerFax">
+                        自动编号起始值</label>
+                </td>
+                <td>
+                    <input class="easyui-numberbox" 
+                        id="djbh-SS_DocNumber-AutoNumberBegin" style="width: 176px" data-options="forbidstatus:[4,3],required:false,min:1"></input>
+                </td>
+            </tr>
+            
+@*            <tr>
+                <td colspan="6">
+                </td>
+            </tr>*@
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="djbh-SS_DocNumber-GUID" type="hidden" keyattr="1"></input>
+</div>
+<label id="wldw-extendregion" style="display: none">
+    <input id="djbh-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>

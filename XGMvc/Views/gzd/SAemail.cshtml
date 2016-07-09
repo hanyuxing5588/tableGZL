@@ -1,0 +1,146 @@
+﻿<body>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var myDate = new Date();
+            var cyear = myDate.getFullYear();
+            var cmonth = myDate.getMonth() + 1;
+
+            $("#SAemail-ActionYear").val(cyear + "");
+            $("#SAemail-ActionMouth").val(cmonth + "");
+
+            $("#SAemail-send").bind("click", function () {
+                var syear=$("#SAemail-ActionYear").val();
+                var smonth=$("#SAemail-ActionMouth").val();
+                $.ajax({
+                    url: "/gzd/SendEmail",
+                    data: { year: syear, month: smonth,actionstate:"1" },
+                    dataType: "json",
+                    type: "POST",
+                    traditional: true,
+                    error: function (xmlhttprequest, textStatus, errorThrown) {
+                        
+                    },
+                    success: function (data) {
+                       
+                    }
+                });
+                closeTab();
+            });
+
+            $("#SAemail-cancel").bind("click", function () {
+                closeTab();
+            });
+        });
+        function closeTab() {
+            var winId = '#b-window';
+            var winOpts = $(winId).dialog('options');
+            winOpts.isCancel = true;
+            $(winId).dialog('close');
+            $.view.detailObj = {
+                data: { r: [], ad: [] },
+                defaultData: null,
+                numObj: {},
+                cur: 1
+            };
+        };
+    </script>
+    <div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+        <div b-type="1" data-options="region:'north',tools:'#tbar'" style="height:51px">
+            <div id='tbar' b-type="1" style="padding: 2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">                  
+                <a href="#"  class="easyui-linkbutton" b-type="1" 
+                id="SAemail-send" b-action="haffirm"
+                data-options="plain:'true',
+                window:'b-window',
+                scope:'gzd',
+                iconCls:'icon-queren'">发送</a>
+                  
+                <a href="#"  class="easyui-linkbutton" b-type="1" 
+                id="SAemail-cancel"   b-action="hexit"      
+                data-options="plain:'true',
+                scope:'gzd', 
+                window:'b-window',         
+                iconCls:'icon-quxiao'">取消</a>
+            </div>
+        </div>
+        <div b-type="1" data-options="region:'center'" >
+            <table id="table" border="0" width:100%>
+                <tr>
+                    <td><label >工资年:</label></td>
+                    <td>
+                        <select id="SAemail-ActionYear">  
+                            <option value="1999">1999</option> 
+                            <option value="2000">2000</option>  
+                            <option value="2001">2001</option> 
+                            <option value="2002">2002</option>  
+                            <option value="2003">2003</option>  
+                            <option value="2004">2004</option>  
+                            <option value="2005">2005</option>  
+                            <option value="2006">2006</option>  
+                            <option value="2007">2007</option>  
+                            <option value="2008">2008</option>  
+                            <option value="2009">2009</option>  
+                            <option value="2010">2010</option>  
+                            <option value="2011">2011</option>  
+                            <option value="2012">2012</option>
+                            <option value="2013">2013</option>
+                            <option value="2014">2014</option>  
+                            <option value="2015">2015</option>
+                            <option value="2016">2016</option>    
+                            <option value="2017">2017</option>  
+                            <option value="2018">2018</option>
+                            <option value="2019">2019</option>    
+                            <option value="2020">2020</option>  
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>    
+                            <option value="2023">2023</option>  
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>    
+                            <option value="2026">2026</option>  
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>    
+                            <option value="2029">2029</option>  
+                            <option value="2030">2030</option>
+                            <option value="2031">2031</option>    
+                            <option value="2032">2032</option>  
+                            <option value="2033">2033</option>
+                            <option value="2034">2034</option>    
+                            <option value="2035">2035</option>  
+                            <option value="2036">2036</option>
+                            <option value="2037">2037</option>    
+                            <option value="2038">2038</option>  
+                            <option value="2039">2039</option>
+                            <option value="2040">2040</option>    
+                            <option value="2041">2041</option>  
+                            <option value="2042">2042</option>
+                            <option value="2043">2043</option>    
+                            <option value="2044">2044</option>  
+                            <option value="2045">2045</option>
+                            <option value="2046">2046</option>    
+                            <option value="2047">2047</option>  
+                            <option value="2048">2048</option>
+                            <option value="2049">2049</option>    
+                            <option value="2050">2050</option>  
+                        </select> 
+                    </td>
+                    <td><label >&nbsp;&nbsp;工资月:</label></td>
+                    <td>
+                        <select id="SAemail-ActionMouth">  
+                            <option value="1">1</option>  
+                            <option value="2">2</option>  
+                            <option value="3">3</option>  
+                            <option value="4">4</option>  
+                            <option value="5">5</option>  
+                            <option value="6">6</option>  
+                            <option value="7">7</option>  
+                            <option value="8">8</option>  
+                            <option value="9">9</option>  
+                            <option value="10">10</option>  
+                            <option value="11">11</option>  
+                            <option value="12">12</option>
+                        </select> 
+                    </td>
+                </tr>
+            </table>            
+        </div>
+    </div>
+</body>

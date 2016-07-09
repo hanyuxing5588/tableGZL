@@ -1,0 +1,33 @@
+﻿/*
+//名    称：BG_SetupBGCodeView
+//创建时间：--
+//修 改 人：dongsheng.zhang
+//修改时间：2014-4-15
+//功    能：BG_SetupBGCode视图
+//修改内容：添加了PSS_BGCodeGUID,BGCodeIsStop字段
+*/
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[BG_SetupBGCodeView]') and OBJECTPROPERTY(id, N'IsView') = 1) --objectproperty
+drop view [dbo].[BG_SetupBGCodeView]
+GO
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+create  VIEW dbo.BG_SetupBGCodeView
+AS
+SELECT dbo.BG_SetupBGCode.GUID, dbo.BG_SetupBGCode.GUID_BGSetup, 
+      dbo.BG_Setup.BGSetupKey, dbo.BG_Setup.BGSetupName, 
+      dbo.BG_SetupBGCode.GUID_BGCode, dbo.SS_BGCode.BGCodeKey, 
+      dbo.SS_BGCode.BGCodeName,dbo.SS_BGCode.PGUID as PSS_BGCodeGUID, dbo.BG_SetupBGCode.RateNum,
+	  dbo.SS_BGCode.IsStop as BGCodeIsStop
+FROM dbo.BG_SetupBGCode INNER JOIN
+      dbo.BG_Setup ON 
+      dbo.BG_SetupBGCode.GUID_BGSetup = dbo.BG_Setup.GUID INNER JOIN
+      dbo.SS_BGCode ON dbo.BG_SetupBGCode.GUID_BGCode = dbo.SS_BGCode.GUID
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO

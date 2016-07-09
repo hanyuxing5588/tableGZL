@@ -1,0 +1,290 @@
+﻿
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[POAO_WorkFlowGetProperty]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[POAO_WorkFlowGetProperty]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[POAO_WorkFlowLoad]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[POAO_WorkFlowLoad]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[POAO_WorkFlowNodeGetExecutor]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[POAO_WorkFlowNodeGetExecutor]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[POAO_WorkFlowNodeGetRoles]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[POAO_WorkFlowNodeGetRoles]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[POAO_WorkFlowProcessGetCurrentNode]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[POAO_WorkFlowProcessGetCurrentNode]
+GO
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[POAO_WorkFlowProcessGetParentNode]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure [dbo].[POAO_WorkFlowProcessGetParentNode]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+    Name:流程图的基本信息及变量信息
+	Anchor:peter
+	Date:2013.9.26
+*/
+CREATE PROCEDURE [dbo].[POAO_WorkFlowGetProperty]
+	
+	(
+	--流程图的ID
+	 @Id uniqueidentifier,
+	 --流程图的版本
+	 @Version int
+	)
+	
+AS
+	select 
+		* 
+	from 
+		OAO_WorkFlow
+	join OAO_WorkFlowVariable
+	on OAO_WorkFlow.Id = OAO_WorkFlowVariable.WorkFlowId
+    where OAO_WorkFlow.Id = @Id 
+	and OAO_WorkFlow.Version = @Version
+	RETURN
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+	Name:加载流程组及流程
+	Anchor:hyx
+	Date:2013.9.22
+*/
+CREATE PROCEDURE [dbo].[POAO_WorkFlowLoad]
+AS
+   
+	select
+		Id,
+		Description,
+		ParentId as WorkFlowGroupId,
+		Name,
+		'-1' as Version,
+		'0' as isAutoStart,
+		'-1' as State
+	from OAO_WorkFlowGroup
+	union all
+	select 
+		Id,
+		Description as descript,
+		WorkFlowGroupId,
+		Name,
+		Version,
+		IsAutoStart as isAutoStart,
+		State
+		 from OAO_WorkFlow
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+    Name:根据节点找到办理未被节点选中的执行人
+	Anchor:peter
+	Date:2013.9.26
+*/
+
+CREATE PROCEDURE [dbo].[POAO_WorkFlowNodeGetExecutor]
+     (
+	    @enableSelect int,
+		--节点的Id
+		@FlowNodeId uniqueidentifier
+	  )
+AS
+
+if @enableSelect=1
+SELECT 
+	b.GUID AS id,
+	 b.OperatorName AS name,
+	 '用户' AS type, 
+	 c.GUID_Role AS roleID
+FROM SS_Operator AS b 
+LEFT OUTER JOIN SS_RoleOperator AS c ON c.GUID_Operator = b.GUID 
+where b.GUID not in( select ExecutorId from OAO_WorkFlowNodeExecutor where WorkFlowNodeId=@FlowNodeId)
+else
+	SELECT 
+	b.GUID AS id,
+	 b.OperatorName AS name,
+	 '用户' AS type, 
+	c.GUID_Role AS roleID
+FROM SS_Operator AS b 
+LEFT OUTER JOIN SS_RoleOperator AS c ON c.GUID_Operator = b.GUID
+where b.GUID in( select ExecutorId from OAO_WorkFlowNodeExecutor where WorkFlowNodeId=@FlowNodeId)
+
+	--select
+	--    b.Id as id,
+	--	b.Name as name,
+	--	'用户' as type,
+	--	b.Version,
+	--	c.RoleId as roleID,
+	--	c.RoleVersion as roleVersion
+	--from 
+	--    OAO_User b
+	---left join OAO_WorkFlowExecutor b on b.Id = a.ExecutorId and b.Version=a.ExecutorVersion
+	--left join OAO_UserRole c on c.UserId=b.Id and c.UserVersion=b.Version
+   ---
+	--where  a.WorkFlowNodeId = @FlowNodeId
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+    Name:根据节点获得未被节点设置的角色
+	Anchor:peter
+	Date:2013.9.26
+*/
+CREATE PROCEDURE [dbo].[POAO_WorkFlowNodeGetRoles]
+	(
+		@enableSelect int,
+		--节点的Id
+		@FlowNodeId uniqueidentifier
+	)
+AS
+if @enableSelect=1
+SELECT 
+	b.GUID AS id,
+	 b.RoleName AS name,
+	 '角色' AS type
+FROM SS_Role AS b 
+LEFT OUTER JOIN SS_RoleOperator AS c ON c.GUID_Role = b.GUID 
+where b.GUID not in( select RoleId from OAO_WorkFlowNodeRole where WorkFlowNodeId=@FlowNodeId)
+else
+SELECT 
+	b.GUID AS id,
+	 b.RoleName AS name,
+	 '角色' AS type
+FROM SS_Role AS b 
+LEFT OUTER JOIN SS_RoleOperator AS c ON c.GUID_Role = b.GUID 
+where b.GUID  in( select RoleId from OAO_WorkFlowNodeRole where WorkFlowNodeId=@FlowNodeId)
+--select 
+--   b.Id,
+--   b.Name,
+--   b.Version
+--from  OAO_WorkFlowNodeRole  a 
+--left join OAO_Role b  on a.RoleId=b.Id and a.RoleVersion=b.Version
+--where a.WorkFlowNodeId=@FlowNodeId
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+    Name:获取流程运行时当前的节点即当前的运行节点
+	Anchor:peter
+	Date:2013.9.26
+*/
+CREATE PROCEDURE [dbo].[POAO_WorkFlowProcessGetCurrentNode]
+	(
+		--当前流程的Id
+		@Id uniqueidentifier		
+	)
+AS
+   
+
+  select 
+  *
+  From
+  OAO_WorkFlowNode
+  where Id in(
+	  select 
+	   WorkFlowNodeId
+	  from 
+	  OAO_WorkFlowProcessNode 
+	  where  WorkFlowProcessId=@Id and State!=2
+  )
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+    Name:获得流程运行时触发的节点
+	Anchor:peter
+	Date:2013.9.26
+*/
+
+CREATE PROCEDURE [dbo].[POAO_WorkFlowProcessGetParentNode]
+	(	
+		--流程运行时的Id
+		@WorkFlowProcessId uniqueidentifier
+	)
+	
+AS
+
+
+	select
+	 *
+	from
+	 OAO_WorkFlowNode
+	 where Id in
+	 (
+		select WorkFlowNodeId  from OAO_WorkFlowProcessNode where Id 
+		 in(
+			select ParentNodeId from OAO_WorkFlowProcess where Id=@WorkFlowProcessId
+			)
+		)
+
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

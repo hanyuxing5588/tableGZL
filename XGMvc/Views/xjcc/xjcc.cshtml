@@ -1,0 +1,804 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "现金存现单";
+}
+<script src="../../Scripts/cn/txd.js?r=12" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        $('#xxjcc-tree-project').tree({
+            onDblClick: function (node) {
+                var id = node.id;
+                //获取树
+                var options = $(this).tree('options');
+                //得到树的id
+                var gridId = options.gridId;
+                //console.log(gridId);
+                //将节点数据重新reload到datagrid上，将后台的参数传过来作为参数
+                $('#' + gridId).datagrid('reload', { bankAccountID: id });
+            }
+        });
+
+        $('#xjcc-print').on('click', function () {
+            var ids = ['xjcc-CN_CashMain-moneychinese', 'xjcc-CN_CashMain-moneyunmber'];
+            var urlArg = "";
+            if (ids && ids.length) {
+                for (var i = 0; i < ids.length; i++) {
+                    var id = ids[i].split('-');
+                    var text = $('#' + ids[i]).val();
+                    //data.m.push({ m: id[1], n: id[2], v: text });
+                    urlArg += "&" + id[2] + "=" + text;
+                }
+                urlArg += "&cn=" + ids[0] + "&number=" + ids[1];
+            }
+            var guid = $.view.getKeyGuid('xjcc');
+            var url = "/Print/xjtqFrame?guid=" + guid + urlArg;
+            var win = window.open("about:blank", "", "fullscreen=1");
+            win.moveTo(0, 0);
+            win.resizeTo(screen.width + 20, screen.height);
+            win.focus();
+            win.location = url;
+        })
+    })
+</script>
+<div class="easyui-layout" id="xjcc-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+                   <a href="#" class="easyui-linkbutton" id="xjcc-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'xjcc',forbidstatus:[1,2,3],
+                   window:'b-window',
+                 @*  bindmethod:{ 'click': ['print'] },*@
+                   bindparms:{'print':['/Print/xjcc',['xjcc-CN_CashMain-moneychinese','xjcc-CN_CashMain-moneyunmber']]}">打印</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xjcc-printView" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'xjcc',forbidstatus:[1,2,3],
+                   window:'b-window',
+                   bindmethod:{ 'click': ['printView'] },
+                   bindparms:{'print':['/Print/xjcc',['xjcc-CN_CashMain-moneychinese','xjcc-CN_CashMain-moneyunmber']]}">预览</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="xjcc-export" data-options="
+                    plain:'true',iconCls:'icon-shuchu', scope:'xjcc',forbidstatus:[1,2,3],
+                    bindmethod:{ 'click': ['export'] }">输出</a>
+
+                     @*<a href="#" class="easyui-linkbutton" id="sxfbxd-muban" data-options="
+                    plain:'true',iconCls:'icon-moban', scope:'sxfbxd',forbidstatus:[4],
+                    bindmethod:{ 'click': ['muban'] }">另存为模板</a>*@
+
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="xjcc-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'xjcc',status:'1',
+                   bindparms:{'newDoc':['/xjcc/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="xjcc-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'xjcc-CN_CashMain-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'xjcc',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       
+                   <a href="#" class="easyui-linkbutton" 
+                   id="xjcc-remove" 
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'xjcc-CN_CashMain-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'xjcc',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="xjcc-addrow" 
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['xjcc-CN_CashDetail']},
+                   scope:'xjcc',forbidstatus:[3,4,5,6]">增行</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="xjcc-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['xjcc-CN_CashDetail']},scope:'xjcc',
+                   forbidstatus:[3,4,5,6]">插行</a>
+
+                   <a href="#" class="easyui-linkbutton" id="xjcc-delrow"
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['xjcc-CN_CashDetail']},scope:'xjcc',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+
+                   <a href="#" class="easyui-linkbutton" 
+                   id="xjcc-detail" 
+                   data-options="plain:'true',iconCls:'icon-mingxi',
+                   window:'b-window',
+                   bindmethod:{ 'click': ['particulars'] },
+                   bindparms:{'particulars':['/particulars/xjcc','xjcc-CN_CashDetail','parti']},scope:'xjcc', forbidstatus:[3]">明细</a> 
+                   
+                   @*<a href="#" class="easyui-linkbutton" id="xjcc-borrow"
+                    data-options="plain:'true',iconCls:'icon-jiekuan',
+                    bindmethod:{ 'click': ['borrow'] },
+                    bindparms:{'borrow':['/Borrow/xjcc','borrow-wl_main','borrow']},
+                    window:'b-window',scope:'xjcc'">借款</a> 
+
+                     <a href="#" class="easyui-linkbutton" id="xjcc-BudgetStatistics"
+                     data-options="plain:'true',iconCls:'icon-yusuan',
+                     bindmethod:{ 'click': ['BudgetStatistics'] },
+                     configUrl:{
+                            'xjcc-CN_CashMain-DocDate':'datebox'
+                      },
+                     configShowData:{
+                       
+                     },
+                     bindparms:{'BudgetStatistics':[
+                        '/BudgetStatistics/xjcc',
+                        '/BudgetStatistics/BudgetStatistics',
+                        'BudgetStatistics-BG_Main',
+                        'BudgetStatistics'
+                     ]},
+                     window:'b-window',
+                     scope:'xjcc'">预算</a> *@
+                   
+                   <a href="#" class="easyui-linkbutton" id="xjcc-abandoned"
+                   data-options="plain:'true',iconCls:'icon-zuofei',docState:'xjcc-CN_CashMain-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['xjcc-CN_CashMain-DocState','9']},scope:'xjcc',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> 
+
+                   <a href="#" class="easyui-linkbutton" id="xjcc-recover"
+                   data-options="plain:'true',iconCls:'icon-huifu',docState:'xjcc-CN_CashMain-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['xjcc-CN_CashMain-DocState','6']},scope:'xjcc',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a>
+
+                   <a href="#" class="easyui-linkbutton" id="xjcc-examine"
+                   data-options="plain:'true',iconCls:'icon-xiaoyan',
+                   bindmethod:{ 'click': ['examine'] },
+                   bindparms:{'examine':{
+                        'datagrid':['xjcc-CN_CashDetail'],
+                        'validatebox':['xjcc-CN_CashMain-DocMemo'],
+                        'datebox':['xjcc-CN_CashMain-DocDate']
+                    }},
+                   scope:'xjcc',forbidstatus:[4]">校验</a>
+
+                   <a href="#" class="easyui-linkbutton" id="xjcc-cancel" data-options="
+                    plain:'true',iconCls:'icon-quxiao', scope:'xjcc',forbidstatus:[4],
+                    bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xjcc-save"
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/xjcc/Save','xjcc-examine']},scope:'xjcc',status:'4',
+                   forbidstatus:[4]">保存</a> 
+
+                   @*<a href="#" class="easyui-linkbutton" id="xjcc-jizhang"
+                   data-options="plain:'true',iconCls:'icon-jizhang',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/xjcc/Save']},scope:'xjcc',status:'4',
+                   forbidstatus:[4]">记账</a>*@
+                   
+                   <a href="#" class="easyui-linkbutton" id="xjcc-xuqiu"
+                   data-options="plain:'true',iconCls:'icon-xuqiu',
+                   bindmethod:{ 'click': ['xuqiu'] },
+                   bindparms:{'xuqiu':['/xjtq/Demand']},
+                   scope:'xjcc',
+                   window:'b-window',
+                   status:'1',
+                   forbidstatus:[2,3,4]
+                   ">需求</a> 
+                    
+                    @*<a href="#" class="easyui-linkbutton" id="xjcc-submitProcess"
+                   data-options="plain:'true',iconCls:'icon-tijiao',docState:'xjcc-CN_CashMain-DocState',
+                   bindmethod:{ 'click': ['submitProcess'] },
+                   bindparms:{'submitProcess':['/xjcc/CommitFlow']},scope:'xjcc',
+                   forbidstatus:[1,2,3]">提交</a>*@
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="xjcc-histroy" data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['history'] },
+                   bindparms:{'history':['/History/xjcc','history-CN_CashMain','history']},
+                    window:'b-window',scope:'xjcc'">历史</a> 
+
+                   @*<a href="#" class="easyui-linkbutton" id="xjcc-viewprocess" data-options="plain:'true',iconCls:'icon-liucheng',
+                   bindmethod:{ 'click': ['viewProcess'] },window:'b-window',
+                   bindparms:{'viewProcess':['/xjcc/viewProcess','/xjcc/process','xjcc-process','process']},scope:'xjcc',
+                   forbidstatus:[1,2,3]">流程</a> *@
+
+                   <a href="#" class="easyui-linkbutton" id="xjcc-help" data-options="
+                    plain:'true',iconCls:'icon-bangzhu', 帮助scope:'xjcc',
+                    bindmethod:{ 'click': ['help'] }">帮助</a>
+                   
+                   <a href="#" class="easyui-linkbutton"
+                   id="xjcc-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'xjcc'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:false" style="width: 330px;">
+        <div class="easyui-tabs" data-options="fit:false" style="width: auto; height:160px;">
+            <div title="银行账号" style="height: 125px; width: 198px;">
+                <ul class="easyui-tree" id="xxjcc-tree-project" data-options="
+                      height:160,
+                      gridId:'xxjcc-CN_CashDetails',
+                      bindmethod:{ 'onDblClick': ['setAssociate'] },
+                      forbidstatus:[4,3],
+                      url:'/Tree/GetBankAccountTree',
+                      method:'post'">
+                </ul>
+            </div>
+        </div>
+        <div>
+            <table class="easyui-datagrid" id="xxjcc-CN_CashDetails" style="width:100%;"
+                data-options="
+                    width:325,
+                    scope:'xjcc',
+                    fitColumns:false,
+                    pagination:true,
+                    pageSize:100,
+                    pageList:[10,50,100],
+                    rownumbers:true,
+                    url:'/Grid/GetCheckListNotUseed',
+                    method:'post',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    sortName:'CheckNumber',
+                    gridassociate:{
+                    'gridId':'xjcc-CN_CashDetail',
+                    'map':{
+                            'xjcc-CN_Check-GUID':['GUID','CheckNumber'],
+                            'xjcc-CN_CashDetail-BankAccountNo':['BankAccountNo','BankAccountNo'],
+                            'xjcc-CN_CashDetail-GUID_BankAccount':['GUID_BankAccount','BankAccountName']
+                        }
+                    },
+                    single:false
+                    ">
+                <thead>
+                    <tr>
+                        <th field="GUID" hidden="true"></th>
+                        <th field="GUID_BankAccount" hidden="true"></th>
+                        <th field="BankAccountNo" hidden="true"></th>
+                        <th field="CN_Check-GUID" hidden="true"></th>
+                        <th field="CheckNumber" title="支票号" width="100px" align="center">支票号</th>
+                        <th field="CheckType" title="支票类型" width="105px" align="center">支票类型</th>
+                        <th field="IsInvalid" title="是否失效" width="70px" align="center">是否失效</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    
+    <div data-options="region:'center'" style="width: 905px" data-options="fit:true">
+        <table border="0" style="height: 350px; width: 905px; padding: 0; ">
+            <tr>
+                <td colspan="6" style="height: 50px;">
+                    <div id="xjcc-abandonedStatus" statusControlID="xjcc-CN_CashMain-DocState" style="font-size: x-large;color:Red;display:none">已作废</div>
+                    <div style="font-size: x-large; text-align: center;">
+                        存现单</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocNum">
+                       <font color="red">*</font>单据编号</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="xjcc-CN_CashMain-DocNum" data-options="forbidstatus:[-1],defalutValue:'自动生成单号'"
+                        style="width: 176px"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1" id="lbl-DocDate">
+                        <font color="red">*</font>单据日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="xjcc-CN_CashMain-DocDate" data-options="width:176,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }
+                    "></input>
+                </td>
+                
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label>
+                        &nbsp;金额<br />(大写)</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="xjcc-CN_CashMain-moneychinese" style="width: 501px"
+                        data-options="forbidstatus:[-1],chinese:true, setNotValue:true"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        (小写)</label>
+                </td>
+                <td style="width:176px;">
+                    <input class="easyui-numberbox" id="xjcc-CN_CashMain-moneyunmber"  style="width: 176px"
+                        data-options="
+                        setNotValue:true,
+                        precision:2,
+                        groupSeparator:',',
+                        decimalSeparator:'.',
+                        forbidstatus:[-1]
+                        ">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label id="lbl-DocMemo">
+                        <font color="red">*</font>用途</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="xjcc-CN_CashMain-DocMemo"  style="width: 501px;" maxlength="200"
+                        data-options="forbidstatus:[4,3],required:false"></input>
+                </td>
+                <td style="width: 60px">
+                    <label id="lbl-BillCount">
+                        是否入账</label>
+                </td>
+                <td>
+                    <input class="easyui-checkbox" id="xjcc-CN_CashDetail-IsRZ" type="checkbox" 
+                    data-options="
+                        forbidstatus:[4]    
+                    "></input>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="xjcc-CN_CashDetail" style="overflow:auto"  data-options="
+                    orderNum:'xjcc-CN_CashDetail-OrderNum',
+                    requireCol:[
+                        'xjcc-CN_CashDetail-Total_Cash',
+                        'xjcc-CN_Check-CheckNumber',
+                        'xjcc-CN_CashDetail-BankAccountNo',
+                        'xjcc-CN_CashDetail-BankAccountName',
+                        'xjcc-CN_PaymentNumber-IsGuoKu',
+                       @* 'xjcc-CN_PaymentNumber-GUID_EconomyClass',*@
+                        'xjcc-CN_PaymentNumber-ExpendTypeName',
+                        'xjcc-CN_PaymentNumber-GUID_BGResource',
+                        'xjcc-CN_CashDetail-CashMemo'
+                    ],
+                    fitColumns:false,
+                    pagination:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:380,
+                    width:905,
+                    rownumbers:true,
+                    scope:'xjcc',
+                    single:false,
+                    formatters:{'xjcc-CN_PaymentNumber-IsGuoKu':'boolbox','xjcc-CN_PaymentNumber-IsProject':'boolbox','xjcc-CN_CashDetail-Total_Cash':'numberbox'},
+                    disableColMap:{
+                            'xjcc-CN_PaymentNumber-IsGuoKu':['xjcc-CN_PaymentNumber-GUID_FunctionClass','xjcc-CN_CashDetail-ProjectKey','xjcc-CN_CashDetail-GUID_Project'],
+                            'xjcc-CN_PaymentNumber-IsProject':['xjcc-CN_CashDetail-GUID_Project'],
+                            'xjcc-CN_PaymentNumber-GUID_FunctionClass':['xjcc-CN_CashDetail-ProjectKey','xjcc-CN_CashDetail-GUID_Project']
+                    },
+                    editEditAfterEvent:$.gridEdit,                    
+                    payCodeConfig:['xjcc','xjcc-CN_CashDetail','xjcc-CN_PaymentNumber'], @*scope = '', gridId = '', scopeModelName = '';*@
+                    forbidstatus:[4,3],
+                    copyField:[
+                        'xjcc-CN_PaymentNumber-IsGuoKu',
+                        'xjcc-CN_PaymentNumber-IsProject',
+                        'xjcc-CN_CashDetail-GUID_Project',
+                        'xjcc-CN_CashDetail-ProjectKey',
+                        'xjcc-CN_CashDetail-GUID_Department',
+                        'xjcc-CN_CashDetail-GUID_BGType',
+                        'xjcc-CN_PaymentNumber-GUID_FunctionClass',
+                        'xjcc-CN_PaymentNumber-GUID_BGResource',
+                        'xjcc-CN_CashDetail-GUID_Person',
+                        'xjcc-CN_Check-GUID',
+                        'xjcc-CN_CashDetail-BankAccountNo',
+                        'xjcc-CN_CashDetail-GUID_BankAccount'
+                    ],
+                    fieldformula:[
+                        {name:'csum',field:'xjcc-CN_CashDetail-Total_Cash',target:['xjcc-CN_CashMain-moneyunmber','xjcc-CN_CashMain-moneychinese']},
+                        {name:'cconcat',field:'xjcc-CN_CashDetail-CashMemo',target:['xjcc-CN_CashMain-DocMemo']}
+                    ]">
+                        <thead>
+                            <tr>
+                            @*扩展码 来源项目 功能分类 经济分类 支出类型 预算类型 预算类型*@
+                                @*<th field="ExtraCode" hidden="true"></th>                                
+                                <th field="FinanceCode" hidden="true"></th>
+                                <th field="EconomyClassKey" hidden="true"></th>
+                                <th field="ExpendTypeKey" hidden="true"></th>
+                                <th field="BGSourceKey" hidden="true"></th>
+                                <th field="BGType" hidden="true"></th>*@
+                                <th field="xjcc-CN_PaymentNumber-GUID_ProjectEx" hidden="true"></th> @*附加项目*@
+                                <th field="xjcc-CN_PaymentNumber-ExtraCodeEx" hidden="true"></th> @*附加项目码*@
+                                <th field="xjcc-CN_PaymentNumber-ExtraCode" hidden="true"></th>
+                                <th field="xjcc-CN_PaymentNumber-FinanceCode" hidden="true"></th>
+                                <th field="xjcc-CN_PaymentNumber-EconomyClassKey" hidden="true"></th>
+                                <th field="xjcc-CN_PaymentNumber-ExpendTypeKey" hidden="true"></th>
+                                <th field="xjcc-CN_PaymentNumber-BGSourceKey" hidden="true"></th>
+                                <th field="xjcc-CN_PaymentNumber-BGType" hidden="true"></th>
+                                @*扩展码 来源项目*@
+                                <th field="xjcc-CN_CashDetail-GUID" hidden="true"></th>
+                                <th field="xjcc-CN_CashDetail-GUID_Person" hidden="true"></th>
+                                <th field="xjcc-CN_PaymentNumber-GUID" hidden="true"></th>
+                                <th field="xjcc-CN_CashDetail-GUID_ProjectClass" hidden="true"></th>
+                                <th field="xjcc-CN_CashDetail-GUID_Department" hidden="true"></th>
+                                <th field="xjcc-CN_CashDetail-GUID_Cutomer" hidden="true"></th>
+                                <th field="xjcc-CN_CashDetail-GUID_SettleType" hidden="true"></th>
+                                <th field="xjcc-CN_CashDetail-GUID_BGType" hidden="true"></th>
+                                <th field="xjcc-CN_CashDetail-Total_Cash" title="金额" sortable="false" align="right"
+                                    width="80" editor="{type:'numberbox',options:{precision:2,max:99999999.99}}">
+                                    金额
+                                </th>
+                                <th field="xjcc-CN_Check-GUID" width="120" title="支票号" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                         gridassociate:{gridId:'xjcc-CN_CashDetail',
+                                         map:{
+                                            'xjcc-CN_CashDetail-BankAccountNo':['BankAccountNo','BankAccountNo'],
+                                            'xjcc-CN_CashDetail-GUID_BankAccount':['GUID_BankAccount','BankAccountName']}
+                                         },
+                                         bindmethod: { 'onSelect': ['setAssociate'] }, 
+                                         associateControl:{
+                                                gridId:'xjcc-CN_CashDetail',map:['xjcc-CN_CashDetail-BankAccountNo']
+                                            },
+                                         isLoad:true,
+                                         width:255,
+                                         panelWidth:500,
+                                         appendcurcheckvalue:'1',
+                                         remoteUrl:'/Grid/GetCheckListNotUseed',
+                                         method:'get',
+                                         pagination:true,
+                                         pageSize:10,
+                                         pageList:[10,50,100],
+                                         idField:'GUID',
+                                         filterField:'CheckNumber',
+                                         textField:'CheckNumber',
+                                         sortName:'CheckNumber',
+                                         columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'GUID_BankAccount',hidden:'true'},
+                                                {field:'CheckNumber',title:'支票号', width:100},
+                                                {field:'BankAccountNo',title:'银行账号',width:120},
+                                                {field:'BankAccountName',title:'银行名称',width:250}
+                                                
+                                          ]]
+                                        }
+                                }">
+                                    支票号
+                                </th>
+                               <th  field="xjcc-CN_CashDetail-BankAccountNo" title="银行账号" width="110" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'xjcc-CN_CashDetail',
+                                     map:{
+                                        'xjcc-CN_CashDetail-GUID_BankAccount':['GUID','BankAccountName']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:255,
+                                     panelWidth:275,
+                                     remoteUrl:'/Combogrid/BankAccount',
+                                     method:'get',
+                                     idField:'BankAccountNo',
+                                     filterField:'BankAccountNo,BankAccountName',
+                                     textField:'BankAccountNo',
+                                     sortName:'BankAccountNo',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'BankAccountNo',title:'银行账号',width:'150'},
+                                            {field:'BankAccountName',title:'银行名称',width:'100'}
+                                      ]]
+                                    }
+                                }">
+                                    银行账号
+                                </th>
+                               <th field="xjcc-CN_CashDetail-GUID_BankAccount" title="银行名称" width="120" sortable="false"
+                                           align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'xjcc-CN_CashDetail',
+                                     map:{
+                                        'xjcc-CN_CashDetail-BankAccountNo':['BankAccountNo','BankAccountNo']
+                                        }
+                                     },
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:255,
+                                     panelWidth:275,
+                                     remoteUrl:'/Combogrid/BankAccount',
+                                     method:'get',
+                                     idField:'GUID',
+                                     filterField:'BankAccountNo,BankAccountName',
+                                     textField:'BankAccountName',
+                                     sortName:'BankAccountNo',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'BankAccountNo',title:'银行账号',width:'150'},
+                                            {field:'BankAccountName',title:'银行名称',width:'100'}
+                                      ]]
+                                    }
+                                }">
+                                    银行名称
+                                </th>
+                                <th field="xjcc-CN_CashDetail-ProjectKey" width="100" title="项目编码" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        width:345,
+                                        panelWidth:365,
+                                        remoteUrl:'/Combogrid/ProjectView',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        sortName:'ProjectKey',
+                                        gridassociate:{
+                                                gridId:'xjcc-CN_CashDetail',
+                                        map:{
+                                            'xjcc-CN_CashDetail-GUID_Project':['GUID','ProjectName'],
+                                            'xjcc-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'xjcc-CN_PaymentNumber-FinanceCode':['FinanceCode'],
+                                            'xjcc-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass','FunctionClassName'],
+                                            'xjcc-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'xjcc-CN_PaymentNumber-IsProject':['IsProject']
+                                          @*  'xjtq-CN_PaymentNumber-PaymentNumber':['clear']*@
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },     
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'IsFinance',hidden:true},
+                                            {field:'ExtraCode',hidden:'true'},
+                                            {field:'IsProject',hidden:true},
+                                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                            {field:'ProjectKey',title:'项目编号',width:'90'},
+                                            {field:'ProjectName',title:'项目名称',width:'250'}
+                                        ]]
+                                     }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="xjcc-CN_CashDetail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="230" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:510,
+                                      width:500,
+                                      remoteUrl:'/Combogrid/ProjectView',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      sortName:'ProjectKey',
+                                      gridassociate:{
+                                            gridId:'xjcc-CN_CashDetail',
+                                      map:{
+                                            'xjcc-CN_PaymentNumber-ExtraCode':['ExtraCode'],
+                                            'xjcc-CN_PaymentNumber-FinanceCode':['FinanceCode'],
+                                            'xjcc-CN_CashDetail-ProjectKey':['ProjectKey','ProjectKey'],
+                                            'xjcc-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass','FunctionClassName'],
+                                            'xjcc-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                            'xjcc-CN_PaymentNumber-IsProject':['IsProject']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'IsFinance',hidden:true},
+                                          {field:'ExtraCode',hidden:'true'},
+                                          {field:'IsProject',hidden:true},
+                                          {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:true},
+                                          {field:'ProjectKey',title:'项目编号',width:'80'},
+                                          {field:'ProjectName',title:'项目名称',width:'200'},
+                                          {field:'ProjectClassName',title:'所属项目分类',width:'120'},
+                                          {field:'Year',title:'所属年度',width:'80'}
+                                       ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="xjcc-CN_PaymentNumber-IsGuoKu" title="是否国库" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否国库
+                                </th>
+                                <th field="xjcc-CN_PaymentNumber-IsProject" title="是否项目" sortable="false" align="center"
+                                    width="60" editor="{type:'booleanbox'}">
+                                    是否项目
+                                </th>
+                                <th field="xjcc-CN_PaymentNumber-GUID_FunctionClass" title="功能分类" sortable="false" align="center"
+                                    width="130" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                        panelWidth:240,width:215,
+                                        remoteUrl:'/Combogrid/FunctionClass',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'FunctionClassName',
+                                        filterField:'FunctionClassKey,FunctionClassName',
+                                        bindmethod: { 'onSelect': ['setAssociate'] },
+                                        gridassociate:{
+                                            gridId:'xjcc-CN_CashDetail',
+                                        map:{
+                                            'xjcc-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                             'xjcc-CN_PaymentNumber-IsProject':['IsProject'],
+                                             'xjcc-CN_PaymentNumber-BGType':['IsProject'],
+                                               @* 'xjcc-CN_PaymentNumber-PaymentNumber':['clear'],*@
+                                             'xjcc-CN_PaymentNumber-FinanceCode':['FinanceCode']
+                                        }},  
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'FinanceCode',hidden:'true'},
+                                          {field:'IsProject',hidden:'true'},
+                                          {field:'IsFinance',hidden:'true'},
+                                          {field:'FunctionClassKey',title:'功能分类编码',width:'90'},
+                                          {field:'FunctionClassName',title:'功能分类名称',width:'120'}
+                                        ]]
+                                      }
+                                  }">
+                                    功能分类
+                                </th>
+                                <th field="xjcc-CN_PaymentNumber-GUID_EconomyClass" title="经济分类" sortable="false" align="center"
+                                    width="130" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                        panelWidth:240,width:215,
+                                        remoteUrl:'/Combogrid/EconomyClass',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'EconomyClassName',
+                                        filterField:'EconomyClassKey,EconomyClassName',
+                                        bindmethod: { 'onSelect': ['setAssociate'] },
+                                        gridassociate:{
+                                            gridId:'xjcc-CN_CashDetail',
+                                        map:{
+                                                'xjcc-CN_PaymentNumber-EconomyClassKey':['EconomyClassKey']
+                                          }},
+                                        sortName:'EconomyClassKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'EconomyClassKey',title:'经济分类编码',width:'90'},
+                                          {field:'EconomyClassName',title:'经济分类名称',width:'120'}
+                                        ]]
+                                      }
+                                  }">
+                                    经济分类
+                                </th>
+                                <th field="xjcc-CN_PaymentNumber-GUID_ExpendType" title="支出类型" sortable="false" align="center"
+                                    width="130" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                        panelWidth:240,width:210,
+                                        remoteUrl:'/Combogrid/ExpendType',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'ExpendTypeName',
+                                        filterField:'ExpendTypeKey,ExpendTypeName',
+                                        bindmethod: { 'onSelect': ['setAssociate'] },
+                                        gridassociate:{
+                                            gridId:'xjcc-CN_CashDetail',
+                                        map:{
+                                            'xjcc-CN_PaymentNumber-ExpendTypeKey':['ExpendTypeKey']
+                                        }},
+                                        sortName:'ExpendTypeKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'ExpendTypeKey',title:'支出类型编码',width:'90'},
+                                          {field:'ExpendTypeName',title:'支出类型名称',width:'120'}
+                                        ]]
+                                      }
+                                  }">
+                                    支出类型
+                                </th>
+                                 <th field="xjcc-CN_PaymentNumber-GUID_BGResource" title="预算来源" sortable="false" align="center"
+                                    width="130" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                        panelWidth:245,width:210,
+                                        remoteUrl:'/Combogrid/BgSource',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'BGSourceName',
+                                        filterField:'BGSourceKey,BGSourceName',
+                                        bindmethod: { 'onSelect': ['setAssociate'] },
+                                        gridassociate:{
+                                            gridId:'xjcc-CN_CashDetail',
+                                        map:{
+                                                'xjcc-CN_PaymentNumber-BGSourceKey':['BGSourceKey']
+                                            }},
+                                        sortName:'BGSourceKey',
+                                        columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'BGSourceKey',title:'预算类型编码',width:'100'},
+                                          {field:'BGSourceName',title:'预算类型名称',width:'120'}
+                                        ]]
+                                      }
+                                  }">
+                                    预算来源
+                                </th>
+                                <th field="xjcc-CN_CashDetail-CashMemo" width="150" title="备注" sortable="false" align="center"
+                                    editor="text">
+                                    备注
+                                </th>
+                                <th field="xjcc-CN_PaymentNumber-PaymentNumber" title="财政支付令" sortable="false" align="center"
+                                    width="120" 
+                                    editor="{
+                                            type:'searchbox',
+                                            options:{
+                                            'particulars':['/particulars/xjcc','xjcc-CN_CashDetail','parti'],
+                                            'window':'b-window'
+                                          }
+                                  }">
+                                    财政支付令</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+            
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单人</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-combobox" 
+                        id="xjcc-CN_CashMain-GUID_Maker" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改人</label>
+                </td>
+                <td>
+                    <input class="easyui-combobox" 
+                        id="xjcc-CN_CashMain-GUID_Modifier" 
+                        data-options="remoteUrl:'/Combo/Operator',
+                        width:'180',
+                        valueField:'GUID',
+                        textField:'OperatorName',
+                        filterField:'OperatorName',
+                        forbidstatus:[-1]">
+                    </input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 60px">
+                    <label for="field1">
+                        制单日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="xjcc-CN_CashMain-MakeDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label for="field1">
+                        提交日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="xjcc-CN_CashMain-SubmitDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 60px">
+                    <label>
+                        修改日期</label>
+                </td>
+                <td>
+                    <input class="easyui-datebox" id="xjcc-CN_CashMain-ModifyDate" data-options="width:180,forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="xjcc-CN_CashMain-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="xjcc-CN_CashMain-GUID_DocType" type="hidden"></input>
+    <input class="easyui-validatebox" id="xjcc-CN_CashMain-GUID_YWType" type="hidden"></input>
+    <input class="easyui-validatebox" id="xjcc-CN_CashMain-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="xjcc-CN_CashMain-DocState"  type="hidden"></input>
+    <input class="easyui-validatebox" id="xjcc-CN_CashMain-OAOTS" type="hidden"></input>
+</div>
+<label id="xjcc-extendregion" style="display: none">
+    <input id="xjcc-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window"  line="true">
+    </div>
+</label>
+<div b-type="1" id="xjcc-BudgetStatistics-datafilter" data-options="region:'north'"   style="height:90px">   
+    <input class="easyui-validatebox" type="hidden" id="xjcc-CN_CashMain-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

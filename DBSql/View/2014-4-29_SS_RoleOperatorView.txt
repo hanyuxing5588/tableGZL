@@ -1,0 +1,30 @@
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SS_RoleOperatorView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[SS_RoleOperatorView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：SS_RoleOperatorView
+//创建时间：2014-4-29
+//修 改 人：sxb
+//修改时间：--
+//功    能：角色操作员视图
+//修改内容：
+*/
+CREATE VIEW dbo.SS_RoleOperatorView
+AS
+SELECT  dbo.SS_Operator.OperatorKey,dbo.SS_Operator.OperatorName,dbo.SS_Operator.IsTimeLimited,
+	dbo.SS_Operator.StartTime,dbo.SS_Operator.StopTime,dbo.SS_Operator.IsStop,
+	dbo.SS_RoleOperator.GUID_Role,dbo.SS_RoleOperator.GUID_Operator,
+	dbo.SS_Role.RoleKey,dbo.SS_Role.RoleName
+FROM dbo.SS_Operator 
+LEFT  JOIN
+dbo.SS_RoleOperator ON dbo.SS_Operator.GUID = dbo.SS_RoleOperator.GUID_Operator
+left join dbo.SS_Role on dbo.SS_RoleOperator.GUID_Role=dbo.SS_Role.GUID
+

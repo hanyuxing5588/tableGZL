@@ -1,0 +1,249 @@
+﻿<script type="text/javascript">
+    $.extend($.fn.validatebox.defaults.rules, {
+        //范围验证
+        scopeValid: {
+            validator: function (value, param) {
+                
+                return ($.trim(value).length == 0) ? false : true;
+            },
+            message: '不能为空！'
+        },
+        //空值验证
+        emptyValid: {
+            validator: function (value, param) {
+                return ($.trim(value).length == 0) ? false : true;
+            },
+            message: '不能为空！'
+        },
+
+        //整数判断
+        //intValid[9]   表示最小值为9
+        //intValid[0,9] 表示取值范围为0~9
+        //intValid[,9]  表示最大值为9
+        intValid: {
+            validator: function (value, param) {
+                
+                //先验证是否为整数
+                var regExp = new RegExp(/^-?\d+$/);
+                if (!regExp.test(value)) {
+                    $.fn.validatebox.defaults.reules.intValid.message = "只能输入整数！";
+                    return false;
+                }
+                var isValueCorrect = true;  //判断指定的值是否在规定范围内
+                if (param != null) {
+                    switch (param.length) {
+                        case 1:
+                            //intValid[9]--最小值为9
+                            isValueCorrect = (value >= param[0]);
+                            $.fn.validatebox.defaults.reules.inValid.message = "最小值为{0}";
+                            break;
+                        case 2:
+                            //intValid[,9]--表示最大值为9
+                            if (typeof (param[0]) == "undefined") {
+                                isValueCorrect = (value >= param[1]);
+                                $.fn.validatebox.defaults.reules.inValid.message = "最大值为{1}";
+                                break;
+                            }
+                            else if (typeof (param[1]) == "undefined") {
+                                isValueCorrect = (value >= param[0]);
+                                $.fn.validatebox.defaults.reules.inValid.message = "最小值为{0}";
+                            } else {
+                                //intValid[0,9]--范围
+                                isValueCorrect = ((value >= param[0]) && (value <= param[1]));
+                                $.fn.validatebox.defaults.reules.inValid.message = "数值的范围为{0}到{1}";
+                            }
+                            break;
+                        default:
+                            isValueCorrect = true;
+                    }
+                }
+                return isValueCorrect;
+            },
+            message: ""
+        }
+    });
+</script>
+<div class="easyui-layout" id="clbxdmx-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 0px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="clbxdmx-sumbmit" 
+            data-options="plain:'true',iconCls:'icon-queding',
+            bindmethod:{ 'click': ['submitDetail'] },
+            bindparms:{'submitDetail':['parti','parti-BX_Travel']},
+            window:'b-window',
+            scope:'parti',status:'0'">确定</a> 
+            
+            <a href="#" class="easyui-linkbutton" id="clbxdmx-addrow"
+            data-options="plain:'true',iconCls:'icon-zenghang',
+            bindmethod:{ 'click': ['addRow'] },
+            bindparms:{'addRow':['clbxdmx-BX_TravelAllowance']},
+            scope:'clbxdmx',forbidstatus:[3,4]">增行</a> 
+            
+            <a href="#" class="easyui-linkbutton" id="clbxdmx-delrow"
+            data-options="plain:'true',iconCls:'icon-shanhang',
+            bindmethod:{ 'click': ['delRow'] },
+            bindparms:{'delRow':['clbxdmx-BX_TravelAllowance']},scope:'clbxdmx',forbidstatus:[3,4]">删行</a> 
+            
+            <a href="#" class="easyui-linkbutton" id="clbxdmx-cancel" 
+            data-options="plain:'true',iconCls:'icon-quxiao', 
+            window:'b-window',
+            scope:'clbxdmx',
+            bindmethod:{ 'click': ['cancelDetail'] }">取消</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table border="0" style="width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="6">
+                    <table class="easyui-edatagrid" id="clbxdmx-BX_TravelAllowance" data-options="
+                    requireCol:[
+                        'clbxdmx-BX_TravelAllowance-GUID_Person'
+                    ],
+                    fitColumns:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true, 
+                    width:870,
+                    height:485,
+                    rownumbers:true,
+                    formatters:{
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney1':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney2':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney3':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney4':'numberbox',
+                        @*'clbxdmx-BX_TravelAllowance-AllowanceDays1':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowanceDays2':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowanceDays3':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowanceDays4':'numberbox',*@
+                        'clbxdmx-BX_TravelAllowance-AllowancePrice1':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowancePrice2':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowancePrice3':'numberbox',
+                        'clbxdmx-BX_TravelAllowance-AllowancePrice4':'numberbox'
+                    },
+                    calculateConfig:{
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney1':['clbxdmx-BX_TravelAllowance-AllowanceDays1','clbxdmx-BX_TravelAllowance-AllowancePrice1'],
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney2':['clbxdmx-BX_TravelAllowance-AllowanceDays2','clbxdmx-BX_TravelAllowance-AllowancePrice2'],
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney3':['clbxdmx-BX_TravelAllowance-AllowanceDays3','clbxdmx-BX_TravelAllowance-AllowancePrice3'],
+                        'clbxdmx-BX_TravelAllowance-AllowenMoney4':['clbxdmx-BX_TravelAllowance-AllowanceDays4','clbxdmx-BX_TravelAllowance-AllowancePrice4']
+                    },
+                    scope:'clbxdmx',
+                    forbidstatus:[4,3]
+                    ">
+                        <thead>
+                            <tr>
+                                @*<th field="clbxdmx-BX_TravelAllowance-GUID" hidden="true">*@
+                                <th field="clbxdmx-BX_TravelAllowance-GUID_Person" width="110px" rowspan="2" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                        panelWidth:450,
+                                        panelHeight:300,
+                                        customValue:true,
+                                        remoteUrl:'/Combogrid/InvitePerson',
+                                        bindmethod: { 'onSelect': ['setAssociate'] },
+                                        gridassociate:{
+                                            gridId:'clbxdmx-BX_TravelAllowance',
+                                        'map':{
+                                                'clbxdmx-BX_TravelAllowance-GUID_Department':['GUID_Department','DepartmentName']
+                                              }
+                                        },
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'InvitePersonName',
+                                        filterField:'InvitePersonName,InvitePersonIDCard',
+                                        singleSelect:true,
+                                        pagination:true,
+                                        striped: false,
+                                        pageSize:10,
+                                        pageList:[10,50,100],
+                                        rownumbers:true,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:'true'},
+                                            {field:'GUID_Department',title:'GUID_Department',hidden:'true'},
+                                            {field:'InvitePersonName',title:'人员名称',width:'100'},
+                                            {field:'InvitePersonIDCard',title:'人员证件号码',width:'150'}
+                                        ]]
+                                        }
+                                }">
+                                    人员名称
+                                </th>
+                                <th field="clbxdmx-BX_TravelAllowance-GUID_Department" width="120px" sortable="false"
+                                    align="center" rowspan="2" editor="{
+                                     type:'combogrid',
+                                    options:{
+                                        panelWidth:320,
+                                        width:300,
+                                        remoteUrl:'/Combogrid/Department',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'DepartmentName',
+                                        filterField:'DepartmentName,DepartmentKey',
+                                        singleSelect:true,
+                                        striped: false,
+                                        rownumbers:true,
+                                        columns:[[
+                                                {field:'GUID',hidden:'true'},
+                                                {field:'DepartmentKey',title:'部门编码',width:'60'},
+                                                {field:'DepartmentName',title:'部门名称',width:'200'}
+                                            ]]
+                                        }
+                                    }">
+                                    部门名称
+                                </th>
+                                <th colspan="3" style="width:250px">
+                                    市内车费
+                                </th>
+                                <th colspan="3" style="width:250px">
+                                    住宿费
+                                </th>
+                                <th colspan="3" style="width:250px">
+                                    伙食补助
+                                </th>
+                                <th colspan="3" style="width:250px">
+                                    &nbsp;&nbsp;其他 &nbsp;&nbsp;
+                                </th>
+                            </tr>
+                            <tr>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowanceDays1' maxlength="3" editor="{type:'numberbox',options:{min:0,max:365}}">&nbsp;&nbsp;天数
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowancePrice1' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:-99999999.99,max:99999999.99}}">
+                                    &nbsp;&nbsp;标准
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowenMoney1' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:0,max:99999999.99}}">
+                                    &nbsp;&nbsp;金额
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowanceDays2' maxlength="3" editor="{type:'numberbox',options:{min:0,max:365}}"> &nbsp;&nbsp;天数
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowancePrice2' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:-99999999.99,max:99999999.99}}">
+                                    &nbsp;&nbsp;标准
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowenMoney2' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:0,max:99999999.99}}">
+                                    &nbsp;&nbsp;金额
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowanceDays3' maxlength="3" editor="{type:'numberbox',options:{min:0,max:365}}">
+                                    &nbsp;&nbsp;天数
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowancePrice3' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:-99999999.99,max:99999999.99}}">
+                                    &nbsp;&nbsp; 标准
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowenMoney3' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:0,max:99999999.99}}">
+                                    &nbsp;&nbsp;金额
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowanceDays4' maxlength="3" editor="{type:'numberbox',options:{min:0,max:365}}">
+                                    &nbsp;&nbsp;天数
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowancePrice4' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:-99999999.99,max:99999999.99}}">
+                                    &nbsp;&nbsp;标准
+                                </th>
+                                <th field='clbxdmx-BX_TravelAllowance-AllowenMoney4' editor="{type:'numberbox',options:{precision:2,groupSeparator:',',min:0,max:99999999.99}}">
+                                    &nbsp;&nbsp;金额
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

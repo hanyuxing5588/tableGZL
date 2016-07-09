@@ -1,0 +1,367 @@
+﻿
+<script src="../../Scripts/jc/jc.js" type="text/javascript"></script>
+<div class="easyui-layout" id="ztsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            @*<a href="#" class="easyui-linkbutton" id="ztsz-print" data-options="
+                   plain:'true',iconCls:'icon-dayin', scope:'ztsz',forbidstatus:[1,2,3],
+                   window:'ztsz',
+                   bindmethod:{ 'click': ['print'] },
+                   bindparms:{'print':['/Print/ztsz']}">打印</a> *@ 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="ztsz-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{'click':['newStatus']},scope:'ztsz',status:'1',                        
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ztsz-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   treeId:['ztsz-tree-ac'],
+                   bindmethod:{'click':['setStatusexamine']},scope:'ztsz',status:'2',                       
+                   forbidstatus:[1,2,3]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ztsz-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                       treeId:['ztsz-tree-ac'],
+                   bindmethod:{ 'click': ['setStatusexamine'] },scope:'ztsz',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="ztsz-save"
+                      data-options="plain:'true',iconCls:'icon-baocun',
+                   JCDA:true,
+                   treeId:['ztsz-tree-ac'],
+                   NewIdStatus:'1',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCqtsz/Saveztsz']},
+                   scope:'ztsz',status:'4',forbidstatus:[4]">保存</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="ztsz-cancel" data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'ztsz',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="ztsz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'ztsz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true" id="dwTabs">
+            <div title="帐套">
+                <ul class="easyui-tree" id="ztsz-tree-ac" data-options="
+                  msg:'帐套',
+                  m:'AccountMain',
+                  associate:{
+                                'ztsz-AccountMain-AccountKey':['AccountKey','AccountKey'],
+                                'ztsz-AccountMain-AccountName':['AccountName'],
+                                'ztsz-AccountMain-PKey':['PKey','PKey'],
+                                'ztsz-AccountMain-PName':['PName'],
+                                'ztsz-AccountMain-PGUID':['PGUID'],
+                                'ztsz-AccountMain-DWKey':['DWKey','DWKey'],
+                                'ztsz-AccountMain-DWName':['DWName'],
+                                'ztsz-AccountMain-GUID':['GUID'],
+                                'ztsz-AccountMain-GUID_DW':['GUID_DW'],
+                                'ztsz-AccountMain-FirstYear':['FirstYear'],
+                                'ztsz-AccountMain-LastYear':['LastYear'],
+                                'ztsz-AccountMain-Description':['Description']
+                  },
+                  associateEX:{
+                    'ztsz-AccountMain-PKey':['PKey','PKey'],
+                                'ztsz-AccountMain-PName':['PName'],
+                                'ztsz-AccountMain-PGUID':['PGUID']
+                  },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  url:'/Tree/GetJCZTTree',
+                  forbidstatus:[3],
+                  method:'post',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  IsDocStatusAssociate:true,
+                  scope:'ztsz'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center',fit:true" style="width: 800px; padding-left: 10px;">
+        <table border="0" style="height: 350px; width: 800px; padding: 0px; margin: 0px;
+            margin-left: 8%;">
+            <tr>
+                <td colspan="6" style="height: 50px; width: 100%">
+                    <div style="font-size: x-large; text-align: center;">
+                        帐&nbsp;套&nbsp;设&nbsp;置</div>
+                </td>
+            </tr>
+            <tr style="height: 50px;">
+                <td style="width: 90px">
+                    <label for="field1" id="lbl-AccountKey">
+                        <font color="red">*</font>帐&nbsp;套&nbsp;编&nbsp;号</label>
+                </td>
+                <td style="width: 200px;">
+                    <input class="easyui-validatebox" id="ztsz-AccountMain-AccountKey" style="width: 176px;"
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td style="width: 90px">
+                    <label for="field1" id="lbl-AccountName">
+                        <font color="red">*</font>帐&nbsp;套&nbsp;名&nbsp;称</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="ztsz-AccountMain-AccountName" style="width: 176px;"
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+            </tr>
+            <tr style="height: 50px;">
+                <td>
+                    <label for="field1" id="lbl-PKey">
+                        上级帐套编号</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="ztsz-AccountMain-PKey" data-options="
+                           width:180,
+                           method:'post',
+                           panelWidth:425,
+                           filterField:'AccountKey,AccountName',
+                           sortName:'AccountKey',
+                           remoteUrl:'/Combo/JCAccountMain',
+                           idField:'GUID',
+                           textField:'AccountKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'AccountKey',title:'上级帐套编号',width:'100'},
+                                {field:'AccountName',title:'上级帐套名称',width:'150'},
+                                {field:'Description',title:'描述',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                                'ztsz-AccountMain-PName':['GUID','AccountName'],
+                                'ztsz-AccountMain-PGUID':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-PName">
+                        上级帐套名称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="ztsz-AccountMain-PName" data-options="
+                           panelWidth:425,
+                           width:180,
+                           method:'post',
+                           scope:'ztsz',
+                           filterField:'AccountKey,AccountName',
+                           sortName:'AccountKey',
+                           remoteUrl:'/Combo/JCAccountMain',
+                           idField:'GUID',
+                           textField:'AccountName',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'AccountKey',title:'上级帐套编号',width:'100'},
+                                {field:'AccountName',title:'上级帐套名称',width:'150'},
+                                {field:'Description',title:'描述',width:'150'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'ztsz-AccountMain-PKey':['AccountKey','AccountKey'],
+                                 'ztsz-AccountMain-PGUID':['GUID']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+            </tr>
+            <tr style="height: 50px;">
+                <td>
+                    <label for="field1" id="lbl-DWKey">
+                        <font color="red">*</font>单&nbsp;位&nbsp;编&nbsp;号</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="ztsz-AccountMain-DWKey" data-options="
+                           width:180,
+                           method:'post',
+                           panelWidth:275,
+                           filterField:'DWKey,DWName',
+                           sortName:'DWKey',
+                           remoteUrl:'/Combogrid/DWView',
+                           idField:'GUID',
+                           textField:'DWKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'DWKey',title:'单位编号',width:'100'},
+                                {field:'DWName',title:'单位名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                                'ztsz-AccountMain-DWName':['GUID','DWName'],
+                                'ztsz-AccountMain-GUID_DW':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-DWName">
+                        <font color="red">*</font>单&nbsp;位&nbsp;名&nbsp;称</label>
+                </td>
+                <td>
+                    <select class="easyui-combogrid" id="ztsz-AccountMain-DWName" data-options="
+                           panelWidth:275,
+                           width:180,
+                           method:'post',
+                           scope:'ztsz',
+                           filterField:'DWKey,DWName',
+                           sortName:'DWKey',
+                           remoteUrl:'/Combogrid/DWView',
+                           idField:'GUID',
+                           textField:'DWName',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'DWKey',title:'单位编号',width:'100'},
+                                {field:'DWName',title:'单位名称',width:'150'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'ztsz-AccountMain-PKey':['DWKey','DWKey'],
+                                 'ztsz-AccountMain-GUID_DW':['GUID']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+            </tr>
+            <tr style="height: 50px;">
+                <td>
+                    <label for="field1" id="lbl-FirstYear">
+                        &nbsp;开&nbsp;始&nbsp;日&nbsp;期</label>
+                </td>
+                <td>
+                   @* <input class="easyui-datebox" id="ztsz-AccountMain-FirstYear" data-options="
+                                                        width:182,
+                                                        forbidstatus:[4,3],
+                                                        bindmethod: { 'onCloseEx': ['setAssociate'] }
+                                                        " />*@
+                 <select id="ztsz-AccountMain-FirstYear" class="easyui-combobox"  data-options="editable:false,forbidstatus:[4,3],tempValue:new Date().getFullYear()"; style="width:180px;">  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+                 </select>
+                </td>
+                <td>
+                    <label for="field1" id="lbl-LastYear">
+                        &nbsp;结&nbsp;束&nbsp;日&nbsp;期</label>
+                </td>
+                <td>
+                    @*<input class="easyui-datebox" id="ztsz-AccountMain-LastYear" data-options="
+                                                        width:182,
+                                                        forbidstatus:[4,3],
+                                                        required:false,
+                                                        bindmethod: { 'onCloseEx': ['setAssociate'] }" />*@
+                        <select id="ztsz-AccountMain-LastYear" class="easyui-combobox"  data-options="editable:false,forbidstatus:[4,3]"; style="width:180px;">  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+                 </select>
+                </td>
+            </tr>
+            <tr style="height: 50px;">
+                <td>
+                    <label for="field1" id="lbl-Description">
+                        <font color="red">*</font>描&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;述</label>
+                </td>
+                <td colspan="3">
+                    <input class="easyui-validatebox" id="ztsz-AccountMain-Description" style="width: 579px;"
+                        data-options="forbidstatus:[4,3]"></input>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="ztsz-AccountMain-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="ztsz-AccountMain-PGUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="ztsz-AccountMain-GUID_DW" type="hidden" keyattr="1"></input>
+</div>
+<label id="ztsz-extendregion" style="display: none">
+<input id="ztsz-status" type="text"></ input>
+    <input id="initscope" type="text" value="ztsz"></ input><!--页面scope为：ztsz-->
+    <input id="initstatus" type="text" value="4"></ input><!--页面状态status为：4-->
+    <input id="initguid" type="text" value=@ViewData["guid"]></ input>
+    <input id="initController" type="text" value="JCqtsz"></ input>
+    <div id="ztsz" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

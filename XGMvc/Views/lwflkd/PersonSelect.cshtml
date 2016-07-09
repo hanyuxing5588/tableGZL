@@ -1,0 +1,45 @@
+﻿<div class="easyui-layout" id="parti-dataregion" data-options="fit:true" z="1">
+<div data-options="region:'north'" style="height:51px">
+<div  style="padding:2px 0 2px 2px;background:#fafafa;border:1px solid #ccc;">
+                  
+                        <a href="#"  class="easyui-linkbutton" id="personInfo-add" data-options="plain:'true',iconCls:'icon-queding',
+                        window:'b-window',
+                         bindmethod:{ 'click': ['submitSelectedPerson'] },
+                        scope:'parti',status:'0',forbidstatus:[4]">确定</a>
+                  
+                    <a href="#"  class="easyui-linkbutton" id="personInfo-quxiao" 
+                    data-options="plain:'true',iconCls:'icon-quxiao',
+                       bindmethod:{ 'click': ['cancelDetail'] },
+                    window:'b-window',
+                   scope:'parti',status:'0'">取消</a>
+            </div>
+</div>
+<div  data-options="region:'center',fit:true" >      
+           
+    <table  style="height:450px;padding:5px" class="easyui-datagrid"  id="persongrid" b-type="1" 
+                data-options="
+                    fitColumns:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    pagination:true,
+                    striped: false,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true">
+                <thead>
+            <tr>       
+                <th field="GUID" hidden="true"></th>
+                 <th field="IsUnit" hidden="true"></th>
+                 <th field="GUID_Department" hidden="true"></th>
+               
+                <th field="CredentialTypekey" hidden=true></th>          
+                <th field="InvitePersonName"  align="left" width="100" >人员名称</th>  
+                <th field="CredentialTypeName" align="left" width="100" >证件名称</th> 
+                 <th field="InvitePersonIDCard"  align="left" width="120">证件号码</th> 
+                <th field="DepartmentName"align="left" width="150" >部门名称</th>                
+            </tr></thead>
+        </table>
+                   
+    </div> 
+</div>

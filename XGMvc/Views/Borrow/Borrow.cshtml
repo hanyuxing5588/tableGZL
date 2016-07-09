@@ -1,0 +1,195 @@
+﻿<script type="text/javascript">
+
+//    $(document).ready(function () {
+//        
+//        var formatNum = function (s1) {
+//            var opts = $('#borrow-GridBorrow').datagrid('options');
+//            s1 = new Number(s1 / (opts.dw || 1)).toFixed(2);
+//            var p = /(\d+)(\d{3})/;
+//            while (p.test(s1)) {
+//                s1 = s1.replace(p, "$1,$2");
+//            }
+//            return s1;
+//        }
+//        var cols = [];
+//        for (var j = 2; j < 19; j++) {
+//            if (j == 17 || j == 6 || j == 7 || j == 9) continue;
+//            cols.push("t" + j);
+//        }
+//        for (var i = 0; i < cols.length; i++) {
+//            var col = cols[i];
+//            var colConfig = $('#borrow-GridBorrow').datagrid('getColumnOption', col);
+//            colConfig.formatter = formatNum;
+//        }
+//        var d = new Date();
+//        var s = d.getFullYear(), s1 = s + "-01-01";
+//        var m = (d.getMonth() + 1);        // 获取月份。
+
+//        m = m.toString().length == 2 ? m : ('0') + m;
+//        s = s + "-" + m + "-";
+//        var r = d.getDate() // 获取日。
+//        r = r.toString().length == 2 ? r : ('0') + r;
+//        s = s + r;
+//        $('#borrow-BX_Main-StartDate').datebox('setValue', s1);
+//        $('#borrow-BX_Main-EndDate').datebox('setValue', s);
+//        $('#borrow-hselect').bind('click', function () {
+//            var s = $('#borrow-BX_Main-StartDate').combo('getText');
+//            var e = $('#borrow-BX_Main-EndDate').combo('getText');
+//            if (new Date(s) > new Date(e)) {
+//                $.messager.alert('系统提示', '起始时间不能大于结束时间！');
+//                return;
+//            }
+//        });
+//    });
+    
+</script>
+<body>
+    <div class="easyui-layout" data-options="fit:true" z="1">
+        <div data-options="region:'north'" style="height: 51px">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#" class="easyui-linkbutton" b-type="1" id="borrow-hselect" b-action="hselect"
+                    data-options=" bindmethod:{ 'click': ['historySearch'] },
+            bindparms:{'historySearch':['/borrow/BorrowMoney','borrow-GridBorrow','borrow','borrowdatafilter']},
+            scope:'borrow',
+            plain:'true',iconCls:'icon-chaxun'">查询</a> <a href="#" class="easyui-linkbutton"
+                b-type="1" id="borrow-tuichu" data-options="plain:'true',iconCls:'icon-tuichu',
+            bindmethod:{ 'click': ['cancelDetail'] },
+            window:'b-window',                 
+            scope:'borrow'">退出</a> <a href="#" class="easyui-linkbutton" b-type="1" id="borrow-bangzhu"
+                data-options="plain:'true',iconCls:'icon-bangzhu',
+            scope:'parti'">帮助</a>
+            </div>
+        </div>
+        <div data-options="region:'west',split:'true'" style="width: 230px">
+            <div class="easyui-tabs" data-options="fit:true">
+                <div title="部门">
+                    <ul class="easyui-tree" id="borrow-tree-dep" data-options="
+        bindmethod:{'onDblClick': ['historySelect'] },
+        bindparms:{'historySelect':['/borrow/BorrowMoney','borrow-GridBorrow','borrow','borrowdatafilter']},
+        url:'/Tree/GetDepartmentTree',                 
+        method:'post'">
+                    </ul>
+                </div>
+                <div title="人员">
+                    <ul class="easyui-tree" id="borrow-tree-per" data-options="
+            bindmethod:{'onDblClick': ['historySelect'] },
+            bindparms:{'historySelect':['/borrow/BorrowMoney','borrow-GridBorrow','borrow','borrowdatafilter']},
+            url:'/Tree/GetPersonTree',
+            method:'post'">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id="borrow-dataregion" data-options="region:'center',fit:true">
+            <div style="font-size: x-large; text-align: center; width: 500px;">
+                个人借款信息查询表
+            </div>
+            <div b-type="1" id="borrow-borrowdatafilter" data-options="region:'north'" style="height: 30px">
+                <table border="0" style="width: 600px;">
+                    <tr>
+                       <td style="width: 60px">
+                            <label>
+                                借款日期：</label>
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" id="borrow-BX_Main-StartDate" 
+                            validType="TimeCheck['borrow-BX_Main-EndDate',true]" 
+                            invalidMessage="开始日期不能大于结束日期"
+                            data-options="
+                                width:120,
+                                required:true,
+                                value:'@ViewData["startDate"]',
+                                bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+
+                        <label>
+                            至</label>
+                        <input class="easyui-datebox" id="borrow-BX_Main-EndDate"  validType="TimeCheck['borrow-BX_Main-StartDate',false]"
+                            data-options="
+                                width:120,
+                                required:true,
+                                value:'@ViewData["currentDate"]',
+                                bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div b-type="1" data-options="region:'center',fit:true">
+                <table border="0" style="width: 760px; height: 450px;">
+                    <tr>
+                        <td colspan="6">
+                            <table style="height: 450px; padding: 5px" class="easyui-datagrid" id="borrow-GridBorrow"
+                                b-type="1" data-options="
+                                    fitColumns:false,
+                                    method:'get',
+                                    singleSelect:true,
+                                    formatters:{'Total':'numberbox'},
+                                    checkOnSelect:true,
+                                    pagination:true,
+                                    striped: false,
+                                    pageSize:20,
+                                    pageList:[20,50,100],
+                                    rownumbers:true,
+                                    scope:'borrow'
+                                ">
+                                <thead>
+                                    <tr>
+                                        @*<th field="b-sel" data-options="width:100,checkbox:'true'">
+                                        </th>*@
+                                        <th field="GUID" hidden="true">
+                                        </th>
+                                        <th field="DocDate" align="center" width="80">
+                                            借款日期
+                                        </th>
+                                        <th field="DepartmentName" lign="center" width="80">
+                                            部门名称
+                                        </th>
+                                        <th field="PersonName" align="center" width="80">
+                                            人员名称
+                                        </th>
+                                        <th field="BGCodeName" align="center" width="120">
+                                            科目名称
+                                        </th>
+                                        <th field="DocMemo" align="left" width="80">
+                                            摘要
+                                        </th>
+                                        <th field="Total" align="right" width="80">
+                                            金额
+                                        </th>
+                                        <th field="WLTypeName" align="center" width="220">
+                                            往来类型                                        </th>
+                                        <th field="SettleTypeName" align="center" width="80">
+                                            结算方式
+                                        </th>
+                                        <th field="ProjectName" align="center" width="140">
+                                            项目名称
+                                        </th>
+                                        <th field="CustomerName" align="center" width="120">
+                                            客户名称
+                                        </th>
+                                        <th field="DrawMoneyType" align="center" width="80">
+                                            是否领款
+                                        </th>
+                                        <th field="RePamyment" align="center" width="80">
+                                            是否还款
+                                        </th>
+                                        <th field="RePayDate" align="center" width="80">
+                                            还款日期
+                                        </th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <label id="bxd-extendregion" style="display: none">
+        <input id="bxd-status" type="text"></input>
+        <input id="initscope" type="text" value=@ViewData["scope"]></input>
+        <input id="initstatus" type="text" value=@ViewData["status"]></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+        <div id="@ViewData["ModelUrl"]-b-window" style="padding: 10px" line="true">
+        </div>
+    </label>
+</body>

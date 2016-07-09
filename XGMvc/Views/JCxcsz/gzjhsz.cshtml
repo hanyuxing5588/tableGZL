@@ -1,0 +1,385 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "工资计划设置";
+}
+
+<script type="text/javascript">
+    $.extend($.fn.linkbutton.methods, {
+        //保存单据
+        saveDoc: function () {
+            var me = this;
+            var opts = $(me).linkbutton('options');
+            var status = $.view.getStatus(opts.scope);
+            var bResult = $.fn.linkbutton.methods["beforeSave"].call(this, status);
+            if (bResult == false) return;
+            var saveAjax = function (status, indata, opts) {
+                if ($.view.curPageState == 6 || $.view.curPageState == 5) {
+                    status = '2';
+                }
+                var date = new Date()
+                $.ajax({
+                    url: url,
+                    data: { "status": status, "m": JSON.stringify(indata.m), "d": JSON.stringify(indata.d) },
+                    dataType: "json",
+                    type: "POST",
+                    traditional: true,
+                    error: function (xmlhttprequest, textStatus, errorThrown) {
+                        $.messager.alert("错误", $.view.warning, 'error');
+                    },
+                    success: function (data) {
+                        // console.log("设置加载数据时间" + (new Date() - date));
+                        switch (status) {
+                            case "1": //新建
+                                if (data && data.result == "success") {
+                                    //还原页面初始状态
+
+                                    var date = new Date()
+                                    /*2014-7-23 hyxUpdate*/
+                                    //                                $.view.clearView(opts.scope, "dataregion");
+                                    //加载页面数据
+                                    //设置页面编辑状态
+
+                                    //alert("清空数据时间" + new Date() - date)
+                                    var date = new Date()
+                                    $.view.loadData(opts.scope, data);
+                                    //  alert("设置加载数据时间" + (new Date() - date))
+                                    var date = new Date()
+                                    $.view.setViewEditStatus(opts.scope, opts.status);
+                                    // alert("设置状态时间" + (new Date() - date))
+                                } else {
+                                    $.view.setStatus(opts.scope, status);
+                                }
+                                //弹出提示
+                                if (!data.s) return;
+                                $.messager.alert(data.s.t, data.s.m, data.s.i);
+                                break;
+                            case "2": //修改
+
+                                if (data && data.result == "success") {
+                                    //还原页面初始状态
+                                    /*2014-7-23 hyxUpdate*/
+                                    //                              $.view.clearView(opts.scope, "dataregion");
+                                    //加载页面数据
+                                    var date = new Date()
+                                    $.view.loadData(opts.scope, data);
+                                    var sTemp = opts.status;
+                                    if ($.view.curPageState == 6 || $.view.curPageState == 5) {
+                                        //sTemp = 3;
+                                    }
+                                    var date = new Date()
+                                    $.view.setViewEditStatus(opts.scope, sTemp);
+                                }
+                                else {
+                                    $.view.setStatus(opts.scope, status);
+                                }
+                                if (!data.s) return;
+                                $.messager.alert(data.s.t, data.s.m, data.s.i);
+                                break;
+                            case "3": //删除
+                                if (data && data.result == "success") {
+                                    //还原页面初始状态
+                                    $.view.clearView(opts.scope, "dataregion");
+                                    //设置页面编辑状态
+                                    $.view.setViewEditStatus(opts.scope, 1); //                                  
+                                    $.view.loadData(opts.scope, data);
+                                }
+                                else {
+                                    var msg = data.s.m;
+                                    if (msg) {
+                                        $.messager.alert('提示', msg);
+                                    }
+                                    $.view.setStatus(opts.scope, status);
+                                }
+                                break;
+                        }
+
+                        //对单据操作完成以后判断单据是否保存成功
+
+
+
+                        //                    $(me).linkbutton('afterSave', status);
+                        $.fn.linkbutton.methods["afterSave"].call($(me), status, data.result);
+
+                        $.view.cancelObj = { data: data, status: 4 };
+                    }
+                });
+            }
+            var saveAjaxBefore = function (opts, saveAjax) {
+
+                var status = $.view.getStatus(opts.scope);
+                var indata = $.view.retrieveData(opts.scope, "dataregion");
+                //设置保存按钮的状态属性
+
+
+                $.view.setStatus(opts.scope, opts.status);
+                if (!indata) return;
+                //删除提示
+                if (status == "3" && $.view.curPageState != 5 && $.view.curPageState != 6) {
+                    $.messager.confirm("提示", "确定要删除吗?", function (data) {
+                        if (!data) {
+                            $.view.setStatus(opts.scope, status);
+                            return;
+                        } else {
+                            saveAjax(status, indata, opts);
+                        }
+                    });
+                }
+                //修改
+                else if (status == '2') {
+                    var treeId = $('#' + opts.treeId);
+                    $.messager.confirm("提示", "是否确认修改当前数据?", function (r) {
+                        if (r) {
+                            var isDefaults = $('#gzjhsz-SA_Plan-IsDefault').checkbox('getValue'); //$('#gzjhsz-SA_Plan-IsDefault').val();
+                            var treeData = treeId.tree("getRoots");
+                            //在新增或修改的时候去验证
+                            var isHavDefault = false;
+                            var ValTrue = true
+                            for (var i = 0; i < treeData.length; i++) {
+                                var isDefault = treeData[i].attributes.IsDefault;
+                                //当idDefaults为true的时候才去校验
+                                if ((isDefaults + "").toLowerCase() == (isDefault + "").toLowerCase()) {
+                                    isHavDefault = true;
+                                    break;
+                                }
+                            }
+                            if (isHavDefault && (isDefaults + "").toLowerCase() == "true") {
+                                $.messager.confirm("提示", "默认值已存在，是否覆盖！", function (r) {
+                                    if (r) {
+                                        saveAjax(status, indata, opts);
+                                    }
+                                });
+                            }
+                            else {
+                                saveAjax(status, indata, opts);
+                            }
+                        }
+                    });
+                }
+                else {//这个是新增的时候
+                    var isDefaults = $('#gzjhsz-SA_Plan-IsDefault').checkbox('getValue');
+                    if ((isDefaults + "").toLowerCase() == "true") {
+                        $.messager.confirm("提示", "默认值已存在，是否覆盖！", function (r) {
+                            if (r) {
+                                saveAjax(status, indata, opts);
+                            }
+                        });
+                    }
+                    else {
+                        saveAjax(status, indata, opts);
+                    }
+                }
+            }
+            $(this).linkbutton('wholeGridEndEdit');
+            var opts = $(this).linkbutton('options');
+            var parms = $(this).linkbutton('getParms', 'saveDoc');
+            if (!parms) return;
+            var url = parms[0];
+            if (!url) return;
+            var isSussess = true;
+            //基础档案校验 
+            if (opts.JCDA) {
+                isSussess = $.fn.linkbutton.methods["examine"]($(this));    //跳转路径：Scripts/jc/jc.js
+                if (!isSussess) {
+                    return;
+                }
+            } else {
+                //常规校验
+                if (parms[1]) {
+                    isSussess = $.fn.linkbutton.methods["examine"].call($('#' + parms[1]), true);
+                    if (!isSussess) {
+                        return;
+                    }
+                }
+            }
+            if (isSussess == true) {
+
+                var isExmine = $.fn.linkbutton.methods["examineAfter"]($(this), status, function () { saveAjaxBefore(opts, saveAjax); });
+
+            } else {
+                $.messager.confirm("提示", isSussess, function (data) {
+                    if (data) {
+                        var isExmine = $.fn.linkbutton.methods["examineAfter"]($(this), status, function () { saveAjaxBefore(opts, saveAjax); });
+                    }
+                })
+            }
+        }
+    });
+
+</script>
+
+<script src="../../Scripts/jc/jc.js?r=1" type="text/javascript"></script>
+
+<div class="easyui-layout" id="gzjhsz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                ` <a href="#" class="easyui-linkbutton" id="gzjhsz-add" 
+                  data-options="plain:'true',iconCls:'icon-xinzeng',
+                  bindmethod:{'click':['newStatus']},scope:'gzjhsz',status:'1',                        
+                  forbidstatus:[1,2,3]">新增</a> 
+                  
+                  <a href="#" class="easyui-linkbutton"
+                  id="gzjhsz-edit" data-options="plain:'true',iconCls:'icon-xiugai',
+                  treeId:['gzjhsz-tree-plan'],
+                  bindmethod:{'click':['setStatusexamine']},scope:'gzjhsz',status:'2',                       
+                  forbidstatus:[1,2,3]">修改</a> 
+                  
+                  <a href="#" class="easyui-linkbutton" id="gzjhsz-remove"
+                  data-options="plain:'true',iconCls:'icon-shanchu',
+                  treeId:['gzjhsz-tree-plan'],
+                  bindmethod:{ 'click': ['setStatusexamine'] },
+                  scope:'gzjhsz',status:'3',
+                  forbidstatus:[1,2,3]">删除</a>
+                  
+                  <a href="#" class="easyui-linkbutton" id="gzjhsz-tingyong"
+                  data-options="plain:'true',iconCls:'icon-tingyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['gzjhsz-SA_Plan-IsStop','1','gzjhsz-tree-plan']},
+                  forbidstatus:[1,2,3]">停用</a>
+
+                  <a href="#" class="easyui-linkbutton" id="gzjhsz-qiyong"
+                  data-options="plain:'true',iconCls:'icon-qiyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['gzjhsz-SA_Plan-IsStop','0','gzjhsz-tree-plan']},
+                  forbidstatus:[1,2,3]">启用</a>
+                  
+                  <a href="#" class="easyui-linkbutton" id="gzjhsz-cancel"
+                  data-options="plain:'true',iconCls:'icon-quxiao', 
+                  scope:'gzjhsz',forbidstatus:[4],
+                  bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                     
+                  <a href="#" class="easyui-linkbutton"
+                  id="gzjhsz-save" data-options="plain:'true',iconCls:'icon-baocun',
+                  JCDA:true,
+                  treeId:['gzjhsz-tree-plan'],
+                  NewIdStatus:'1',
+                  bindmethod:{ 'click': ['saveDoc'] },
+                  bindparms:{'saveDoc':['/JCxcsz/Savegzjhsz']},
+                  scope:'gzjhsz',status:'4',forbidstatus:[4]">保存</a> 
+                   
+                  <a href="#" class="easyui-linkbutton"
+                  id="gzjhsz-close" data-options="plain:'true',iconCls:'icon-tuichu',
+                  bindmethod:{ 'click': ['closeTab'] },
+                  scope:'gzjhsz'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="工资计划">
+                <ul class="easyui-tree" id="gzjhsz-tree-plan" data-options="
+                msg:'工资计划',
+                m:'SA_Plan',
+                    associate:{
+                            'gzjhsz-SA_Plan-PlanKey':['PlanKey'],
+                            'gzjhsz-SA_Plan-PlanName':['PlanName'],
+                            'gzjhsz-SA_Plan-GUID':['GUID'],
+                            'gzjhsz-SA_Plan-GUID_SA_PlanArea':['GUID_SA_PlanArea'],
+                            'gzjhsz-SA_Plan-PlanDate':['PlanDate'],
+                            'gzjhsz-SA_Plan-IsStop':['IsStop'],
+                            'gzjhsz-SA_Plan-IsDefault':['IsDefault']
+                  },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  forbidstatus:[3],
+                  checkbox:false,
+                  url:'/Tree/GetJCPlanTree',
+                  scope:'gzjhsz',
+                  retStatus:'4',
+                  customBindFirst:true,
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'">
+        <table border="0" id="table"  style=" width:100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="4" style="height: 50px;">
+                        <div style="font-size: x-large; text-align: center;">
+                        工资计划档案</div>
+                 </td>
+            </tr>
+             <tr>
+                <td class="tdTextTr2">
+                <label for="field1" id="lbl-PlanKey">
+                    <font color="red">*</font>工资计划编号</label>
+            </td>
+                <td  class="tdValueTr2" >
+                <input class="easyui-validatebox" id="gzjhsz-SA_Plan-PlanKey"  data-options="forbidstatus:[4,3]"></input>
+            </td>
+                <td class="tdTextTr2">
+                <label for="field" id="lbl-PlanName">
+                    <font color="red">*</font>工资计划名称</label>
+            </td>
+            <td class="tdValueTr2">
+                <input class="easyui-validatebox" id="gzjhsz-SA_Plan-PlanName" 
+                    data-options="forbidstatus:[4,3]"></input>
+            </td>
+            </tr>
+            <tr>
+               <td class="tdTextTr2">
+                <label for="field" id="lbl-PlanDate">
+                    <font color="red">*</font>计划开始时间</label>
+            </td>
+               <td class="tdValueTr2">
+                <input class="easyui-datebox" id="gzjhsz-SA_Plan-PlanDate" data-options="width:185,forbidstatus:[4,3],required:false,
+    bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+            </td>
+               <td class="tdTextTr2">
+                <label for="field" id="lbl-GUID_SA_PlanArea">
+                    <font color="red">*</font>工资计划区间</label>
+            </td>
+               <td class="tdValueTr2">
+                    <select class="easyui-combogrid" id="gzjhsz-SA_Plan-GUID_SA_PlanArea" data-options="
+                        panelWidth:245,
+                        width:185,
+                        method:'post',
+                        scope:'gzjhsz',
+                        filterField:'PlanAreaKey,PlanAreaName',
+                        sortName:'PlanAreaKey',
+                        remoteUrl:'/Combogrid/PlanArea',
+                        idField:'GUID',
+                        textField:'PlanAreaName',
+                        columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'PlanAreaKey',title:'工资计划区间编码',width:'110'},
+                            {field:'PlanAreaName',title:'工资计划区间名称',width:'110'}
+                        ]],
+                        forbidstatus:[4,3]
+                        ">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+              <td class="tdTextTr2">
+                <input type="checkbox" class="easyui-checkbox" id="gzjhsz-SA_Plan-IsStop" data-options="forbidstatus:[4,3]"></input>&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+              <td class="tdValueTr2">
+                是否停用
+            </td>
+              <td class="tdTextTr2">
+                <input type="checkbox" class="easyui-checkbox" id="gzjhsz-SA_Plan-IsDefault" data-options="forbidstatus:[4,3]"></input>&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+              <td class="tdValueTr2">
+                是否默认
+            </td>
+        </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="gzjhsz-SA_Plan-GUID" type="hidden" keyattr="1"></input>
+    </div>
+    <label id="gzjhsz-extendregion" style="display: none">
+        <input id="gzjhsz-status" type="text"></input>
+        <input id="initscope" type="text" value="gzjhsz"></input>
+        <input id="initstatus" type="text" value="4"></input>
+        <input id="initController" type="text" value="JCxcsz"></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+        <div id="gzjhsz-b-window" line="true">
+        </div>
+    </label>
+    <iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+         (function () {
+             var datagridId = "";
+             var colCount = 4;             
+             $.setControl("divWest", datagridId, colCount);
+         })();
+</script>

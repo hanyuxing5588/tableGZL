@@ -1,0 +1,397 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>劳务支出领款单</title>
+    <style type="text/css">
+        body
+        {
+            font-size: 12px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .Layout {
+            margin: 0px auto;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+            margin-top: 1px;
+            bottom: 80px;
+        }
+        .xj
+        {
+            width: 800px;
+            height: 80px;
+            text-align: center;
+            margin: 0px;
+			margin-left:80px;
+        }
+        .xj .xj_pos
+        {
+            margin-left: 200px;
+            width: 383px;
+            font-family: 华文细黑;
+            font-size: 40px;
+            font-weight: bold;
+            line-height: 43px;
+        }
+        .dh
+        {
+            width: 203px;
+            line-height: 43px;
+            height: 43px;
+            float: right;
+            margin-top: -40px;
+            text-align: right;
+            font-family: 宋体;
+			font-size:20px;
+            font-weight: bold;
+        }
+        .xj_bg
+        {
+            width: 1000px;
+            height: 40px;
+            font-family: 华文楷体;
+            font-size: 20px;
+            float:left;
+            padding-top:15px;
+        }
+        .xj_bg_div1
+        {
+            float: left;
+            padding: 3px;
+			margin-top:10px;
+			
+        }
+        .xj_bg_div2
+        {
+            padding: 3px;
+        }
+       
+        .tab_foot
+        {
+            width: 990px;
+            height: 90px;
+            margin: 0px auto;
+            font-family: 华文楷体;
+            font-size: 20px;
+            vertical-align: bottom;
+            float:left;
+        }
+        .tabfoot_div
+        {
+            line-height: 1px;
+            text-align: center left;
+            float: left;
+			font-family: 宋体;
+            margin-top:50px;
+            font-weight: bold;
+			width: 330px;
+        }
+        .jine div
+        {
+            height: 40px;
+            line-height: 46px;
+            float: left;
+            text-align: center;
+			margin-left:5px;
+        }
+        table
+        {
+            border-collapse: collapse; /*边框合并属性*/
+            margin-top: 25px;
+            font-family: 华文楷体;
+            font-size: 14px;
+            width: 1000px;
+            height: 402px;
+            float: left;
+            table-layout:fixed;
+        }
+        th
+        {
+            border: 1px solid #000000;
+            height: 26px;
+            background: #C0C0C0;
+            text-align: center;
+            line-height: 25px;
+			font-family: 华文楷体;
+            font-size: 20px;
+        }
+        td
+        {
+            border: 1px solid #000000;
+            height: 29px;
+            text-align: center;
+            word-wrap:break-word;
+            line-height:13px;
+			font-family: 华文楷体;
+            font-size: 20px;
+        }
+    </style>
+    <link href="../../Content/css/Print/printView.css" rel="stylesheet" type="text/css" />
+    
+    <style type="text/css" media="print">
+        .noprint
+        {
+             display:none;
+             
+        }
+    </style>
+
+    <script src="../../Content/commonjs/print/basePrint1.js?r=1117121" type="text/javascript"></script>
+    <script src="../../Content/commonjs/print/print1.js?r=12311121" type="text/javascript"></script>
+</head>
+<body>
+    <div id="print" style="page-break-after:always;padding:0;margin:0;height: 100%;width:100%">
+    <div style="position: relative; height: 100%; line-height: 100%;margin-left:80px;margin-top:25px" options="{'extendcontent':{'BX_InviteFee':{'gist':'rowcount','model':'page','target':'content'}}}">
+        <div id="content" class="Layout">
+            <div class="xj">
+                <div class="xj_pos">
+                    劳&nbsp;务&nbsp;支&nbsp;出&nbsp;领&nbsp;款&nbsp;单                 </div>
+                <div style="width: 400px; height: 5px; margin-left: 200px; border-top: 1px solid black;
+                    border-bottom: 1px solid black;">
+                </div>
+                <div class="dh">
+                    <span>单号&nbsp;<span id="BX_Main-DocNum">编号</span>&nbsp;<span id="pagination"></span></span>
+                </div>
+                <div style="width: 383px; font-size: 20px; height: 31px; line-height: 31px; margin: 0 140px;margin-left:240px;
+                    padding-top: 10px">
+                    <span id="BX_Main-DocDate">时间日期</span></div>
+            </div>
+            <div class="xj_bg">
+                <div class="xj_bg_div1">
+                    单位领导_____________</div>
+                <div class="xj_bg_div1">
+                    部门负责人___________</div>
+                <div class="xj_bg_div1">
+                    项目负责人_____________</div>
+                <div class="xj_bg_div1">
+                    财务负责人_____________</div>
+                <div class="xj_bg_div1">
+                    项目名称<div style=" border-bottom:1px solid black ; width:400px; margin-left:100px"></div>
+					<div style=" width:430px; float:right; margin-top: -22px;margin-left: 100px;" id="BX_Detail-ProjectName"></div>
+					</div>
+                    <div class="xj_bg_div1">
+                        项目编号<div style=" border-bottom:1px solid black ; width:300px; margin-left:80px"></div>
+					<div style=" float:right; width:157px; margin-top: -22px;margin-right: 130px;" id="BX_Detail-ProjectKey"></div>
+                    </div>
+            </div>
+            <div>
+                <table id="BX_InviteFee">
+                    <thead>
+                        <tr>
+                            <th field="colindex" style="width: 45px;">
+                                序号
+                            </th>
+                            <th field="BX_InviteFee-InvitePersonName" style="width: 105px;">
+                                姓名
+                            </th>
+                            <th field="BX_InviteFee-InvitePersonIDCard" style="width: 190px;">
+                                证件号
+                            </th>
+                            <th field="BX_InviteFee-Total_BX" isDemical="true" style="width: 120px;">
+                                金额
+                            </th>
+                            <th field="BX_InviteFee-Total_Tax" style="width: 120px;">
+                                税金
+                            </th>
+                            <th field="BX_InviteFee-Total_Real" style="width: 120px;">
+                                实领金额
+                            </th>
+                            <th field="BX_InviteFee-" style="width:110px;">
+                                领款人
+                            </th>
+							<th field="BX_InviteFee-FeeMemo" style="width: 100px;">
+                                备注
+                            </th>
+                            <th style="border: 0px; width:45px; background: White;">
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="height:55px">
+                            <td>
+                                1
+                            </td>
+                            <td>
+                            </td>
+							<td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td>
+                            </td>
+                            <td class="noprint" style="border: 0px;" style="width: 45px;">
+                                附
+                            </td>
+                        </tr>
+                        <tr style="height:55px">
+                            <td>
+                                2
+                            </td>
+                            <td field="">
+                            </td>
+							<td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td class="noprint" style="border: 0px;">
+                                单                             </td>
+                        </tr>
+                        <tr style="height:55px">
+                            <td style="width: 190px;">
+                                3
+                            </td>
+                            <td field="">
+                            </td>
+							<td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td class="noprint" style="border: 0px; ">
+                                据                             </td>
+                        </tr>
+                        <tr style="height:55px">
+                            <td>
+                                4
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+							<td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td style="border: 0px; text-align:center;">
+                                <div id="BX_Main-BillCount"  style="margin-top:40px">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="height:55px">
+                            <td>
+                                5
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+							<td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td class="noprint" style="border: 0px;">
+                                张                             </td>
+                        </tr>
+                        <tr style="height:55px">
+                            <td>
+                            6
+                            </td>
+                            <td field="">
+                           
+                            </td>
+                            <td field="">
+                             合计
+                            </td>
+                            <td field="">
+                            </td>
+							<td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td field="">
+                            </td>
+                            <td style="border: 0px;">
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr style="height:80px">
+                            <td colspan="8">
+                                <div class="jine">
+                                    <div style="width: 110px; font-weight:bold; font-size:20px"> 
+                                        实领金额
+                                    </div>
+                                    <div style="width: 500px; text-align: left; margin-left:15px; font-weight:bold; font-size:25px">
+                                        <span id="BX_Main-moneychinese">大写金额</span>
+                                    </div>
+                                    <div style="width: 189px; text-align: center;">
+                                        <div style="width: 140px; padding-right: 1px; line-height: 45px;
+                                            text-align: right; border-bottom: 1px solid #000000; float: right; height: 36px;">
+                                            <span id="BX_Detail-Total_Real" style="font-weight:bold; font-size:25px">小写金额</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="tab_foot">
+                <div class="tabfoot_div" >
+                    &nbsp; 会计审核：<span id=""></span>
+                </div>
+                <div class="tabfoot_div" >
+                    &nbsp;出纳：<span id=""></span>
+                </div>
+                <div class="tabfoot_div" >
+                    &nbsp; 收款人：<span id="BX_Main-PersonName"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+     <div class="noprint" id="printButtonArr" style="float: left; height:10%;  margin-top:100px; margin-left:-550px">            
+                <a  id="btn_print" class="l-btn l-btn-plain" href="javascript:void(0)">
+                <span class="l-btn-left"><span class="l-btn-text icon-dayin l-btn-icon-left">打印</span></span>
+                </a>
+                <a id="btn_cancel" class="l-btn l-btn-plain" href="javascript:void(0)">
+                <span class="l-btn-left"><span class="l-btn-text icon-quxiao l-btn-icon-left">取消</span></span> 
+                </a>
+     </div>
+     <div style="display:none">
+            <input id="dataguid" type="hidden" value="@ViewData["guid"]"/>
+            <input id="scope" type="hidden" value="@ViewData["ModelUrl"]"/>
+            <input id="moneychinese" type="hidden" value="@ViewData["moneychinese"]" />
+            <input id="moneyunmber" type="hidden" value="@ViewData["moneyunmber"]" />
+            <input  id="moneychineseField" type="hidden" value="@ViewData["moneychineseField"]" /> 
+            <input  id="moneyunmberField" type="hidden" value="@ViewData["moneyunmberField"]" />
+     </div>
+	
+</body>
+</html>

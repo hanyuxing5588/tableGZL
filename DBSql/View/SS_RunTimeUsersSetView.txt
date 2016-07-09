@@ -1,0 +1,30 @@
+﻿if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[SS_RunTimeUsersSetView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[SS_RunTimeUsersSetView]
+GO
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+/*
+//名    SS_RunTimeUsersSetView
+//创建时间：--
+//修 改 人：dongsheng.zhang
+//修改时间：2014-6-18
+//功    能：运行时人员设置
+*/
+
+CREATE  VIEW dbo.SS_RunTimeUsersSetView
+AS
+SELECT  dbo.SS_RunTimeUsersSet.Id,dbo.SS_RunTimeUsersSet.WorkFlowNodeId,dbo.SS_RunTimeUsersSet.WorkFlowNodeName,
+	dbo.SS_RunTimeUsersSet.WorkFlowId,dbo.SS_RunTimeUsersSet.OperatorId,dbo.SS_Operator.OperatorName,
+	dbo.SS_RunTimeUsersSet.Sort,dbo.SS_RunTimeUsersSet.DocId,dbo.SS_RunTimeUsersSet.WorkFlowVersion
+FROM dbo.SS_RunTimeUsersSet LEFT OUTER JOIN
+      dbo.SS_Operator ON 
+      dbo.SS_Operator.GUID = dbo.SS_RunTimeUsersSet.OperatorId 
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO

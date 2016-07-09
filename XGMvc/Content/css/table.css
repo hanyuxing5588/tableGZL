@@ -1,0 +1,47 @@
+﻿/*
+	table 布局设置
+*/
+/*
+	一行有三列列时应用
+*/
+.tdText
+{
+	width: 6%;
+}
+.tdValue
+{
+	width: 24%;	
+}
+/*
+	一行有两列时应用
+*/
+
+.tdTextTr2
+{
+	width: 10%;	
+}
+.tdValueTr2
+{
+	width: 40%;	
+}
+.tdTextTD2L
+{
+	width: 11%;	
+}
+
+.detailGrid
+{
+  width:100%;	
+}
+/*
+  一行8列平均分4份
+*/
+.tdText4
+{
+	width: 8%;	
+}
+.tdValue4
+{
+	width: 17%;	
+}
+

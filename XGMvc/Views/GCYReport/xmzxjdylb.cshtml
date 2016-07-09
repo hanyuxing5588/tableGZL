@@ -1,0 +1,291 @@
+﻿ <script>
+     var curData = [];
+     var ExportExcel = function () {
+         var s = $('#State_DocDate').combo('getText');
+         var e = $('#End_DocDate').combo('getText');
+         var ruleQ = $('#comboM').combo('getValue');
+         if (new Date(s) > new Date(e)) {
+             $.messager.alert('系统提示', '起始时间不能大于结束时间！');
+             return;
+         }
+         var l = $('#xmjdylb_grid').datagrid('getRows');
+         if (l <= 1) {
+             $.messager.alert('系统提示', '没有要输出的数据！');
+             return;
+         }
+         window.open('/GCYReport/ExportXMZCJDReport?startDate=' + s + '&endDate=' + e + '&mType=' + ruleQ);
+     }
+     $(document).ready(function () {
+         $('#xmjdylb_grid').datagrid({
+             height: $('body').height() - 180,
+             singleSelect: true,
+             fitColumns:false,
+             rownumbers: true,
+             scope: 'xmjdylb'
+         })
+         var formatNum = function (s1) {
+             var opts = $('#xmjdylb_grid').datagrid('options');
+             s1 = new Number(s1 / (opts.dw || 1)).toFixed(2);
+             var p = /(\d+)(\d{3})/;
+             while (p.test(s1)) {
+                 s1 = s1.replace(p, "$1,$2");
+             }
+             return s1;
+         }
+
+         var cols = [];
+         for (var j = 7; j < 16; j++) {
+             cols.push("T" + j);
+         }
+         for (var j = 19; j <= 27; j++) {
+             cols.push("T" + j);
+         }
+         for (var i = 0; i < cols.length; i++) {
+             var col = cols[i];
+             var colConfig = $('#xmjdylb_grid').datagrid('getColumnOption', col);
+             colConfig.formatter = formatNum;
+         }
+         $('#xmjdylb-select').bind('click', function () {
+             var s = $('#State_DocDate').combo('getText');
+             var e = $('#End_DocDate').combo('getText');
+             if (new Date(s) > new Date(e)) {
+                 $.messager.alert('系统提示', '起始时间不能大于结束时间！');
+                 return;
+             }
+             var ruleQ = $('#comboM').combo('getValue');
+             $('#xmjdylb_grid').datagrid('loading');
+             $.ajax({
+                 url: '/GCYReport/GetLoadXMZCJDData',
+                 data: { startDate: s, endDate: e, mType: ruleQ },
+                 dataType: "json",
+                 type: "POST",
+                 error: function (xmlhttprequest, textStatus, errorThrown) {
+                     $('#xmjdylb_grid').datagrid('loaded');
+                     $.messager.alert("错误", '网络超时,请重新登录', 'error');
+                 },
+                 success: function (data) {
+                     if (!data || data.length == 1) {
+                         $('#xmjdylb_grid').datagrid('loaded');
+                         $.messager.alert("系统提示", data[0].msg, 'error');
+                         return;
+                     }
+                     var opts = $('#xmjdylb_grid').datagrid('options');
+                     opts.dw = ruleQ || 10000;
+                     $('#xmjdylb_grid').datagrid('loadData', data);
+                     $('#xmjdylb_grid').datagrid('loaded');
+                 }
+             });
+         })
+         $('#xmjdylb-tuichu').bind('click', function () {
+             parent.window.CloseTabs();
+         });
+         $('#xmjdylb-shuchu').bind('click', function () {
+             ExportExcel();
+         });
+         var d = new Date();
+         var s = d.getFullYear(), s1 = s + "-01-01";
+         var m = (d.getMonth() + 1);        // 获取月份。
+         m = m.toString().length == 2 ? m : ('0') + m;
+         s = s + "-" + m + "-";
+         var r = d.getDate() // 获取日。
+         r = r.toString().length == 2 ? r : ('0') + r;
+         s = s + r;
+         $('#State_DocDate').datebox('setValue', s1);
+         $('#End_DocDate').datebox('setValue', s);
+         $('#comboM').combobox({
+             required: false,
+             editable: false,
+             panelHeight: 80,
+             width: 80,
+             value: '10000',
+             valueField: 'value',
+             textField: 'label',
+             data: [{
+                 label: '万元',
+                 value: '10000'
+             }, {
+                 label: '千元',
+                 value: '1000'
+             }, {
+                 label: '元',
+                 value: '1'
+             }],
+             onChange: function (newValue, oldValue) {
+                 //获取所有行记录
+                 var curData = $('#xmjdylb_grid').datagrid('getRows');
+                 var opts = $('#xmjdylb_grid').datagrid('options');
+                 opts.dw = newValue;
+                 $('#xmjdylb_grid').datagrid('loadData', curData);
+             }
+         })
+
+         setTimeout(function () {
+             var s = $('#State_DocDate').combo('getText');
+             var e = $('#End_DocDate').combo('getText');
+             if (new Date(s) > new Date(e)) {
+                 $.messager.alert('系统提示', '起始时间不能大于结束时间！');
+                 return;
+             }
+             var ruleQ = $('#comboM').combo('getValue');
+             $('#xmjdylb_grid').datagrid('loading');
+             $.ajax({
+                 url: '/GCYReport/GetLoadXMZCJDData',
+                 data: { startDate: s, endDate: e, mType: ruleQ },
+                 dataType: "json",
+                 type: "POST",
+                 error: function (xmlhttprequest, textStatus, errorThrown) {
+                     $('#xmjdylb_grid').datagrid('loaded');
+                     $.messager.alert("错误", '网络超时,请重新登录', 'error');
+                 },
+                 success: function (data) {
+                     if (!data || data.length == 1) {
+                         $('#xmjdylb_grid').datagrid('loaded');
+                         $.messager.alert("系统提示", data[0].msg, 'error');
+                         return;
+                     }
+                     var opts = $('#xmjdylb_grid').datagrid('options');
+                     opts.dw = 10000;
+                     $('#xmjdylb_grid').datagrid('loadData', data);
+                     $('#xmjdylb_grid').datagrid('loaded');
+                 }
+             });
+
+
+         }, 200);
+//         $('#xmjdylb-select').click();
+     })
+ </script>
+<body>
+   
+    <div class="easyui-layout" id="xmjdylb-dataregion" data-options="fit:true" z="1">
+        <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#" class="easyui-linkbutton" id="xmjdylb-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'xmjdylb',
+                  forbidstatus:[-1]">查询</a> <a href="#" class="easyui-linkbutton" id="xmjdylb-shuchu"
+                      data-options="plain:'true',iconCls:'icon-shuchu',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'xmjdylb',
+                  forbidstatus:[-1]">输出</a> 
+                  <a href="#" class="easyui-linkbutton" id="xmjdylb-tuichu"
+                      data-options="plain:'true',iconCls:'icon-tuichu',
+                  scope:'xmjdylb'">退出</a>
+            </div>
+        </div>
+        <div data-options="region:'center'">
+                <table border="0" style="height: 40px; padding: 0px; margin: 0">
+                    <tr>
+                        <td style="width: 80px">
+                            起始日期：
+                        </td>
+                        <td>
+                            <input class="easyui-datebox" id="State_DocDate" ></input>
+                        </td>
+                        <td style="width: 80px">
+                            结束日期：
+                        </td>
+                        <td>
+                            <input class="easyui-datebox"  id="End_DocDate"></input>
+                        </td>
+                        <td>
+                            金额单位
+                            <input id="comboM" />
+                        </td>
+                    </tr>
+                </table>
+                <table border="0" style="height: 40px; width: 100%; padding: 0px; margin: 0">
+                    <tr>
+                        <td colspan="18" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                            咨询项目执行进度一览表
+                        </td>
+                    </tr>
+                    <tr>
+                        <td field="" style="text-align: center; width: 180px; height: 18px; float: left;
+                            text-align: left;">
+                            单位：中国工程院
+                        </td>
+                    </tr>
+                </table>
+                <table  id="xmjdylb_grid" >
+                    <thead frozen="true">
+                        <tr>
+                            <th field="T0" halign="center" align="right" style="width: 140px;">
+                                项目编码
+                            </th>
+                            <th field="T1" halign="center" style="width: 140px;">
+                                项目简称
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        <tr>
+                            <th field="T7" halign="center"  align="right" width:"100px" >
+                                合计安排
+                            </th>
+                            <th field="T8" halign="center" align="right" width:"100px">
+                                可用额度
+                            </th>
+                            <th field="T9" halign="center" align="right" width:"100px">
+                                经费使用合计
+                            </th>
+                            <th field="T10" halign="center" align="right" width:"100px">
+                                本年借款
+                            </th>
+                            <th field="T11"  halign="center" align="right" width:"100px">
+                                以前年借款
+                            </th>
+                            <th field="T12"  halign="center" align="right" width:"100px">
+                                借款合计
+                            </th>
+                            <th field="T13"  halign="center" align="right" width:"100px">
+                                本年支出
+                            </th>
+                            <th field="T14"  halign="center" align="right" width:"100px">
+                                以前年支出
+                            </th>
+                            <th field="T15"  halign="center" align="right" width:"100px">
+                                支出合计
+                            </th>
+                            <th field="T16"  halign="center" align="center" width:"100px">
+                                执行率
+                            </th>
+                            <th field="T17"  halign="center" align="center" width:"100px">
+                                支出率
+                            </th>
+                            <th field="T18"  halign="center">
+                                备注
+                            </th>
+                            <th field="T19"  halign="center"  align="right" width:"100px">
+                                2006年安排
+                            </th>
+                            <th field="T20"  halign="center" align="right" width:"100px">
+                                2007年安排
+                            </th>
+                            <th field="T21"  halign="center"  align="right" width:"100px">
+                                2008年安排
+                            </th>
+                            <th field="T22"  halign="center"  align="right" width:"100px">
+                                2009年安排
+                            </th>
+                            <th field="T23"  halign="center"  align="right" width:"100px">
+                                2010年安排
+                            </th>
+                            <th field="T24"  halign="center"  align="right" width:"100px">
+                                20011年安排
+                            </th>
+                            <th field="T25"  halign="center"  align="right" width:"100px">
+                                2012年安排
+                            </th>
+                            <th field="T26"  halign="center"  align="right" width:"100px">
+                                2013年安排
+                            </th>
+                            <th field="T27"  halign="center"  align="right" width:"100px">
+                                2014年安排
+                            </th>
+                        </tr>
+                    </thead>
+                </table>
+        </div>
+    </div>
+</body>

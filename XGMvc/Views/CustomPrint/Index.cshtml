@@ -1,0 +1,63 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "自定义打印";
+}
+    <style type="text/css" media="print">
+    .noprint
+    {
+            display:none;
+             
+    }
+    </style>
+    <link href="../../Content/css/Print/printView.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#custom-tuichu').bind('click', function () {
+                parent.window.CloseTabs();
+            })
+            $("#btn_cancel").bind("click", function () {
+                window.close();
+                parent.window.opener = null;
+                window.parent.close();
+                parent.open("", "_self");
+                parent.window.close();
+            });
+            LoadData();
+        });
+        var LoadData = function () {
+            $('#tree').tree({
+                url: '/CustomPrint/GetTreePrintTemp',
+                onSelect: function (node) {
+                    if (node) {
+                        var url = node.attributes.URL;
+                        $("#iframe").attr("src", url);
+                    }
+                },
+                onLoadSuccess: function (node, data) {
+
+                    var node = $('#tree').tree('find', data[0].id);
+                    $('#tree').tree('select', node.target);
+                }
+            });
+        }
+    </script>
+    <div id="cc" class="easyui-layout"  data-options="fit:true">  
+    <div id="header" data-options="region:'north',split:true" class="noprint" style="height:51px;">
+        <div class="noprint" style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">    
+                  <a href="#" class="easyui-linkbutton" id="custom-tuichu"
+                        data-options="plain:'true',iconCls:'icon-tuichu',
+                   scope:'custom'">退出</a>
+        </div>
+        
+    </div>
+
+    <div id="left" class="noprint" data-options="region:'west',title:'打印单据',split:true" style="width:200px;">
+        <ul  id="tree" class="easyui-tree" data-options="">
+        </ul> 
+    </div>  
+
+    <div id="main" data-options="region:'center',title:'打印内容'" style="background:#eee;">
+        <iframe  id="iframe" src="" style="width:100%; height:100%; border:0px;"></iframe>
+    </div>  
+</div>  
+

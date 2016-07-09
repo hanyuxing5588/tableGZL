@@ -1,0 +1,54 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[JJ_MainView]') and OBJECTPROPERTY(id, N'IsView') = 1) --objectproperty
+drop view [dbo].[JJ_MainView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：JJ_MainView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-2-18
+//功    能：基金视图信息
+*/
+CREATE  VIEW dbo.JJ_MainView
+AS
+SELECT dbo.JJ_Main.GUID, dbo.JJ_Main.DocNum, dbo.JJ_Main.DocDate, 
+      dbo.JJ_Main.DocMemo, dbo.JJ_Main.BillCount, dbo.JJ_Main.DocState, 
+      dbo.JJ_Main.MakeDate, dbo.JJ_Main.ModifyDate, dbo.JJ_Main.SubmitDate, 
+      dbo.JJ_Main.GUID_YWType, dbo.SS_YWType.YWTypeKey, 
+      dbo.SS_YWType.YWTypeName, dbo.JJ_Main.GUID_DW, dbo.SS_DW.DWKey, 
+      dbo.SS_DW.DWName, dbo.JJ_Main.OAOTS, dbo.JJ_Main.GUID_Maker, 
+      SS_Operator_1.OperatorName AS Maker, dbo.JJ_Main.GUID_Modifier, 
+      dbo.SS_Operator.OperatorName AS Modifier, dbo.JJ_Main.GUID_DocType, 
+      dbo.SS_DocTypeView.DocTypeKey, dbo.SS_DocTypeView.DocTypeName, 
+      dbo.JJ_Main.GUID_UIType, dbo.SS_UIType.UITypeKey, dbo.SS_UIType.UITypeName, 
+      dbo.JJ_Main.GUID_Department, dbo.SS_Department.DepartmentKey, 
+      dbo.SS_Department.DepartmentName, dbo.JJ_Main.GUID_Person, 
+      dbo.SS_Person.PersonKey, dbo.SS_Person.PersonName,dbo.SS_DocTypeView.DocTypeUrl,
+	  dbo.JJ_Main.ApproveState
+FROM dbo.SS_Department RIGHT OUTER JOIN
+      dbo.JJ_Main LEFT OUTER JOIN
+      dbo.SS_Person ON dbo.JJ_Main.GUID_Person = dbo.SS_Person.GUID ON 
+      dbo.SS_Department.GUID = dbo.JJ_Main.GUID_Department LEFT OUTER JOIN
+      dbo.SS_DW ON dbo.JJ_Main.GUID_DW = dbo.SS_DW.GUID LEFT OUTER JOIN
+      dbo.SS_UIType ON 
+      dbo.JJ_Main.GUID_UIType = dbo.SS_UIType.GUID LEFT OUTER JOIN
+      dbo.SS_DocTypeView ON 
+      dbo.JJ_Main.GUID_DocType = dbo.SS_DocTypeView.GUID LEFT OUTER JOIN
+      dbo.SS_Operator ON 
+      dbo.JJ_Main.GUID_Modifier = dbo.SS_Operator.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.JJ_Main.GUID_Maker = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.SS_YWType ON dbo.JJ_Main.GUID_YWType = dbo.SS_YWType.GUID
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

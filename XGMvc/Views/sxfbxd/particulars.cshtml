@@ -1,0 +1,541 @@
+﻿<body>
+    <div class="easyui-layout" id="parti-dataregion" data-options="fit:true" z="1">
+        <div data-options="region:'north'" style="height: 50px">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#" class="easyui-linkbutton" id="parti-add" 
+                    data-options="plain:'true',iconCls:'icon-queding',  
+                    bindmethod:{ 'click': ['submitDetail'] },
+                    bindparms:{'submitDetail':['sxfbxd','sxfbxd-BX_Detail']},
+                    scope:'parti',status:'0'">
+                    确定</a> 
+             
+                    
+              
+                <a href="#" class="easyui-linkbutton" id="parti-addrow"
+                   data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['detailAddRow'] },
+                   bindparms:{'detailAddRow':['sxfbxd-BX_Detail']},
+                   scope:'parti'">
+                   增行</a> 
+                   
+                 <a href="#" class="easyui-linkbutton" id="parti-InsertRow"
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['detailInsertRow'] },
+                   bindparms:{'detailInsertRow':['sxfbxd-BX_Detail']},
+                   scope:'parti'">
+                   插行</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="parti-delrow" 
+                   data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['detailDeleteRow'] },
+                   bindparms:{'detailDeleteRow':['sxfbxd-BX_Detail']},
+                   scope:'parti'">
+                   删行</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="parti-uprow" 
+                   data-options="plain:'true',iconCls:'icon-shangyihang',
+                   bindmethod:{ 'click': ['detailUpRow'] },
+                   bindparms:{'delRow':['sxfbxd-BX_Detail']},
+                   scope:'parti'">
+                   上一行</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="parti-downrow" 
+                   data-options="plain:'true',iconCls:'icon-xiayihang',
+                   bindmethod:{ 'click': ['detailDownRow'] },
+                   bindparms:{'delRow':['sxfbxd-BX_Detail']},
+                   scope:'parti'">
+                   下一行</a> 
+              
+                   <a href="#" class="easyui-linkbutton" id="parti-quxiao" 
+                   data-options="plain:'true',iconCls:'icon-quxiao',
+                   bindparms:{'cancelDetail':['sxfbxd']},
+                   bindmethod:{ 'click': ['cancelDetail'] },
+                   scope:'parti',status:'0'">
+                   取消</a>
+               </div>
+        </div>
+        <div data-options="region:'center'" style="width: auto">
+            <table border="0" style="height: 450px; width: 98%; margin: 5px">
+                <tr>
+                    <td colspan="8">
+                        <div style="font-size: x-large; text-align: center;">
+                            报销明细卡片</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-OrderNum">
+                            <font color="red">*</font>序&nbsp;&nbsp;&nbsp;&nbsp;号</label>
+                    </td>
+                    <td>
+                        <input class="easyui-validatebox" id="parti-BX_Detail-OrderNum" data-options="forbidstatus:[-1]"
+                            style="width: 136px"></input>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-Total_Real">
+                            <font color="red">*</font>报销金额</label>
+                    </td>
+                    <td>
+                        <input class="easyui-numberbox" id="parti-BX_Detail-Total_Real" data-options="precision:2"
+                            style="width: 136px"></input>
+                    </td>
+                    <td style="width: 75px">
+                        <label for="field1" id="lbl-GUID_BGType">
+                            <font color="red">*</font>预算类型</label>
+                    </td>
+                    <td>
+                        <select class="easyui-combogrid" id="parti-BX_Detail-GUID_BGType" data-options="
+                            columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'BGTypeName',title:'名称',width:'110'},
+                                    {field:'BGTypeKey',title:'编号',width:'80'}
+                                ]],
+                                width:130,
+                                panelWidth:195,
+                                method:'post',
+                                CZZFField:'BGTypeKey',
+                                editable:false,
+                                bindmethod:{ 'onCloseEx':['setCCZFCode'] },
+                                bindparms:{
+                                    'setCCZFCode':[
+                                        'parti-BX_Detail-GUID_BGType',
+                                        'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                        'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                        'parti-CN_PaymentNumber-GUID_ExpendType',
+                                        'parti-CN_PaymentNumber-GUID_BGResource',
+                                        'parti-BX_Detail-GUID_Project',
+                                        'parti-CN_PaymentNumber-IsGuoKu',
+                                        'parti-CN_PaymentNumber-PaymentNumber'
+
+                                ]},
+                                remoteUrl:'/Combogrid/BGType',
+                                idField:'GUID',
+                                textField:'BGTypeName',
+                                filterField:'BGTypeKey,BGTypeName'">
+                        </select>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-PaymentNumber">
+                            财政支付令</label>
+                    </td>
+                    <td>
+                        <input class="easyui-validatebox" id="parti-CN_PaymentNumber-PaymentNumber" style="width: 137px"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_Person">
+                            <font color="red">*</font>人员名称</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-BX_Detail-GUID_Person" 
+                            data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'GUID_Department',hidden:'true'},
+                                    {field:'GUID_DW',hidden:'true'},
+                                    {field:'PersonName',title:'人员名称',width:'100'},
+                                    {field:'DepartmentName',title:'部门名称',width:'115'},
+                                    {field:'DWName',title:'单位名称',width:'135'}
+                                 ]],
+                                 width:350,
+                                 panelWidth:375,
+                                 method:'post',
+                           remoteUrl:'/Combogrid/Person',
+                           idField:'GUID',
+                           textField:'PersonName',
+                           filterField:'PersonKey,PersonName',
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           remoteSort:false,
+                           associate:
+                              {
+                                'parti-BX_Detail-GUID_Department':['GUID_Department']
+                              }">
+                        </select>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_Department">
+                            <font color="red">*</font>部门名称</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-BX_Detail-GUID_Department" 
+                            data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'GUID_DW',hidden:'true'},
+                                    {field:'DepartmentName',title:'部门名称',width:'195'},
+                                    {field:'DWName',title:'所属单位名称',width:'130'}
+                                 ]],
+                                 width:350,
+                                 panelWidth:350,
+                                 method:'post',
+                           remoteUrl:'/Combogrid/Department',
+                           idField:'GUID',
+                           textField:'DepartmentName',
+                           filterField:'DepartmentKey,DepartmentName'
+                         ">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_BGCode">
+                            <font color="red">*</font>科目名称</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-BX_Detail-GUID_BGCode" 
+                            data-options="
+                                columns:[[
+                                    {field:'GUID',hidden:'true'},
+                                    {field:'GUID_EconomyClass',hidden:'true'},
+                                    {field:'BGCodeName',title:'名称',width:'205'},
+                                    {field:'BGCodeKey',title:'编码',width:'120'}
+                                ]],
+                                width:350,
+                                panelWidth:350,
+                                method:'post',
+                            associate:
+                                {
+                                disableMap:{
+                                     'parti-CN_PaymentNumber-GUID_EconomyClass':'true'
+                                },
+                                'parti-CN_PaymentNumber-GUID_EconomyClass':['GUID_EconomyClass'],
+                            },
+                           bindmethod: { 'onCloseEx': ['setAssociate','setControlFun'] },
+                           bindparms:{
+                           'setControlFun':{
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass':['combogrid','setCCZFCode']
+                            }},
+                           remoteUrl:'/Combogrid/BGCode',
+                           idField:'GUID',
+                           textField:'BGCodeName',
+                           filterField:'BGCodeKey,BGCodeName'">
+                        </select>
+                    </td>
+                    <td style="width: 60px">
+                        <label for"field1" id="lbl-FeeMemo">
+                            <font color="red">*</font>摘&nbsp;&nbsp;&nbsp;&nbsp;要</label>
+                    </td>
+                    <td colspan="3">
+                        <input class="easyui-validatebox" id="parti-BX_Detail-FeeMemo" style="width: 346px"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_Project">
+                            项目名称</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-BX_Detail-GUID_Project" data-options="columns:[[
+                            {field:'GUID',hidden:'true'},{field:'ExtraCode',hidden:'true'},
+                            {field:'FinanceProjectKey',hidden:'true'},
+                            {field:'IsFinance',hidden:true},
+                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:'true'},
+                            {field:'ProjectName',title:'名称',width:'205'},
+                            {field:'ProjectKey',title:'编码',width:'120'}]],width:350,panelWidth:350,method:'post',
+                           remoteUrl:'/Combogrid/Project',
+                           CZZFField:'ExtraCode',
+                           idField:'GUID',textField:'ProjectName',
+                            associate:
+                            {
+                                disableMap:{
+                                     'parti-CN_PaymentNumber-GUID_FunctionClass':'true',
+                                     'parti-CN_PaymentNumber-IsGuoKu':'true'
+                                },
+                                'parti-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                 'parti-BX_Detail-FinanceProjectKey':['FinanceProjectKey'],
+                                 'parti-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                 'parti-BX_Detail-ProjectKey':['ProjectKey','ProjectKey']
+                            },
+                           bindmethod: {'onCloseEx': ['setAssociate','setCCZFCode','setControlFun'] },
+                            bindparms:{
+                                'setCCZFCode':[
+                                    'parti-BX_Detail-GUID_BGType',
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                    'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                    'parti-CN_PaymentNumber-GUID_ExpendType',
+                                    'parti-CN_PaymentNumber-GUID_BGResource',
+                                    'parti-BX_Detail-GUID_Project',
+                                    'parti-CN_PaymentNumber-IsGuoKu',
+                                    'parti-CN_PaymentNumber-PaymentNumber'],       
+                                'setControlFun':{
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass':['combogrid','setAssociate'],
+                                    'parti-CN_PaymentNumber-IsProject':['checkbox','setControlValue']
+                            }},
+                           filterField:'ProjectKey,ProjectName'
+                         
+                           ">
+                        </select>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-ProjectKey">
+                            项目编码</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-BX_Detail-ProjectKey" data-options="columns:[[
+                            {field:'GUID',hidden:'true'},{field:'ExtraCode',hidden:'true'},
+                            {field:'FinanceProjectKey',hidden:'true'},
+                            {field:'IsFinance',hidden:true},
+                            {field:'GUID_FunctionClass',title:'GUID_FunctionClass',hidden:'true'},
+                            {field:'ProjectName',title:'名称',width:'205'},
+                            {field:'ProjectKey',title:'编码',width:'120'}]],width:350,panelWidth:350,method:'post',
+                            remoteUrl:'/Combogrid/Project',
+                            CZZFField:'ExtraCode',
+                            idField:'ProjectKey',textField:'ProjectKey',
+                            associate:
+                            {
+                                disableMap:{
+                                     'parti-CN_PaymentNumber-GUID_FunctionClass':'true',
+                                     'parti-CN_PaymentNumber-IsGuoKu':'true'
+                                },
+                                'parti-CN_PaymentNumber-GUID_FunctionClass':['GUID_FunctionClass'],
+                                'parti-BX_Detail-FinanceProjectKey':['FinanceProjectKey'],
+                                'parti-CN_PaymentNumber-IsGuoKu':['IsFinance'],
+                                'parti-BX_Detail-GUID_Project':['GUID','ProjectName']
+                            },
+                            bindmethod: {'onCloseEx': ['setAssociate','setCCZFCode','setControlFun'] },
+                            bindparms:{
+                                'setCCZFCode':[
+                                    'parti-BX_Detail-GUID_BGType',
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                    'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                    'parti-CN_PaymentNumber-GUID_ExpendType',
+                                    'parti-CN_PaymentNumber-GUID_BGResource',
+                                    'parti-BX_Detail-GUID_Project',
+                                    'parti-CN_PaymentNumber-IsGuoKu',
+                                    'parti-CN_PaymentNumber-PaymentNumber'],       
+                                'setControlFun':{
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass':['combogrid','setAssociate'],
+                                    'parti-CN_PaymentNumber-IsProject':['checkbox','setControlValue']
+                            }},
+                           filterField:'ProjectKey,ProjectName'
+                           ">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_FunctionClass">
+                            功能分类</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-CN_PaymentNumber-GUID_FunctionClass" data-options="
+                        columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'FinanceCode',hidden:'true'},
+                                {field:'IsProject',hidden:'true'},
+                                {field:'FunctionClassKey',title:'功能编码',width:'120'},
+                                {field:'FunctionClassName',title:'功能名称',width:'205'}
+                            ]],
+                            associate:
+                            {
+                                disableMap:{
+                                     'parti-CN_PaymentNumber-IsProject':'true',
+                                     'parti-CN_PaymentNumber-IsGuoKu':'true'
+                                },
+                                'parti-CN_PaymentNumber-IsProject':['IsProject'],
+                                'parti-CN_PaymentNumber-IsGuoKu':['GUID']
+                            },
+                           width:350,panelWidth:350,method:'post',
+                           CZZFField:'FinanceCode',
+                           remoteUrl:'/Combogrid/FunctionClass',
+                           hideValue:'GUID_FunctionClass',
+                           idField:'GUID',textField:'FunctionClassName',
+                            bindmethod:{ 'onCloseEx':['setAssociate','setCCZFCode'] },
+                            bindparms:{
+                                'setCCZFCode':[
+                                    'parti-BX_Detail-GUID_BGType',
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                    'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                    'parti-CN_PaymentNumber-GUID_ExpendType',
+                                    'parti-CN_PaymentNumber-GUID_BGResource',
+                                    'parti-BX_Detail-GUID_Project',
+                                    'parti-CN_PaymentNumber-IsGuoKu',
+                                    'parti-CN_PaymentNumber-PaymentNumber'
+
+                            ]},
+                           filterField:'FunctionClassKey,FunctionClassName'">
+                        </select>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl=IsGuoKu">
+                            是否国库</label>
+                    </td>
+                    <td>
+                        <input class="easyui-checkbox" id="parti-CN_PaymentNumber-IsGuoKu" 
+                        data-options="
+                        bindmethod:{ 'onClick':['setCCZFCode'] },
+                        bindparms:{
+                            'setCCZFCode':[
+                                'parti-BX_Detail-GUID_BGType',
+                                'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                'parti-CN_PaymentNumber-GUID_ExpendType',
+                                'parti-CN_PaymentNumber-GUID_BGResource',
+                                'parti-BX_Detail-GUID_Project',
+                                'parti-CN_PaymentNumber-IsGuoKu',
+                                'parti-CN_PaymentNumber-PaymentNumber'
+
+                         ]}
+                         " type="checkbox"></input>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-IsProject">
+                            是否项目</label>
+                    </td>
+                    <td>
+                        <input class="easyui-checkbox" id="parti-CN_PaymentNumber-IsProject" 
+                        data-options="
+                            bindmethod:{ 
+                            'onClick':['setControlValue','setCCZFCode'] },
+                            bindparms:{
+                                'setControlValue':[
+                                    'parti-BX_Detail-GUID_BGType'],
+                                 'setCCZFCode':[
+                                        'parti-BX_Detail-GUID_BGType',
+                                        'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                        'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                        'parti-CN_PaymentNumber-GUID_ExpendType',
+                                        'parti-CN_PaymentNumber-GUID_BGResource',
+                                        'parti-BX_Detail-GUID_Project',
+                                        'parti-CN_PaymentNumber-IsGuoKu',
+                                        'parti-CN_PaymentNumber-PaymentNumber'
+
+                            ]}" type="checkbox"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_EconomyClass">
+                            经济分类</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-CN_PaymentNumber-GUID_EconomyClass" 
+                        data-options="
+                            columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'EconomyClassKey',title:'经济分类编码',width:'120'},
+                                {field:'EconomyClassName',title:'经济分类名称',width:'205'}
+                           ]],
+                           width:'350',
+                           panelWidth:'350',
+                           method:'post',
+                           remoteUrl:'/Combogrid/EconomyClass',
+                           CZZFField:'EconomyClassKey',
+                           idField:'GUID',
+                           textField:'EconomyClassName',
+                           hideValue:'GUID_EconomyClass',
+                           bindmethod:{ 'onCloseEx':['setCCZFCode'] },
+                            bindparms:{
+                                'setCCZFCode':[
+                                    'parti-BX_Detail-GUID_BGType',
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                    'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                    'parti-CN_PaymentNumber-GUID_ExpendType',
+                                    'parti-CN_PaymentNumber-GUID_BGResource',
+                                    'parti-BX_Detail-GUID_Project',
+                                    'parti-CN_PaymentNumber-IsGuoKu',
+                                    'parti-CN_PaymentNumber-PaymentNumber'
+
+                            ]},
+                           filterField:'EconomyClassKey,EconomyClassName'">
+                        </select>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_ExpendType">
+                            支出类型</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-CN_PaymentNumber-GUID_ExpendType" 
+                        data-options="
+                            columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'ExpendTypeKey',title:'支出类型编码',width:'120'},
+                                {field:'ExpendTypeName',title:'支出类型名称',width:'205'}
+                             ]],
+                             width:'350',
+                             panelWidth:350,
+                             method:'post',
+                             CZZFField:'ExpendTypeKey',
+                             remoteUrl:'/Combogrid/ExpendType',
+                             hideValue:'GUID_ExpendType',
+                             idField:'GUID',
+                             textField:'ExpendTypeName',
+                             bindmethod:{ 'onCloseEx':['setCCZFCode'] },
+                             bindparms:{
+                                'setCCZFCode':[
+                                    'parti-BX_Detail-GUID_BGType',
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                    'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                    'parti-CN_PaymentNumber-GUID_ExpendType',
+                                    'parti-CN_PaymentNumber-GUID_BGResource',
+                                    'parti-BX_Detail-GUID_Project',
+                                    'parti-CN_PaymentNumber-IsGuoKu',
+                                    'parti-CN_PaymentNumber-PaymentNumber'
+
+                             ]},
+                             filterField:'ExpendTypeKey,ExpendTypeName'">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-GUID_BGResource">
+                            <font color="red">*</font>预算来源</label>
+                    </td>
+                    <td colspan="3">
+                        <select class="easyui-combogrid" id="parti-CN_PaymentNumber-GUID_BGResource" 
+                        data-options="
+                            columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'BGSourceKey',title:'预算来源编码',width:'120'},
+                                {field:'BGSourceName',title:'预算来源名称',width:'205'}
+                            ]],
+                            width:'350',
+                            panelWidth:'350',
+                            method:'post',
+                            remoteUrl:'/Combogrid/BgSource',
+                            editable:false,
+                            hideValue:'GUID_BGResource',
+                            bindmethod:{ 'onCloseEx':['setCCZFCode'] },
+                            bindparms:{
+                                'setCCZFCode':[
+                                    'parti-BX_Detail-GUID_BGType',
+                                    'parti-CN_PaymentNumber-GUID_FunctionClass',
+                                    'parti-CN_PaymentNumber-GUID_EconomyClass',
+                                    'parti-CN_PaymentNumber-GUID_ExpendType',
+                                    'parti-CN_PaymentNumber-GUID_BGResource',
+                                    'parti-BX_Detail-GUID_Project',
+                                    'parti-CN_PaymentNumber-IsGuoKu',
+                                    'parti-CN_PaymentNumber-PaymentNumber'
+
+                            ]},
+                           idField:'GUID',
+                           textField:'BGSourceName',
+                           filterField:'BGSourceKey,BGSourceName',
+                           CZZFField:'BGSourceKey'
+                          ">
+                        </select>
+                    </td>
+                    <td style="width: 60px">
+                        <label for="field1" id="lbl-FinanceProjectKey">
+                            财政项目编码</label>
+                    </td>
+                    <td colspan="3">
+                        <input class="easyui-validatebox" id="parti-BX_Detail-FinanceProjectKey" data-options="forbidstatus:[-1]"
+                            style="width: 346px"></input>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <input class="easyui-validatebox" id="parti-BX_Detail-GUID" type="hidden" keyattr="1"></input>
+    </div>
+    <label id="parti-extendregion" style="display: none">
+        <input id="parti-status" type="text"></input>
+        <input id="initscope" type="text" value=@ViewData["scope"]></input>
+        <input id="initstatus" type="text" value=@ViewData["status"]></input>
+        <input id="initguid" type="text" value=@ViewData["guid"]></input>
+        <div id="parti-b-window" style="padding: 10px" line="true">
+        </div>
+    </label>
+</body>

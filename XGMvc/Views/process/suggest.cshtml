@@ -1,0 +1,46 @@
+﻿<script src="../../Content/commonjs/flow.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#chk').bind('click', function () {
+            
+            var flag = $('#chk').is(":Checked");
+            if (flag) {
+                $('#suggest').removeAttr('disabled');
+                $('#suggest').html("请在此填写建议！");
+            } else {
+                $('#suggest').attr('disabled', 'disabled');
+                $('#suggest').html("");
+            }
+        });
+        $('#suggest').focus(function () {$(this).html("");}).blur(function () { $('#suggest').html("请在此填写建议！"); });
+    });
+</script>
+<div class="easyui-layout" id="sug-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="sug-queding"
+                   data-options="plain:'true',iconCls:'icon-queding',
+                   window:'b-window',docState:'@ViewData["DocState"]',
+                   bindmethod:{ 'click': ['suggestOk'] },
+                   bindparms:{'suggestOk':['@ViewData["Url"]']},scope:'@ViewData["Scope"]'">确定</a>
+
+            <a href="#" class="easyui-linkbutton" id="sug-quxiao" data-options="plain:'true',iconCls:'icon-quxiao',
+                bindmethod:{ 'click': ['suggestCancel'] },window:'b-window',scope:'sug',">取消</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: auto">
+        <table border="0" style="height: 300px; width: 98%; margin: 5px">
+            <tr>
+                <td colspan="8" style="height:15px;">
+                    <input id="chk"  type="checkbox" class="easyui-checkbox">&nbsp;是否编写建议</input>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea id="suggest" rows="17" cols="76" disabled="true"></textarea>
+                </td>
+            </tr>
+        </table>
+    </div>
+      
+</div>

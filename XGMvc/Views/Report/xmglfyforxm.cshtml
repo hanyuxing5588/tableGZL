@@ -1,0 +1,536 @@
+﻿<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script>
+    var throughtParms = {};
+   var formatter=function (value, row, index) {
+        if (row.totalbx) {
+            return "<font color='blue'>" + row.totalbx + "</font>"; //'<a id="btn_"' + index + '"" href="#" title="" onclick="window.open(\"baidu.com\")"><font color="blue">'+ row.totalbx + '</font></a>';
+        } else {
+            return value;
+        }
+    }
+    $(document).ready(function () {
+        //设置默认值
+
+        SetDefaultData()
+        //绑定事件
+        BindEvent();
+        //加载数据
+        LoadData();
+        $('#xmzxzcqk-tuichu').bind('click', function () {
+            parent.window.CloseTabs();
+        });
+       var colConfig= $('#xmjdylb_grid').datagrid('getColumnOption', "totalbx");
+       colConfig.formatter = formatter;
+    })
+    //设置默认数据
+    function SetDefaultData() {
+        //联动项目Tree
+        $("#xmzxzcqk-history-Year").combobox({
+            onChange: function (newValue, oldValue) {
+//                url = $.format("/Tree/GetProjectTree?year={0}", newValue);
+//                $("#xmzxzcqk-tree-project").tree({
+//                    url: url
+//                });
+                SetChangeDate(newValue);
+            }
+        });      
+        var year=$('#Year').val(),sDate=$('#StartDate').val(),eDate=$('#EndDate').val()
+        $('#xmzxzcqk-history-Year').combobox('setValue', year);
+        $('#xmzxzcqk-history-Year').combobox('setText', year);
+        var newDate = new Date();
+        var year = newDate.getFullYear();
+        var month = newDate.getMonth();
+        month = month + 1;
+        if (month < 10) {
+            month = "0" + month;
+        }
+        var day = newDate.getDate();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        $("#xmzxzcqk-history-StartDate").datebox("setValue",sDate);// year + "-01-01");
+        $("#xmzxzcqk-history-EndDate").datebox("setValue",eDate );// + "-" + month + "-" + day);        
+    }
+    //获取查询数据
+    function GetData() {
+        debugger
+        throughtParms = getThroughParms();
+        var data = $.view.retrieveData("xmzxzcqk", "historydatafilter");
+        var url;
+        var tcondition;
+        var result = {};
+        if (data && data.m) {
+            for (var i = 0, j = data.m.length; i < j; i++) {
+                var temp = data.m[i];
+                if (!temp && !temp.v) continue;
+                result[temp.n] = temp.v;
+            }
+        }
+
+        var treeCondition = [];
+        //树节点
+
+
+        //项目树
+
+        var r = $("#xmzxzcqk-tree-project").tree('getSelected');
+        if (r) {
+            tcondition = { treeModel: r.attributes.m, treeValue: r.id };
+            treeCondition.push(tcondition);           
+            $("#xmzxzcqk-projectKey").html(r.attributes.ProjectKey)
+            $("#xmzxzcqk-projectName").html(r.attributes.ProjectName)
+        }
+
+        //预算步骤
+
+        r = $("#xmzxzcqk-tree-step").tree('getSelected');
+        if (r) {
+            tcondition = { treeModel: r.attributes.m, treeValue: r.attributes.BGStepKey };
+            treeCondition.push(tcondition);
+        }
+
+        result = $.extend(result, { TreeNodeList: treeCondition });
+        $.ajax({
+            url: '/Report/GetLoadXMGLFYFORXMData/',
+            data: { condition: JSON.stringify(result) },
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", '网络超时,请重新登录', 'error');
+            },
+            success: function (data) {
+                if (!data || data == null) {
+                    return;
+                }
+                $('#xmzxzcqk_grid').datagrid('loadData', data);
+            }
+        });
+
+        $("#xmzxzcqk-Year").html($('#xmzxzcqk-history-Year').combobox('getValue'))
+        $("#xmzxzcqk-RMBUnit").html($('#xmzxzcqk-history-RMBUnit').combobox('getText'))
+
+    }
+    //导出
+    function ExportExcel() {
+        var tcondition = {};
+        var l = $('#xmzxzcqk_grid').datagrid('getRows');
+        if (l <= 1) {
+            $.messager.alert('系统提示', '没有要输出的数据！');
+            return;
+        }
+        //项目树
+
+        var r = $("#xmzxzcqk-tree-project").tree('getSelected');
+        if (r) {
+            tcondition["ProjectKey"] = r.attributes.ProjectKey;
+            tcondition["ProjectName"] = r.attributes.ProjectName;
+        }
+        tcondition["Year"] = $('#xmzxzcqk-history-Year').combo('getValue');
+        tcondition["RMBUnit"] = $('#xmzxzcqk-history-RMBUnit').combobox('getText');
+        var result = $.extend(tcondition, {})
+
+        var url = $.format("/Report/ExportXMGLFYFORXMReport?ReportHead={0}", JSON.stringify(result))
+
+        window.open(url);
+    }
+    //绑定事件
+    function BindEvent() {
+        $('#xmzxzcqk-select').bind('click', function () {
+            
+            GetData();
+        })
+        $('#xmzxzcqk-shuchu').bind('click', function () {
+            ExportExcel();
+        })
+        $('#xmzxzcqk-tuichu').bind('click', function () {
+            $($(parent.document).find("#closeTab")).click();
+        })
+    }
+    //加载数据
+    function LoadData() {
+        var year = $("#xmzxzcqk-history-Year").combobox("getValue");
+        var url = $.format("/Tree/GetProjectTreeFX?year={0}", year);
+        //项目
+        $("#xmzxzcqk-tree-project").tree({
+            url: url,
+            method: 'post',
+           
+            onLoadSuccess: function (node, data) {
+                var prokey = $('#ProjectKey').val();
+                if (prokey) {
+                    var node = $('#xmzxzcqk-tree-project').tree('find', prokey);
+                    $('#xmzxzcqk-tree-project').tree('select', node.target);
+                    $('#ProjectKey').val('');
+                    GetData(data);
+                } else {
+                    if (data && data.length > 0) {
+                        var flag = false;
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].isCheck == true) {
+                                flag = true;
+                                $("#xmzxzcqk-tree-project li:eq(" + i + ")").find("div").first().addClass("tree-node-selected");
+                            }
+                        }
+                        if (flag == false) {
+                            $("#xmzxzcqk-tree-project li:eq(0)").find("div").first().addClass("tree-node-selected");
+                        }
+                    }
+
+
+                }
+               
+            }
+        });
+        //预算步骤
+        $("#xmzxzcqk-tree-step").tree({
+            url: '/Tree/GetBGStepTree',
+            method: 'post',
+            onLoadSuccess: function (node, data) {
+                if (data && data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].isCheck == true) {
+                            $("#xmzxzcqk-tree-step li:eq(" + i + ")").find("div").addClass("tree-node-selected");
+                        }
+                    }
+                }
+            }
+        });
+        //设置Grid的行背景颜色
+//        $("#xmzxzcqk_grid").datagrid({
+//            rowStyler: function (index, row) {
+//                if (row.bgcodekey && row.bgcodekey.length == 2) {
+//                    return "background-color:#CCFFCC";
+//                }
+//            }
+//        });
+       
+    }
+    //设置开始于结束的时间
+
+    function SetChangeDate(year) {
+        //var year = oldValue;
+        var newDate = new Date();
+        var month = newDate.getMonth();
+        month = month + 1;
+        if (month < 10) {
+            month = "0" + month;
+        }
+
+        var day = newDate.getDate();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        $("#xmzxzcqk-history-StartDate").datebox("setValue", year + "-01-01");
+        $("#xmzxzcqk-history-EndDate").datebox("setValue", year + "-" + month + "-" + day);
+    }
+
+    $.extend($.fn.datagrid.defaults, {
+        onDblClickRow: function (rowIndex, rowData) {
+
+        },
+        onDblClickCell: function (rowIndex, field, value) {
+            if (field != "totalbx") return;
+            var rowData = $(this).datagrid('getSelected');
+            if (!rowData) return;
+            var bgcodekey = rowData.bgcodekey;
+
+            var bgcode = bgcodekey.replaceAll("&nbsp", ""); //科目
+            throughtParms.bgcode = bgcode;
+            var url = "/djlb/XMZXZCQKReportThrough1?scope=djlb";
+            for (var n in throughtParms) {
+                url = url + "&" + n + "=" + throughtParms[n];
+            }
+            parent.window.openTabs2("单据列表", "djlb", "", 4, url);
+        }
+    });
+    function CascadeTree(cTree, selectnode, values) {
+        var childrens = cTree.tree('getChildren', selectnode.target) || [];
+        childrens.push(selectnode);
+        for (var i = 0; i < childrens.length; i++) {
+            var itemnode = childrens[i];
+            var model = itemnode.attributes.m;
+            if (model == "SS_Project") {
+                var isLeaf = cTree.tree('isLeaf', itemnode.target);
+                if (isLeaf) {
+                    values.push(itemnode.attributes.ProjectKey);
+
+                }
+            }
+        }
+    };
+    function getThroughParms() {
+        var bgresource = $('#xmzxzcqk-history-BGResourceType').combobox('getValue'); //预算来源
+        var StartDate = $('#xmzxzcqk-history-StartDate').datebox('getValue');
+        var EndDate = $('#xmzxzcqk-history-EndDate').datebox('getValue');
+        var PayStatus = $('#xmzxzcqk-history-PayStatus').combobox('getValue'); //付款状态
+        var ApproveStatus = $('#xmzxzcqk-history-ApproveStatus').combobox('getValue'); //审批状态
+        var CertificateStatus = $('#xmzxzcqk-history-CertificateStatus').combobox('getValue'); //凭证状态
+        var projectobj = $('#xmzxzcqk-tree-project').tree('getSelected');
+        var projectkeys = [];
+        CascadeTree($('#xmzxzcqk-tree-project'), projectobj, projectkeys);
+
+
+
+        var parms = {};
+        
+        parms.bgresource = bgresource;
+        parms.StartDate = StartDate;
+        parms.EndDate = EndDate;
+        parms.PayStatus = PayStatus;
+        parms.ApproveStatus = ApproveStatus;
+        parms.CertificateStatus = CertificateStatus;
+        parms.project = projectkeys.join(',');
+        return parms;
+    };
+
+//    setTimeout(function () {
+//        GetData();
+//    }, 2000);
+</script>
+<body>
+    <div class="easyui-layout" id="xmzxzcqk-dataregion" data-options="fit:true" z="1">
+       <div data-options="region:'west',split:'true'" style="width: 200px" id="regionwest">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="项目">
+                <ul  id="xmzxzcqk-tree-project" data-options="">
+                </ul>
+            </div>
+            <div title="预算步骤">
+                <ul  id="xmzxzcqk-tree-step" data-options="">
+                </ul>
+            </div>
+        </div>
+    </div>
+       <div data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+             <a href="#" b-type="1"  class="easyui-linkbutton" id="xmzxzcqk-shuchu"
+                data-options="plain:'true',iconCls:'icon-shuchu',                 
+                 forbidstatus:[-1]">输出</a> 
+            <a href="#" class="easyui-linkbutton" id="xmzxzcqk-select" data-options="plain:'true',iconCls:'icon-chaxun',
+                  scope:'xmzxzcqk',
+                  forbidstatus:[-1]">查询</a>           
+            <a href="#" class="easyui-linkbutton" id="xmzxzcqk-tuichu"
+                data-options="plain:'true',iconCls:'icon-tuichu',
+            scope:'xmzxzcqk'">退出</a>
+            </div>
+        </div>
+       <div data-options="region:'center'" id="xmzxzcqk-historydatafilter">
+            <table id="report_fiters" border="0" style="width: 100%;padding: 0px; margin: 0">
+                    <tr>
+                        <td style="width:10%;">
+                            <label for="field1" style="width:100%;">报销年度</label>
+                        </td>
+                        <td style="width:10%;">
+                            <select id="xmzxzcqk-history-Year" class="easyui-combobox"  data-options="editable:false"; style="width:100%;">  
+                                <option value="2011">2011</option>  
+                                <option value="2012">2012</option>
+                                <option value="2013">2013</option>
+                                <option value="2014">2014</option>  
+                                <option value="2015">2015</option>
+                                <option value="2016">2016</option>    
+                                <option value="2017">2017</option>  
+                                <option value="2018">2018</option>
+                                <option value="2019">2019</option>    
+                                <option value="2020">2020</option>  
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>    
+                                <option value="2023">2023</option>  
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>    
+                                <option value="2026">2026</option>  
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>    
+                                <option value="2029">2029</option>  
+                                <option value="2030">2030</option>
+                                <option value="2031">2031</option>    
+                                <option value="2032">2032</option>  
+                                <option value="2033">2033</option>
+                                <option value="2034">2034</option>    
+                                <option value="2035">2035</option>  
+                                <option value="2036">2036</option>
+                                <option value="2037">2037</option>    
+                                <option value="2038">2038</option>  
+                                <option value="2039">2039</option>
+                                <option value="2040">2040</option>    
+                                <option value="2041">2041</option>  
+                                <option value="2042">2042</option>
+                                <option value="2043">2043</option>    
+                                <option value="2044">2044</option>  
+                                <option value="2045">2045</option>
+                                <option value="2046">2046</option>    
+                                <option value="2047">2047</option>  
+                                <option value="2048">2048</option>
+                                <option value="2049">2049</option>    
+                                <option value="2050">2050</option>  
+                            </select> 
+                        </td>
+                        <td style="width:10%;">
+                            <label for="field1"  style="width:100%;">预算来源</label>
+                        </td>
+                        <td style="width:10%;">
+                            <select id="xmzxzcqk-history-BGResourceType" class="easyui-combobox"  data-options="editable:false"; style="width:100%;">  
+                                            <option value="0" selected>全部</option>  
+                                            <option value="1">当年预算</option>
+                                            <option value="2">上年结转</option>    
+                            </select> 
+                        </td>
+                        <td style="width:10%;">
+                            起始日期
+                        </td>
+                        <td style="width:10%;">
+                            <input class="easyui-datebox" id="xmzxzcqk-history-StartDate" value=""  style="width:100%;"></input>
+                        </td>
+                        <td style="width:10%;">
+                            截止日期
+                        </td>
+                        <td style="width:10%;">
+                            <input class="easyui-datebox"  id="xmzxzcqk-history-EndDate"  value=""   style="width:100%;"></input>
+                        </td>
+                        <td style="width:10%;">
+                             金额单位
+
+                        </td>
+                        <td style="width:10%;">
+                           <select id="xmzxzcqk-history-RMBUnit" class="easyui-combobox" 
+                               data-options="editable:false,value:10000"
+                               style="width:100%;">
+                                    <option value="1">元</option>
+                                    <option value="100">百元</option>
+                                    <option value="1000">千元</option>
+                                    <option value="10000" selected=selected>万元</option>
+                                    <option value="100000">十万元</option>
+                                    <option value="1000000">百万元</option>
+                            </select>
+                        </td>
+                       
+                    </tr>
+                    <tr>
+                        <td style="width:10%;">
+                            付款状态
+                        </td>
+                        <td style="width:10%;">
+                          <select id="xmzxzcqk-history-PayStatus" class="easyui-combobox"  data-options="editable:false,value:0"  style="width:100%;">  
+                            <option  value="0" selected="selected">全部</option>  
+                            <option  value="1">未付款</option>  
+                            <option  value="2">已付款</option>  
+                            </select> 
+                        </td>
+                        <td style="width:10%;">
+                            审批状态
+                        </td>
+                        <td style="width:10%;">
+                            <select id="xmzxzcqk-history-ApproveStatus" class="easyui-combobox"  data-options="editable:false,value:2"; style="width:100%;">  
+                                <option value="0">全部</option>  
+                                 <option value="1">未审核</option>  
+                                 <option value="2" selected>已审核</option>            
+                                 <option value="3">审核中</option>  
+                            </select> 
+                        </td>
+                        <td style="width:10%;">
+                            凭证状态
+                        </td>
+                        <td colspan='5' style="width:10%;">
+                            <select id="xmzxzcqk-history-CertificateStatus" class="easyui-combobox"  data-options="editable:false,value:0";  style="width:100%;">  
+                                <option  value="0" selected=selected>全部</option>  
+                                <option  value="1">未生成凭证</option>  
+                                <option  value="2">已生成凭证</option>  
+                            </select> 
+                        </td>
+                    </tr>
+                </table>
+            <table id="report_rules" border="0" style="width: 100%; padding: 0px; margin: 0">
+                <tr>
+                    <td colspan="18" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                        项目管理费用执行情况表（按项目）
+                    </td>
+                </tr>
+                    <tr>
+                    <td field="" style="text-align: center; width: 80px; height: 18px; float:left;
+                        text-align: right;">
+                        <label> 项目编号：</label> 
+                    </td>
+                    <td field="" style=" width: 150px; height: 18px; float: left;text-align: left;">
+                        <div id="xmzxzcqk-projectKey"></div>
+                           
+                    </td>
+                        <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                        text-align:right;">
+                            <label> 项目名称：</label>                             
+                    </td>
+                    <td field="" style="text-align: center; width: 350px; height: 18px; float: left;
+                        text-align: left;">
+                        <div id="xmzxzcqk-projectName"></div>                           
+                    </td>
+
+                    <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                        text-align: right;">
+                        <label> 年度：</label> 
+                    </td>
+                    <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                        text-align: left;">
+                        <div id="xmzxzcqk-Year"></div>
+                    </td>
+                        <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                        text-align: right;">
+                        <label> 金额单位：</label> 
+                    </td>
+                    <td field="" style="text-align: center; width: 80px; height: 18px; float: left;
+                        text-align: left;">
+                        <div id="xmzxzcqk-RMBUnit"></div>
+                    </td>
+                </tr>
+                    
+            </table>
+            <table class="easyui-datagrid" id="xmzxzcqk_grid" data-options="
+                    fitColumns:true,
+                    rownumbers:true,
+                    singleSelect:true,
+                    scope:'xmzxzcqk'
+                    ">
+                <thead>
+                    <tr>
+                            
+                        <th field="bgcodekey" width="100px;" align="left" halign="center" >
+                            科目编号
+                        </th>
+                        <th field="bgcodename" width="200px;" align="left" halign="center">
+                            科目名称
+                        </th>
+                        <th field="totalbg" width="150px;" align="right" halign="center">
+                            预算数
+                        </th>
+                        <th field="totalbx" width="100px;" align="right" data-options=" styler: function (value, row, index) {
+              return 'color:blue';}" halign="center">
+                            执行数
+
+                        </th>
+                        <th field="jy" width="150px;" align="right" halign="center">
+                            结余
+                        </th>
+                        <th field="jybl" width="80px;"align="right" halign="center">
+                            结余比例
+                        </th>
+                        <th field="wcl" width="80px;" align="right" halign="center">
+                            完成率
+
+
+                        </th>
+                    </tr>
+                </thead>
+                   
+            </table>
+       </div>
+       <label id="xmzxzcqk-extendregion" style="display: none">
+           <input id="xmzxzcqk-status" type="text"></input>
+           <input id="initscope" type="text" value="xmzxzcqk"></input>
+           <input id="initstatus" type="text" value=@ViewData["status"]></input>
+           <input id="initguid" type="text" value=@ViewData["guid"]></input>
+              <input id="ProjectKey" type="text" value=@ViewData["ProjectKey"]></input>
+                 <input id="StartDate" type="text" value=@ViewData["StartDate"]></input>
+                    <input id="EndDate" type="text" value=@ViewData["EndDate"]></input>
+                       <input id="Year" type="text" value=@ViewData["Year"]></input>
+           <div id="b-window" line="true">
+       </div>
+</label>
+</div>
+</body>

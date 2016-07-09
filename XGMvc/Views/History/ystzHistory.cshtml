@@ -1,0 +1,249 @@
+﻿<script type="text/javascript">
+    $(document).ready(function () {
+    })
+    function SearchHistory() {
+        
+        var treeProject = '#history-tree-historyproject';
+        var treeDep = '#history-tree-historydep';
+        var projectSelect = GetTreeNode(treeProject);
+        var depSelect = GetTreeNode(treeDep);
+        var year = $('#history-history-Year').combobox('getValue');
+        var bgType = GetSelectValue('#history-BG_Main-GUID_BGType', "BGTypeKey");
+        var bgStep = GetSelectValue('#history-BG_Main-GUID_BGStep', "BGStepKey");
+
+        $.ajax({
+            url: "/History/YSTZHistory",
+            data: { Year: year, BGType: bgType, BGStep: bgStep, Project: projectSelect, Department: depSelect },
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", $.view.warning, 'error');
+            },
+            success: function (data) {
+                $('#history-BG_Detail').datagrid('getPager').pagination('options').pageNumber = 1;
+                $('#history-BG_Detail').datagrid('loadData', data);
+            }
+        });
+    }
+    function GetTreeNode(treeName) {
+        var treeNodes = $(treeName).tree('getChecked');
+        var proIds = [];
+        for (var i = 0; i < treeNodes.length; i++) {
+            var node = treeNodes[i];
+            proIds.push(node.id);
+        }
+        var pr = proIds.join(',');
+        return pr;
+    }
+    function GetSelectValue(name, field) {
+        var grid = $(name).combogrid("grid");
+        var row = grid.datagrid("getSelected");
+        if (null == row) {
+            return "";
+        }
+        else {
+            return row[field];
+        }
+    }
+</script>
+<body>
+    <div class="easyui-layout" b-type="1" data-options="fit:true" z="1">
+        <div b-type="1" data-options="region:'north',tools:'#tbar'" style="height: 51px">
+            <div id='tbar' b-type="1" style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="history-haffirm" b-action="haffirm" gridId="history-BG_Detail" 
+                   data-options="plain:'true',
+                   bindmethod:{ 'click': ['submitHistory'] },
+                   bindparms:{'submitHistory':['history-BG_Detail','@ViewData["ModelUrl"]']},
+                   window:'b-window',
+                   scope:'history',
+                   iconCls:'icon-queren'">浏览</a>
+                   <a href="#"  class="easyui-linkbutton" b-type="1" 
+                   id="history-hselect" b-action="hselect" data-options=" 
+                   scope:'history',
+                   plain:'true',iconCls:'icon-chaxun'" onclick="javascript:SearchHistory()">查询</a>
+                    <a href="#"  class="easyui-linkbutton" b-type="1" 
+                    id="history-hexit"   b-action="hexit"      
+                    data-options="plain:'true',
+                    bindmethod:{ 'click': ['cancelDetail'] },
+                    bindparms:{'cancelDetail':['@ViewData["ModelUrl"]']},
+                    scope:'history', 
+                    window:'b-window',         
+                    iconCls:'icon-quxiao'">取消</a>
+            </div>
+        </div>
+        <div data-options="region:'west',split:'true'" style="width: 250px">
+            <div class="easyui-tabs" data-options="fit:true">
+                <div title="部门">
+                    <ul class="easyui-tree" id="history-tree-historydep" data-options="
+                  bindmethod:{'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/History/History','history-BG_Main','history','historydatafilter']},
+                  url:'/Tree/GetDepartmentTreeCheck',
+                  checkbox:true,
+                  method:'post'">
+                    </ul>
+                </div>
+                <div title="项目">
+                    <ul class="easyui-tree" id="history-tree-historyproject" data-options="
+                  bindmethod:{ 'onDblClick': ['historySelect'] },
+                  bindparms:{'historySelect':['/History/History','history-BG_Main','history','historydatafilter']},
+                  url:'/Tree/GetProjectTreeCheck',
+                  checkbox:true,
+                  method:'post'">
+                    </ul>
+                </div>
+            </div>
+            </div>
+            <div b-type="1" data-options="region:'center'">
+                <div b-type="1" id="history-historydatafilter" data-options="region:'north'" style="height: 30px">
+                    <table border="0" style="width: 100%;">
+                        <tr>
+                            <td style="width: 13%; padding-left:3%;">
+                                <label for="field1">
+                                    预算年度</label>
+                            </td>
+                            <td style="width: 20%;">
+                                <select id="history-history-Year" class="easyui-combobox"  data-options="editable:false,tempValue:new Date().getFullYear()"; style="width: 150px;">
+                                    <option value="2011">2011</option>
+                                    <option value="2012">2012</option>
+                                    <option value="2013">2013</option>
+                                    <option value="2014">2014</option>
+                                    <option value="2015">2015</option>
+                                    <option value="2016">2016</option>
+                                    <option value="2017">2017</option>
+                                    <option value="2018">2018</option>
+                                    <option value="2019">2019</option>
+                                    <option value="2020">2020</option>
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023">2023</option>
+                                    <option value="2024">2024</option>
+                                    <option value="2025">2025</option>
+                                    <option value="2026">2026</option>
+                                    <option value="2027">2027</option>
+                                    <option value="2028">2028</option>
+                                    <option value="2029">2029</option>
+                                    <option value="2030">2030</option>
+                                    <option value="2031">2031</option>
+                                    <option value="2032">2032</option>
+                                    <option value="2033">2033</option>
+                                    <option value="2034">2034</option>
+                                    <option value="2035">2035</option>
+                                    <option value="2036">2036</option>
+                                    <option value="2037">2037</option>
+                                    <option value="2038">2038</option>
+                                    <option value="2039">2039</option>
+                                    <option value="2040">2040</option>
+                                    <option value="2041">2041</option>
+                                    <option value="2042">2042</option>
+                                    <option value="2043">2043</option>
+                                    <option value="2044">2044</option>
+                                    <option value="2045">2045</option>
+                                    <option value="2046">2046</option>
+                                    <option value="2047">2047</option>
+                                    <option value="2048">2048</option>
+                                    <option value="2049">2049</option>
+                                    <option value="2050">2050</option>
+                                </select>
+                            </td>
+                            <td style="width: 10%;">
+                                <label for="field1">
+                                    预算类型</label>
+                            </td>
+                            <td style="width: 20%;">
+                                <select id="history-BG_Main-GUID_BGType" class="easyui-combogrid" data-options="
+                                columns:[[
+                                        {field:'GUID',hidden:'true'},
+                                        {field:'BGTypeKey',title:'预算类型编码',width:'100',hidden:'true'},
+                                        {field:'BGTypeName',title:'预算类型名称',width:'215'}
+                                        ]],
+                                panelWidth:240,
+                                width:160,
+                                method:'post',
+                                idField:'BGTypeKey',
+                                tempValue:'02',
+                                textField:'BGTypeName',
+                                remoteUrl:'/Combogrid/BGType',
+                                filterField:'BGTypeKey,BGTypeName'" >
+                                </select>
+                            </td>
+                            <td style="width: 10%;">
+                                <label for="field1">
+                                    预算步骤</label>
+                            </td>
+                            <td style="width: 30%;">
+                                <select id="history-BG_Main-GUID_BGStep" class="easyui-combogrid" data-options="
+                                columns:[[
+                                        {field:'GUID',hidden:'true'},
+                                        {field:'BGStepKey',title:'预算步骤编码',width:'100'},
+                                        {field:'BGStepName',title:'预算步骤名称',width:'215'}
+                                        ]],
+                                panelWidth:240,
+                                width:160,
+                                method:'post',
+                                idField:'BGStepKey',
+                                tempValue:'05',
+                                textField:'BGStepName',
+                                remoteUrl:'/Combogrid/BGStepView',
+                                filterField:'BGStepKey,BGStepName'" >
+                                </select>
+                                
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div b-type="1" data-options="region:'center',fit:true" style="width:730px;">
+                    <table style="height: 480px;padding: 5px" class="easyui-edatagrid" id="history-BG_Detail"
+                        b-type="1" data-options="
+                        width:730,
+                        fitColumns:false,
+                        method:'get',
+                        singleSelect:true,
+                        checkOnSelect:true,
+                        pagination:true,
+                        striped: false,
+                        url:'',
+                        pageSize:20,
+                        pageList:[20,50,100],
+                        rownumbers:true
+                        ">
+                        <thead>
+                            <tr>
+                                <th field="b-sel" data-options="width:100,checkbox:'true'">
+                                </th>
+                                <th field="GUID" hidden="true" width="100">
+                                </th>
+                                <th field="DocNum" align="center" width="120">
+                                    单据编码
+                                </th>
+                                <th field="DocVerson" lign="center" width="100">
+                                    有效版本
+                                </th>
+                                <th field="BGSetupName" lign="center" width="100">
+                                    预算设置
+                                </th>
+                                <th field="ProjectName" align="center" width="140">
+                                    项目名称
+                                </th>
+                                <th field="ProjectKey" align="center" width="100">
+                                    项目编码
+                                </th>
+                                <th field="BGStepName" align="center" width="100">
+                                    预算步骤
+                                </th>
+                                <th field="BGTypeName" align="center" width="90">
+                                    预算类型
+                                </th>
+                                <th field="DepartmentName" align="center" width="120">
+                                    部门
+                                </th>
+                                <th field="PersonName" align="center" width="100">
+                                    制单人
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <input id="history-history-ModelUrl" class="easyui-validatebox" type="hidden" name="ModelUrl" value="@ViewData["ModelUrl"]"/>
+                </div>
+            </div>
+</body>

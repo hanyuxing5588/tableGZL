@@ -1,0 +1,43 @@
+﻿if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[BG_SetupView]') and OBJECTPROPERTY(id, N'IsView') = 1) --objectproperty
+drop view [dbo].[BG_SetupView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+/*
+//名    称：BG_SetupView
+//创建时间：--
+//修 改 人：dongsheng.zhang
+//修改时间：2014-4-10
+//功    能：预算设置视图
+//修改内容：添加了PBG_StepGUID，PBGStepKey，PBGStepName字段
+*/
+
+create  VIEW dbo.BG_SetupView
+AS
+SELECT dbo.BG_Setup.GUID, dbo.BG_Setup.BGSetupKey, dbo.BG_Setup.BGSetupName, 
+      dbo.BG_Setup.GUID_MoneyUnit, dbo.SS_MoneyUnit.MoneyUnitKey, 
+      dbo.SS_MoneyUnit.MoneyUnitName, dbo.SS_MoneyUnit.UnitMultiple, 
+      dbo.BG_Setup.BGPeriodType, dbo.SS_DocType.DocTypeKey, 
+      dbo.SS_DocType.DocTypeName, dbo.BG_Setup.GUID_DocType, 
+      dbo.BG_Setup.GUID_BGType, dbo.BG_Type.BGTypeKey, 
+      dbo.BG_Type.BGTypeName, dbo.BG_Setup.IsStop, dbo.BG_Setup.GUID_BGStep, 
+      dbo.BG_Step.BGStepKey, dbo.BG_Step.BGStepName,BS.GUID as PBG_StepGUID,BS.BGStepKey as PBGStepKey,BS.BGStepName as PBGStepName
+FROM dbo.BG_Setup LEFT OUTER JOIN
+      dbo.BG_Step ON 
+      dbo.BG_Setup.GUID_BGStep = dbo.BG_Step.GUID LEFT OUTER JOIN
+      dbo.BG_Type ON 
+      dbo.BG_Setup.GUID_BGType = dbo.BG_Type.GUID LEFT OUTER JOIN
+      dbo.SS_DocType ON 
+      dbo.BG_Setup.GUID_DocType = dbo.SS_DocType.GUID LEFT OUTER JOIN
+      dbo.SS_MoneyUnit ON dbo.BG_Setup.GUID_MoneyUnit = dbo.SS_MoneyUnit.GUID
+      LEFT OUTER JOIN dbo.BG_Step BS ON (dbo.BG_Step.GUID = dbo.BG_Setup.GUID_BGStep AND BS.GUID = dbo.BG_Step.PGUID)
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO

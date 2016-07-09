@@ -1,0 +1,210 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "2010年财政拨款收支一览表";
+}
+<style type="text/css">
+    .datagrid-header
+    {
+        height: 110px !important;
+    }
+    .datagrid-header-row, .datagrid-row
+    {
+        height: 49px;
+    }
+    .td{
+    width: 150px;
+    }
+</style>
+<div class="easyui-layout" id="czbksz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+            <a href="#" class="easyui-linkbutton" id="czbksz-print" 
+                      data-options="plain:'true',iconCls:'icon-dayin',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'czbksz',
+                  forbidstatus:[-1]">打印</a> <a href="#" class="easyui-linkbutton" id="czbksz-shuchu"
+                      data-options="plain:'true',iconCls:'icon-shuchu',
+                  bindmethod:{ 'click': ['history'] },
+                  scope:'czbksz',
+                  forbidstatus:[-1]">输出</a> <a href="#" class="easyui-linkbutton" id="czbksz-save"
+                      data-options="plain:'true',iconCls:'icon-baocun',
+                  bindmethod:{ 'click': ['saveDoc'] },
+                  bindparms:{'saveDoc':['/czbksz/Save']},
+                  scope:'czbksz',status:'0',
+                  forbidstatus:[0]">保存</a> <a href="#" class="easyui-linkbutton" id="czbksz-close"
+                      data-options="plain:'true',iconCls:'icon-tuichu',
+                  bindmethod:{ 'click': ['closeTab'] },
+                  scope:'czbksz'">退出</a>
+        </div>
+    </div>
+    <div data-options="region:'center'" style="width: 1020px">
+        <table border="0" style="height: 350px; width: 1040px; padding: 0; margin: 0">
+            <tr>
+                <td>
+                    <table border="0" style="height: 40px; padding: 0px; margin: 0">
+                        <tr>
+                            <td style="width: 80px">
+                                起始日期：
+                            </td>
+                            <td>
+                                <input class="easyui-datebox" id="State_DocDate"></input>
+                            </td>
+                            <td style="width: 80px">
+                                结束日期：
+                            </td>
+                            <td>
+                                <input class="easyui-datebox" id="End_DocDate"></input>
+                            </td>
+                            <td>
+                                金额单位
+                                <select id="" class="easyui-combobox" data-options="editable:false,panelHeight:65"
+                                    style="width: 80px;">
+                                    <option value="0">元</option>
+                                    <option value="1">万元</option>
+                                    <option value="2">千元</option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="button" id="sel" value="查询" />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100%; height: 200px;">
+                    <table class="easyui-edatagrid" id="" data-options="
+                        height:550,
+                        width:1230,
+                        scope:'czbksz'
+                        ">
+                        <thead>
+                            <tr>
+                                <th field="" align="center" width="180px" height="100px">
+                                    单位：中国工程院
+                                </th>
+                                <th colspan="11" field="" align="center" style="font-size: x-large; height: 45px;">
+                                    财政拨款收支一览表
+                                </th>
+                                <th>
+                                    截止日期
+                                </th>
+                                <th>
+                                </th>
+                            </tr>
+                        </thead>
+                        <thead>
+                            <tr>
+                                <th>
+                                    项目名称
+                                </th>
+                                <th>
+                                    上年结转
+                                </th>
+                                <th>
+                                    使用结余或结转资金
+                                </th>
+                                <th>
+                                    本年财富拨款
+                                </th>
+                                <th>
+                                    本年安排投资
+                                </th>
+                                <th>
+                                    额度支出执行比率
+                                </th>
+                                <th>
+                                    动态执行比率
+                                </th>
+                                <th>
+                                    账面支出
+                                </th>
+                                <th>
+                                    占本年安排比率
+                                </th>
+                                <th>
+                                    本年安排账面结余
+                                </th>
+                                <th>
+                                    累计结余
+                                </th>
+                                <th>
+                                    其中：应收费
+                                </th>
+                                <th>
+                                    今年可用额度
+                                </th>
+                                <th>
+                                    银行额度支出
+                                </th>
+                                <th>
+                                    当年额度支出
+                                </th>
+                                <th>
+                                    用款计划数
+                                </th>
+                                <th>
+                                    用款计划执行比率
+                                </th>
+                                <th>
+                                    年初恢复
+                                </th>
+                                <th>
+                                    备注
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    1
+                                </td>
+                                <td>
+                                    2
+                                </td>
+                                <td>
+                                    3
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<label id="czbksz-extendregion" style="display: none">
+    <input id="czbksz-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="czbksz-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>

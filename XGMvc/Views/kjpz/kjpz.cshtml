@@ -1,0 +1,815 @@
+﻿@{
+    Layout = "~/Views/master/_Layout.cshtml";
+    ViewBag.Title = "会计凭证";
+}
+<script src="../../Scripts/kj/kjpz.js?r=12123" type="text/javascript"></script>
+
+<script type="text/javascript">
+    //自适应调整 2016 4 11 hyx
+    //zzp  2014-04-08
+    //帐套是根据年度联动
+    //在帐套加载的时候，传一个年的参数 -year-
+    $(document).ready(function () {
+        var FisvalYeay = '#kjpz-CW_PZMain-FiscalYear', //年度id
+            AccountKey = '#kjpz-CW_PZMain-AccountKey', //帐套id
+            url = '/Combo/AccountMain';
+        $(FisvalYeay).combobox({
+            onSelect: function (rec) {//rec选中的值
+                $.ajax({
+                    url: url,
+                    data: { year: rec.value }, //根据选择的值跟后台匹配，作为条件
+                    dataType: "JSON",
+                    type: "POST",
+                    error: function (xmlhttprequest, textStatus, errorThrown) {
+                        $messager.alert("错误", "数据错误！", "error");
+                    },
+                    success: function (data) {//返回的数据
+                        if (!data || data == null) return;
+                        $(AccountKey).combobox('setValue', '');
+                        $(AccountKey).combobox('loadData', data);
+                    }
+                });
+            }
+        });
+
+
+        $('#kjpz-CW_PZDetail').edatagrid({
+            width:$('body').width()-260,
+            height: $('body').height() - 204
+        })
+
+    });
+
+    function compute() {
+        var rows = $('#kjpz-CW_PZDetail').datagrid('getRows');
+        var total = 0;
+        for (var i = 0; i < rows.length; i++) {
+            total += rows[i]['借方金额'];
+        }
+        alert(total);
+    }
+
+
+    $.extend($.fn.datagrid.defaults.editors, {
+        combogrid: {
+            init: function (container, options) {
+                var input = $("<input type=\"text\" class=\"datagrid-editable-combogrid\" />").appendTo(container);
+
+                if (options.urlParmas) {
+                    options.remoteUrl = '/Combogrid/CWAcountTitle';
+                    options.remoteUrl += '?key=' + $('#kjpz-CW_PZMain-AccountKey').combobox('getValue');
+                }
+                input.combogrid(options);
+                //绑定事件
+                $.view.bind.call($(input), 'combogrid');
+                //加载远程数据
+                $(input).combogrid('loadRemoteDataToLocal');
+
+
+                return input;
+            },
+            destroy: function (target) {
+                $(target).combogrid('destroy');
+            },
+            getValue: function (target) { //回到grid
+
+                var opts = $(target).combogrid('options');
+                var val = $(target).combogrid('getValue'), text = $(target).combogrid('getText');
+                var rowIndex = $(target).combogrid("grid").datagrid("getRowIndex", val);
+                if (!opts.customValue && rowIndex < 0) {
+                    text = "";
+                    val = "";
+                }
+                if (!text) {
+                    $.fn.combogrid.methods["setAssociate"].call(target);
+                    val = "";
+                }
+                if (opts.customValue && rowIndex < 0) {
+                    val = "";
+                }
+                target.parents().find("div.datagrid-editable").attr("oaovalue", val);
+                return text;
+            },
+            setValue: function (target, value) {//从grid的来
+                var ivalue = target.parents().find("div.datagrid-editable").attr("oaovalue");
+                $(target).combogrid('setValue', ivalue)
+                return $(target).combogrid('setText', value);
+            },
+            resize: function (target, width) {
+                $(target).combogrid("resize", width);
+            }
+        }
+    });
+
+
+</script>
+<div class="easyui-layout" id="kjpz-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   @if ((@ViewData["btnControl"]+"").Trim()== "0")
+                   {
+                        <a href="#" class="easyui-linkbutton" id="kjpz-ok" data-options="plain:'true',iconCls:'icon-queding',
+                        bindmethod:{ 'click': ['submitPer'] },
+                        window:'b-kjpzwindow',
+                        scope:'kjpz',status:'0',forbidstatus:[4]">确定</a>
+                       
+                         <a href="#" class="easyui-linkbutton" id="kjpz-jiedai1" data-options="
+                            plain:'true',iconCls:'icon-jiedai', scope:'kjpz',forbidstatus:[4],
+                           window:'b-window',bindmethod:{ 'click': ['switchValue'] },
+                           bindparms:{'switchValue':[
+                                'kjpz-CW_PZDetail',
+                                'kjpz-CW_PZDetail-Total_Borrow',
+                                'kjpz-CW_PZDetail-Total_Loan',
+                                'kjpz-CW_PZDetail-Total_PZ',
+                                'kjpz-CW_PZDetail-IsDC']}">借贷
+                        </a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="kjpz-honglan1"
+                   data-options=" plain:'true',iconCls:'icon-honglan', 
+                   scope:'kjpz',forbidstatus:[4],
+                   bindmethod:{ 'click': ['switchConquer'] },
+                   bindparms:{'switchConquer':['kjpz-CW_PZDetail','kjpz-CW_PZDetail-Total_Borrow','kjpz-CW_PZDetail-Total_Loan']}">红蓝</a> 
+                                <a href="#" class="easyui-linkbutton" id="kjpz-addrow1"
+                       data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['kjpz-CW_PZDetail']},
+                   scope:'kjpz',forbidstatus:[3,4,5,6]">增行</a> 
+                       
+                     <a href="#" class="easyui-linkbutton" id="kjpz-InsertRow1"
+
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['kjpz-CW_PZDetail']},scope:'kjpz',
+                   forbidstatus:[3,4,5,6]">插行</a>
+                       
+                       <a href="#" class="easyui-linkbutton"
+                       id="kjpz-delrow1" data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['kjpz-CW_PZDetail']},scope:'kjpz',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+                      <a href="#" class="easyui-linkbutton" id="kjpz-close1"
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'kjpz'">退出</a>
+                       
+                   }
+                   else
+                   {
+                   <a href="#" class="easyui-linkbutton" id="kjpz-jiedai" data-options="
+                   plain:'true',iconCls:'icon-jiedai', scope:'kjpz',forbidstatus:[2,3],
+                   window:'b-window',bindmethod:{ 'click': ['switchValue'] },
+                   bindparms:{'switchValue':[
+                        'kjpz-CW_PZDetail',
+                        'kjpz-CW_PZDetail-Total_Borrow',
+                        'kjpz-CW_PZDetail-Total_Loan',
+                        'kjpz-CW_PZDetail-Total_PZ',
+                        'kjpz-CW_PZDetail-IsDC']}">借贷
+                        </a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="kjpz-honglan"
+                   data-options=" plain:'true',iconCls:'icon-honglan', 
+                   scope:'kjpz',forbidstatus:[2,3],
+                   bindmethod:{ 'click': ['switchConquer'] },
+                   bindparms:{'switchConquer':['kjpz-CW_PZDetail','kjpz-CW_PZDetail-Total_Borrow','kjpz-CW_PZDetail-Total_Loan']}">红蓝</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="kjpz-add" data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{ 'click':['newDoc'] },scope:'kjpz',status:'1',
+                   bindparms:{'newDoc':['/kjpz/New']},
+                   forbidstatus:[1,2,3]">新增</a> 
+                       <a href="#" class="easyui-linkbutton" id="kjpz-edit"
+                       data-options="plain:'true',iconCls:'icon-xiugai',
+                   docState:'kjpz-CW_PZMain-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'kjpz',status:'2',
+                   forbidstatus:[1,2,3]">修改</a> 
+                       <a href="#" class="easyui-linkbutton" id="kjpz-remove"
+                       data-options="plain:'true',iconCls:'icon-shanchu',
+                   docState:'kjpz-CW_PZMain-DocState',
+                   bindmethod:{ 'click': ['setStatus'] },scope:'kjpz',status:'3',
+                   forbidstatus:[1,2,3]">删除</a>
+                        <a href="#" class="easyui-linkbutton" id="kjpz-addrow"
+                       data-options="plain:'true',iconCls:'icon-zenghang',
+                   bindmethod:{ 'click': ['addRow'] },
+                   bindparms:{'addRow':['kjpz-CW_PZDetail']},
+                   scope:'kjpz',forbidstatus:[3,4,5,6]">增行</a> 
+                       
+                       <a href="#" class="easyui-linkbutton" id="kjpz-InsertRow"
+
+                   data-options="plain:'true',iconCls:'icon-chahang',
+                   bindmethod:{ 'click': ['InsertRow'] },
+                   bindparms:{'InsertRow':['kjpz-CW_PZDetail']},scope:'kjpz',
+                   forbidstatus:[3,4,5,6]">插行</a>
+                       
+                       <a href="#" class="easyui-linkbutton"
+                       id="kjpz-delrow" data-options="plain:'true',iconCls:'icon-shanhang',
+                   bindmethod:{ 'click': ['delRow'] },
+                   bindparms:{'delRow':['kjpz-CW_PZDetail']},scope:'kjpz',
+                   forbidstatus:[3,4,5,6]">删行</a> 
+                       <a href="#" class="easyui-linkbutton" id="kjpz-abandoned"
+                       data-options="plain:'true',iconCls:'icon-zuofei',
+                   docState:'kjpz-CW_PZMain-DocState',
+                   bindmethod:{ 'click': ['abandoned'] },
+                   bindparms:{'abandoned':['kjpz-CW_PZMain-DocState','9']},
+                   scope:'kjpz',status:'3',
+                   forbidstatus:[1,2,3]">作废</a> <a href="#" class="easyui-linkbutton" id="kjpz-recover"
+                       data-options="plain:'true',iconCls:'icon-huifu',
+                   docState:'kjpz-CW_PZMain-DocState',
+                   bindmethod:{ 'click': ['recover'] },
+                   bindparms:{'recover':['kjpz-CW_PZMain-DocState','6']},
+                   scope:'kjpz',status:'3',
+                   forbidstatus:[1,2,3]">恢复</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="kjpz-cancel"
+                       data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'kjpz',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a> 
+                   
+                   <a href="#" class="easyui-linkbutton"
+                       id="kjpz-save" data-options="plain:'true',iconCls:'icon-baocun',
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/kjpz/Save']},@*,'kjpz-examine'*@
+                   scope:'kjpz',status:'4',
+                   forbidstatus:[4]">保存</a> 
+                   <a href="#" class="easyui-linkbutton" id="kjpz-histroy"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['kjpzls'] },
+                   bindparms:{'kjpzls':['/kjpz/kjpzHistory','kjpz/kjpzHistory','history-CW_PZMain','history']},
+                   window:'b-window',scope:'kjpz'">历史</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="kjpz-firstitem"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['FetchItem'] },
+                   bindparms:{'FetchItem':['/kjpz/FetchItem','first']},
+                   forbidstatus:[1,2,3],
+                   scope:'kjpz'">首条</a> 
+                   <a href="#" class="easyui-linkbutton" id="kjpz-preitem"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['FetchItem'] },
+                   bindparms:{'FetchItem':['/kjpz/FetchItem','pre']},
+                   forbidstatus:[1,2,3],scope:'kjpz'">上条</a> 
+                   
+                    <a href="#" class="easyui-linkbutton" id="kjpz-nextitem"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['FetchItem'] },
+                   bindparms:{'FetchItem':['/kjpz/FetchItem','next']},
+                   forbidstatus:[1,2,3],scope:'kjpz'">下条</a>     
+                     <a href="#" class="easyui-linkbutton" id="kjpz-lastitem"
+                       data-options="plain:'true',iconCls:'icon-lishi',
+                   bindmethod:{ 'click': ['FetchItem'] },
+                   bindparms:{'FetchItem':['/kjpz/FetchItem','last']},
+                   forbidstatus:[1,2,3],scope:'kjpz'">末条</a>   
+                       
+                    
+              @*     <a href="#" class="easyui-linkbutton" id="kjpz-help" data-options="plain:'true',iconCls:'icon-bangzhu', 
+                   scope:'kjpz',
+                   bindmethod:{ 'click': ['help'] }">帮助</a> *@
+                       
+                   <a href="#" class="easyui-linkbutton" id="kjpz-close"
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'kjpz'">退出</a>
+                   }
+        </div>
+    </div>
+    <div data-options="region:'west',split:'true'" style="width: 250px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="会计科目" data-options="selected:true">
+                <ul class="easyui-tree" id="kjpz-tree-code" data-options="gridassociate:{
+                      'gridId':'kjpz-CW_PZDetail',
+                      'map': {
+                        'kjpz-CW_PZDetail-AccountTitleKey':['AccountTitleKey','AccountTitleKey'],
+                        'kjpz-CW_PZDetail-GUID_AccountTitle':['GUID','AccountTitleName']
+                      },
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetCWAccountTitleTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="部门">
+                <ul class="easyui-tree" id="kjpz-tree-dep" data-options="
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  gridassociate:{
+                      'gridId':'kjpz-CW_PZDetail',
+                      'map': {
+                        'kjpz-CW_PZDetail-GUID_Department':['GUID','DepartmentName']
+                      }
+                  },
+                  url:'/Tree/GetDepartmentTree',
+                  forbidstatus:[4,3],
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="项目">
+                <ul class="easyui-tree" id="kjpz-tree-project" data-options="gridassociate:{
+                    'gridId':'kjpz-CW_PZDetail',
+                    'map':{
+                        'kjpz-CW_PZDetail-GUID_Project':['GUID','ProjectName'],
+                        'kjpz-CW_PZDetail-ProjectKey':['ProjectKey','ProjectKey']
+                    }
+                  },
+                  bindmethod:{ 'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetProjectTree',
+                  method:'post'">
+                </ul>
+            </div>
+            <div title="人员">
+                <ul class="easyui-tree" id="kjpz-tree-per" data-options="
+                  gridassociate:{
+                      'gridId':'kjpz-CW_PZDetail',
+                      'map': {
+                        'kjpz-CW_PZDetail-GUID_Person':['GUID','PersonName']
+                      }
+                  },
+                  bindmethod:{'onDblClick': ['setAssociate'] },
+                  forbidstatus:[4,3],
+                  url:'/Tree/GetPersonTree',
+                  method:'post'">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'"  data-options="fit:true">
+        <table border="0" style="height: 150px;  padding: 0; margin: 0">
+            <tr>
+                <td colspan="8" style="height: 15px;">
+                    <div id="kjpz-abandonedStatus" statuscontrolid="kjpz-CW_PZMain-DocState" style="font-size: x-large;
+                        color: Red; display: none">
+                        已作废</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-CWPeriod">
+                        会计期间</label>
+                </td>
+                <td style="width: 140px;">
+                    <select id="kjpz-CW_PZMain-CWPeriod" class="easyui-combobox" data-options="editable:false,tempValue:new Date().getMonth() + 1"  style="width: 160px;">
+                        <option value="0">全部</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                </td>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-DocNum">
+                        凭证编号</label>
+                </td>
+                <td style="width: 160px">
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-DocNum" style="width: 50px;"
+                        data-options="forbidstatus:[-1],type:'text'"></input>
+                    <label for="field1" id="lbl-YYDocNum">
+                        用友编号</label>
+                    <input class="easyui-validatebox" id="kjpz-GL_accvouch-Ino_id" style="width: 50px"
+                        data-options="forbidstatus:[-1],type:'text'"></input>
+                </td>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-DocDate">
+                        凭证日期</label>
+                </td>
+                <td style="width: 140px;">
+                    <input class="easyui-datebox" id="kjpz-CW_PZMain-DocDate" data-options="width:160,forbidstatus:[4,3],required:false,
+                        bindmethod: { 'onCloseEx': ['setAssociate'] }"></input>
+                </td>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-DWName">
+                        单&nbsp;&nbsp;位</label>
+                </td>
+                <td style="width: 140px;">
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-DWName" style="width: 157px;"
+                        data-options="forbidstatus:[-1],type:'text'"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-FiscalYear">
+                        年&nbsp;&nbsp;度</label>
+                </td>
+                <td style="width: 140px;">
+                    <select id="kjpz-CW_PZMain-FiscalYear" class="easyui-combobox" data-options="editable:false,tempValue:new Date().getFullYear()"; style="width: 160px;">
+                        <option value="0">全部</option>
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                        <option value="2005">2005</option>
+                        <option value="2006">2006</option>
+                        <option value="2007">2007</option>
+                        <option value="2008">2008</option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>
+                        <option value="2011">2011</option>
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>
+                        <option value="2017">2017</option>
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>
+                        <option value="2032">2032</option>
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>
+                        <option value="2035">2035</option>
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>
+                        <option value="2038">2038</option>
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>
+                        <option value="2041">2041</option>
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>
+                        <option value="2044">2044</option>
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>
+                        <option value="2047">2047</option>
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>
+                        <option value="2050">2050</option>
+                    </select>
+                </td>
+                <td style="width: 55px;">
+                    <label for="field1" id="lbl-PZTypeName">
+                        凭证类型</label>
+                </td>
+                <td style="width: 160px;">
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-PZTypeName" style="width: 164px"
+                        data-options="forbidstatus:[-1],type:'text'"></input>
+                </td>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-BillCount">
+                        附件数量</label>
+                </td>
+                <td style="width: 140px;">
+                    <input class="easyui-numberbox" id="kjpz-CW_PZMain-BillCount" style="width: 156px"
+                        data-options="forbidstatus:[4,3],min:0,max:99"></input>
+                </td>
+                <td style="width: 55px; height: 15px;">
+                    <label for="field1" id="lbl-YWTypeName">
+                        业务类型</label>
+                </td>
+                <td style="width: 140px;">
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-YWTypeName" style="width: 157px"
+                        data-options="forbidstatus:[-1],type:'text'"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-Total_C">
+                        借方合计</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-Total_C" style="width: 157px"
+                        data-options="setNotValue:true,forbidstatus:[-1],precision:2,max:99999999.99"></input>
+                </td>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-Total_D">
+                        贷方合计</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-Total_D" style="width: 164px"
+                        data-options="setNotValue:true,forbidstatus:[-1],precision:2,max:99999999.99"></input>
+                </td>
+                <td style="width: 55px">
+                    <label for="field1" id="lbl-Maker">
+                        制单人</label>
+                </td>
+                <td>
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-Maker" style="width: 157px"
+                        data-options="type:'text', forbidstatus:[-1]"></input>
+                </td>
+                <td style="width: 55px; height: 15px;">
+                    <label for="field1" id="lbl-DocTypeName">
+                        单据类型</label>
+                </td>
+                <td style="width: 180px;">
+                    <input class="easyui-validatebox" id="kjpz-CW_PZMain-DocTypeName" style="width: 157px"
+                        data-options="type:'text', forbidstatus:[-1]"></input>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 55px; height: 15px;">
+                    <label for="field1" id="lbl-AccountKey">
+                        凭证帐套</label>
+                </td>
+                <td colspan="7" style="width: 180px;">
+                    <input class="easyui-combobox" id="kjpz-CW_PZMain-AccountKey" style="width: 160px;"
+                        data-options="
+                        editable:false,
+                        valueField:'GUID',
+                        textField:'AccountKey',
+                        filterField:'AccountKey',
+                        panelHeight:150
+                        "></input>
+                </td>
+            </tr>
+           
+        </table>
+        <table class="easyui-edatagrid" id="kjpz-CW_PZDetail" style="overflow: auto" data-options="
+                            orderNum:'kjpz-CW_PZDetail-OrderNum',
+                            fitColumns:false,
+                            pagination:false,
+                            method:'get',
+                            singleSelect:true,
+                            checkOnSelect:true,
+                            rownumbers:true,
+                            scope:'kjpz',
+                            single:false,
+                            pagination:true,
+                            pagesize:150,
+                            pageList:[150],
+                            formatters:{'kjpz-CW_PZDetail-Total_Borrow':'numberbox','kjpz-CW_PZDetail-Total_Loan':'numberbox'},
+                            forbidstatus:[4,3],
+                            
+                            fieldformula:[
+                                {name:'csum',field:'kjpz-CW_PZDetail-Total_Borrow',target:['kjpz-CW_PZMain-Total_C']},
+                                {name:'csum',field:'kjpz-CW_PZDetail-Total_Loan',target:['kjpz-CW_PZMain-Total_D']}
+                            ]
+                         ">
+                        <thead>
+                            <tr>
+                                <th field="kjpz-CW_PZDetail-GUID" hidden="true">
+                                </th>
+                                <th field="kjpz-CW_PZDetail-GUID_PZMAIN" hidden="true">
+                                </th>
+                                <th field="kjpz-CW_PZDetail-GUID_SettleType" hidden="true">
+                                </th>
+                                <th field="kjpz-CW_PZDetail-Total_PZ"  title="金额1123" hidden="false">
+                                </th>
+                                <th field="kjpz-CW_PZDetail-IsDC"  title="借贷" hidden="false">
+                                </th>
+                                <th field="kjpz-CW_PZDetail-PZMemo" width="200" title="摘要" sortable="false" align="center"
+                                    editor="{type:'validatebox'}">
+                                    摘要
+                                </th>
+                                @*<th field="kjpz-CW_PZDetail-PZMemo" width="150" title="摘要" sortable="false" align="center"
+                                    editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        customValue:true,
+                                        panelWidth:320,
+                                        panelHeight:300,
+                                        remoteUrl:'/Combogrid/BGCodeMemo',
+                                        method:'get',
+                                        idField:'PZMemo',
+                                        textField:'PZMemo',
+                                        filterField:'PZMemo',
+                                        associateControl:{
+                                                gridId:'kjpz-CW_PZDetail',
+                                                map:['kjpz-CW_PZDetail-GUID_AccountTitle']
+                                            },
+                                        isLoad:false,
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'GUID_AccountTitle',title:'GUID_AccountTitle',hidden:true},
+                                            {field:'PZMemo',title:'摘要',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    摘要
+                                </th>*@
+                                <th field="kjpz-CW_PZDetail-AccountTitleKey" title="科目编码" width="100" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'kjpz-CW_PZDetail',
+                                     map:{
+                                        'kjpz-CW_PZDetail-GUID_AccountTitle':['GUID','AccountTitleName']
+                                        }
+                                     },
+                                     urlParmas:'kjpz-CW_PZMain-AccountKey',
+                                     bindmethod: { 'onCloseEx': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:255,
+                                     remoteUrl:'/Combogrid/CWAcountTitle',
+                                     method:'get',
+                                     idField:'AccountTitleKey',
+                                     delay:1500,
+                                     filterField:'AccountTitleKey,AccountTitleName',
+                                     textField:'AccountTitleKey',
+                                     sortName:'AccountTitleKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_AccountMain',hidden:'true'},
+                                            {field:'AccountTitleKey',title:'科目编码',width:'100'},
+                                            {field:'AccountTitleName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目编码
+                                </th>
+                                <th field="kjpz-CW_PZDetail-GUID_AccountTitle" title="科目名称" width="120" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                     gridassociate:{gridId:'kjpz-CW_PZDetail',
+                                     map:{
+                                        'kjpz-CW_PZDetail-AccountTitleKey':['AccountTitleKey','AccountTitleKey']
+                                        }
+                                     },
+                                     urlParmas:'kjpz-CW_PZMain-AccountKey',
+                                     bindmethod: { 'onSelect': ['setAssociate'] },     
+                                     width:520,
+                                     panelWidth:255,
+                                     remoteUrl:'/Combogrid/CWAcountTitle',
+                                     method:'get',
+                                     idField:'GUID',
+                                     delay:1500,
+                                     filterField:'AccountTitleKey,AccountTitleName',
+                                     textField:'AccountTitleName',
+                                     sortName:'AccountTitleKey',
+                                     columns:[[
+                                            {field:'GUID',hidden:'true'},
+                                            {field:'GUID_AccountMain',hidden:'true'},
+                                            {field:'AccountTitleKey',title:'科目编码',width:'100'},
+                                            {field:'AccountTitleName',title:'科目名称',width:'130'}
+                                      ]]
+                                    }
+                                }">
+                                    科目名称
+                                </th>
+                                <th field="kjpz-CW_PZDetail-Total_Borrow" title="借方金额" sortable="false" align="right"
+                                    width="100" editor="{type:'numberbox',options:{precision:2,min:-99999999.99,max:99999999.99}}">
+                                    借方金额
+                                </th>
+                                <th field="kjpz-CW_PZDetail-Total_Loan" title="贷方金额" sortable="false" align="right"
+                                    width="100" editor="{type:'numberbox',options:{precision:2,min:-99999999.99,max:99999999.99}}">
+                                    贷方金额
+                                </th>
+                                <th field="kjpz-CW_PZDetail-GUID_Department" title="部门名称" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:420,  
+                                      width:520,
+                                      remoteUrl:'/Combogrid/Department',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'DepartmentName',
+                                      filterField:'DepartmentKey,DepartmentName',
+                                      columns:[[
+                                          {field:'GUID',title:'名称',width:'60',hidden:true},
+                                          {field:'DepartmentKey',title:'部门编码',width:'60'},
+                                          {field:'DepartmentName',title:'部门名称',width:'200'},
+                                          {field:'DWName',title:'所属单位名称',width:'130'}
+                                        ]]
+                                      }
+                                    }">
+                                    部门名称
+                                </th>
+                                <th field="kjpz-CW_PZDetail-ProjectKey" width="150" title="项目编码" sortable="false"
+                                    align="center" editor="{
+                                        type:'combogrid',
+                                        options:{
+                                        realValue:true,
+                                        panelWidth:405,
+                                        panelHeight:255,
+                                        remoteUrl:'/Combogrid/Project',
+                                        method:'get',
+                                        idField:'ProjectKey',
+                                        textField:'ProjectKey',
+                                        filterField:'ProjectKey,ProjectName',
+                                        gridassociate:{
+                                                gridId:'kjpz-CW_PZDetail',
+                                        map:{
+                                            'kjpz-CW_PZDetail-GUID_Project':['GUID','ProjectName']
+                                        }},
+                                        bindmethod: { 'onSelect': ['setAssociate'] },
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:true},
+                                            {field:'ProjectKey',title:'项目编码',width:'80'},
+                                            {field:'ProjectName',title:'项目名称',width:'300'}
+                                        ]]
+                                        }
+                                }">
+                                    项目编码
+                                </th>
+                                <th field="kjpz-CW_PZDetail-GUID_Project" title="项目名称" sortable="false" align="center"
+                                    width="300" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:405,
+                                      panelHeight:255,
+                                      remoteUrl:'/Combogrid/Project',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'ProjectName',
+                                      filterField:'ProjectKey,ProjectName',
+                                      gridassociate:{
+                                            gridId:'kjpz-CW_PZDetail',
+                                      map:{
+                                            'kjpz-CW_PZDetail-ProjectKey':['ProjectKey','ProjectKey']
+                                      }},
+                                      bindmethod: { 'onSelect': ['setAssociate'] },     
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'ProjectKey',title:'项目编码',width:'80'},
+                                          {field:'ProjectName',title:'项目名称',width:'300'}
+                                      ]]
+                                      }
+                                  }">
+                                    项目名称
+                                </th>
+                                <th field="kjpz-CW_PZDetail-GUID_Customer" title="往来单位" sortable="false" align="center"
+                                    width="150" editor="{
+                                      type:'combogrid',
+                                      options:{
+                                      panelWidth:325,width:520,
+                                      remoteUrl:'/Combogrid/Customer',
+                                      method:'get',
+                                      idField:'GUID',
+                                      textField:'CustomerName',
+                                      filterField:'CustomerKey,CustomerName',
+                                      columns:[[
+                                          {field:'GUID',title:'GUID',hidden:true},
+                                          {field:'CustomerKey',title:'往来单位编码',width:'100'},
+                                          {field:'CustomerName',title:'往来单位名称',width:'200'}
+                                        ]]
+                                      }
+                                  }">
+                                    往来单位
+                                </th>
+                                <th field="kjpz-CW_PZDetail-GUID_Person" title="人员" width="110" sortable="false"
+                                    align="center" editor="{
+                                    type:'combogrid',
+                                    options:{
+                                        panelWidth:500,
+                                        customValue:true,
+                                        width:368,
+                                        remoteUrl:'/Combogrid/Person',
+                                        method:'get',
+                                        idField:'GUID',
+                                        textField:'PersonName',
+                                        filterField:'PersonKey,PersonName',
+                                        singleSelect:true,
+                                        editable:true,
+                                        pagination:true,
+                                        striped: false,
+                                        pageSize:10,
+                                        pageList:[10,50,100],
+                                        rownumbers:true,
+                                        bindmethod: { 'onCloseEx': ['setAssociate','cassign'] },
+                                        columns:[[
+                                            {field:'GUID',title:'GUID',hidden:'true'},
+                                            {field:'PersonKey',title:'人员编码',width:'100'},
+                                            {field:'PersonName',title:'人员名称',width:'100'}
+                                            ]]
+                                        }
+                                     }">
+                                    人员
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+    </div>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID" type="hidden" keyattr="1"></input>>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_UIType" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-DocState" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-OAOTS" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_KeePer" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_Cashier" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_Checker" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_Master" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_Maker" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-MakeDate" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_DW" type="hidden"></input>
+    <input class="easyui-validatebox" id="kjpz-CW_PZMain-GUID_PZType" type="hidden"></input>
+</div>
+<label id="kjpz-extendregion" style="display: none">
+    <input id="kjpz-status" type="text"></input>
+    <input id="initscope" type="text" value=@ViewData["scope"]></input>
+    <input id="initstatus" type="text" value=@ViewData["status"]></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="b-window" line="true">
+    </div>
+</label>
+<div b-type="1" id="kjpz-BudgetStatistics-datafilter" data-options="region:'north'"
+    style="height: 90px">
+    <input class="easyui-validatebox" type="hidden" id="kjpz-CW_PZMain-DWKey" />
+</div>
+<iframe id="printIframe" style="display: none"></iframe>

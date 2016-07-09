@@ -1,0 +1,63 @@
+if exists (select * from dbo.sysobjects where id = object_id(N'[dbo].[BX_CollectMainView]') and OBJECTPROPERTY(id, N'IsView') = 1)
+drop view [dbo].[BX_CollectMainView]
+GO
+
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS ON 
+GO
+
+
+/*
+//名    称：BX_CollectMainView
+//创建时间：--
+//修 改 人：sxb
+//修改时间：2014-2-14
+//功    能：往来明细视图信息
+*/
+
+CREATE  VIEW dbo.BX_CollectMainView
+AS
+SELECT dbo.BX_CollectMain.GUID, dbo.BX_CollectMain.DocNum, 
+      dbo.BX_CollectMain.OAOTS, dbo.BX_CollectMain.DocMemo, 
+      dbo.BX_CollectMain.DocState, dbo.BX_CollectMain.GUID_Maker, 
+      SS_Operator_1.OperatorName AS Maker, dbo.BX_CollectMain.GUID_Modifier, 
+      SS_Operator_1.OperatorName AS Modifier, dbo.BX_CollectMain.MakeDate, 
+      dbo.BX_CollectMain.ModifyDate, dbo.BX_CollectMain.SubmitDate, 
+      dbo.BX_CollectMain.GUID_YWType, dbo.SS_YWType.YWTypeKey, 
+      dbo.SS_YWType.YWTypeName, dbo.BX_CollectMain.GUID_DocType, 
+      dbo.SS_DocTypeView.DocTypeKey, dbo.SS_DocTypeView.DocTypeName, 
+      dbo.BX_CollectMain.GUID_Person, dbo.SS_Person.PersonKey, 
+      dbo.SS_Person.PersonName, dbo.BX_CollectMain.GUID_Department, 
+      dbo.SS_Department.DepartmentKey, dbo.SS_Department.DepartmentName, 
+      dbo.BX_CollectMain.GUID_DW, dbo.SS_DW.DWKey, dbo.SS_DW.DWName, 
+      dbo.BX_CollectMain.GUID_UIType, dbo.SS_UIType.UITypeKey, 
+      dbo.SS_UIType.UITypeName, dbo.BX_CollectMain.GUID_Cutomer, 
+      dbo.SS_Customer.CustomerKey, dbo.SS_Customer.CustomerName, 
+      dbo.BX_CollectMain.DocDate,dbo.SS_DocTypeView.DocTypeUrl,
+	  dbo.BX_CollectMain.ApproveState
+FROM dbo.BX_CollectMain LEFT OUTER JOIN
+      dbo.SS_Customer ON 
+      dbo.BX_CollectMain.GUID_Cutomer = dbo.SS_Customer.GUID LEFT OUTER JOIN
+      dbo.SS_UIType ON 
+      dbo.BX_CollectMain.GUID_UIType = dbo.SS_UIType.GUID LEFT OUTER JOIN
+      dbo.SS_Person ON 
+      dbo.BX_CollectMain.GUID_Person = dbo.SS_Person.GUID LEFT OUTER JOIN
+      dbo.SS_DW ON 
+      dbo.BX_CollectMain.GUID_DW = dbo.SS_DW.GUID LEFT OUTER JOIN
+      dbo.SS_Department ON 
+      dbo.BX_CollectMain.GUID_Department = dbo.SS_Department.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_1 ON 
+      dbo.BX_CollectMain.GUID_Modifier = SS_Operator_1.GUID LEFT OUTER JOIN
+      dbo.SS_Operator SS_Operator_2 ON 
+      dbo.BX_CollectMain.GUID_Maker = SS_Operator_2.GUID LEFT OUTER JOIN
+      dbo.SS_DocTypeView ON 
+      dbo.BX_CollectMain.GUID_DocType = dbo.SS_DocTypeView.GUID LEFT OUTER JOIN
+      dbo.SS_YWType ON dbo.BX_CollectMain.GUID_YWType = dbo.SS_YWType.GUID
+
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+

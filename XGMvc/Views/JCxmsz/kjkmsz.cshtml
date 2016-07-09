@@ -1,0 +1,658 @@
+﻿
+<script src="../../Scripts/jc/jcxmda1.js?r=1" type="text/javascript"></script>
+
+<script type="text/javascript" language="javascript">
+    
+    $(document).ready(function () {
+        $("#SS_Project-ShowStop").bind("click", function (e) {
+
+            var type = 0;
+            var b = $(this).attr("checked");
+            if (b || b == "checked") {
+                type = 2;
+
+            }
+            var url = '/JCxmsz/AllRetrievexmda';
+            $.ajax({
+                url: url,
+                data: { "type": type },
+                async: false, //同步
+                dataType: "json",
+                type: "POST",
+                traditional: true,
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                },
+                success: function (data) {
+
+                    $.view.loadData("xmda", data);
+                    
+                    
+                }
+            });
+            $.RefeshTree(type);
+        });
+        
+        
+        
+    });
+    //刷新树
+    $.RefeshTree = function (type) {
+        $('#xmda-tree-project').tree({
+            url: '/Tree/GetJCXMDAProjectTree?type=' + type
+        });
+    };
+
+</script>
+<div class="easyui-layout" id="xmda-dataregion" data-options="fit:true" z="1">
+    <div data-options="region:'north'" style="height: 51px;">
+        <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+                   
+               
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmda-add" 
+                   data-options="plain:'true',iconCls:'icon-xinzeng',
+                   bindmethod:{'click':['newStatus']},scope:'xmda',status:'1',                        
+                   forbidstatus:[1,2,3]">新增</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmda-edit"
+                   data-options="plain:'true',iconCls:'icon-xiugai',
+                   treeId:['xmda-tree-project'],
+                   bindmethod:{'click':['setStatusexamine']},scope:'xmda',status:'2',                       
+                   forbidstatus:[1,2,3]">修改</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmda-remove"
+                   data-options="plain:'true',iconCls:'icon-shanchu',
+                   treeId:['xmda-tree-project'],
+                   bindmethod:{ 'click': ['setStatusexamine'] },scope:'xmda',status:'3',
+                   forbidstatus:[1,2,3]">删除</a> 
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmda-tingyong"
+                  data-options="plain:'true',iconCls:'icon-tingyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['xmda-SS_Project-IsStop','1','xmda-tree-project']},
+                  forbidstatus:[1,2,3]">停用</a>
+
+                  <a href="#" class="easyui-linkbutton" id="xmda-qiyong"
+                  data-options="plain:'true',iconCls:'icon-qiyong', status:'2' ,
+                  bindmethod:{ 'click': ['setEnable'] },
+                  bindparms:{'setEnable':['xmda-SS_Project-IsStop','0','xmda-tree-project']},
+                  forbidstatus:[1,2,3]">启用</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmda-save" 
+                   data-options="plain:'true',iconCls:'icon-baocun',
+                   JCDA:true,
+                   treeId:['xmda-tree-project'],
+                   bindmethod:{ 'click': ['saveDoc'] },
+                   bindparms:{'saveDoc':['/JCxmsz/Savexmda']},
+                   scope:'xmda',status:'4',forbidstatus:[4]">保存</a>
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmda-cancel"
+                   data-options="plain:'true',iconCls:'icon-quxiao', 
+                   scope:'xmda',forbidstatus:[4],
+                   bindmethod:{ 'click': ['cancel'] }">取消</a>  
+                   
+                   <a href="#" class="easyui-linkbutton" id="xmda-close" 
+                   data-options="plain:'true',iconCls:'icon-tuichu',
+                   bindmethod:{ 'click': ['closeTab'] },
+                   scope:'xmda'">退出</a>
+        </div>
+    </div>
+    <div id="divWest" data-options="region:'west',split:'true'" style="width: 230px">
+        <div class="easyui-tabs" data-options="fit:true">
+            <div title="会计科目">
+                <ul class="easyui-tree" id="xmda-tree-project" data-options="
+                  msg:'会计科目',
+                  m:'SS_Project',
+                  associate:{
+                       'xmda-SS_Project-DWKey':['DWKey','DWKey'],
+                       'xmda-SS_Project-DWName':['DWName'],
+                       'xmda-SS_Project-PKey':['PKey','PKey'],
+                       'xmda-SS_Project-PName':['PName'],
+                       'xmda-SS_Project-ProjectKey':['ProjectKey','ProjectKey'],
+                       'xmda-SS_Project-ProjectName':['ProjectName'],
+                       'xmda-SS_Project-PGUID':['PGUID'],
+                       'xmda-SS_Project-GUID':['GUID'],
+                       'xmda-SS_Project-GUID_DW':['GUID_DW'],
+                       'xmda-SS_Project-GUID_FunctionClass':['GUID_FunctionClass'],
+                       'xmda-SS_Project-BeginYear':['BeginYear'],
+                       'xmda-SS_Project-StopYear':['StopYear'],
+                       'xmda-SS_Project-IsFinance':['IsFinance'],
+                       'xmda-SS_Project-FinanceProjectKey':['FinanceProjectKey'],
+                       'xmda-SS_Project-IsBalanced':['IsBalanced'],
+                       'xmda-SS_Project-ExtraCode':['ExtraCode'],
+                       'xmda-SS_Project-IsStop':['IsStop'],
+                       'xmda-SS_Project-ProjectClassKey':['ProjectClassKey','ProjectClassKey'],
+                       'xmda-SS_Project-ProjectClassName':['ProjectClassName']
+                                
+                  },
+                   associateEX:{
+                       'xmda-SS_Project-PKey':['PKey','PKey'],
+                       'xmda-SS_Project-PName':['PName'],
+                       'xmda-SS_Project-PGUID':['PGUID'],
+                       'xmda-SS_Project-ProjectClassKey':['ProjectClassKey','ProjectClassKey'],
+                       'xmda-SS_Project-ProjectClassName':['ProjectClassName']
+                   },
+                  bindmethod:{'onClick': ['setAsso'] },
+                  url:'/Tree/GetJCXMDAProjectTree',
+                  forbidstatus:[3],
+                  retStatus:'4',
+                  customBindFirst:true,
+                  IsDocStatusAssociate:true,
+                  method:'post',
+                  scope:'xmda'
+                  ">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div data-options="region:'center'" data-options="fit:true">
+        <table id="table" border="0" style="height: 350px; width: 100%; padding: 0; margin: 0">
+            <tr>
+                <td colspan="8" style="height: 50px;">
+                    <div style="font-size: x-large; text-align: center;">
+                        会&nbsp;计&nbsp;科&nbsp;目</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-ProjectKey">
+                        <font color="red">*</font>项&nbsp;目&nbsp;&nbsp;编&nbsp;号</label>
+                </td>
+                <td class="tdValue4">
+                    <input class="easyui-validatebox" id="xmda-SS_Project-ProjectKey" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-ProjectName">
+                        <font color="red">*</font>项&nbsp;目&nbsp;&nbsp;名&nbsp;称</label>
+                </td>
+                <td class="tdValue4">
+                    <input class="easyui-validatebox" id="xmda-SS_Project-ProjectName" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td  class="tdText4">
+                    <label for="field1" id="lbl-GUID_FunctionClass">
+                        &nbsp;功能分类</label>
+                </td>
+                <td class="tdValue4"">
+                    <select class="easyui-combogrid" id="xmda-SS_Project-GUID_FunctionClass" data-options="                          
+                           method:'post',
+                           panelWidth:'270',
+                           filterField:'FunctionClassKey,FunctionClassName',
+                           remoteUrl:'/Combogrid/FunctionClass',
+                           idField:'GUID',
+                           textField:'FunctionClassName',
+                           sortName:'FunctionClassKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'FunctionClassKey',title:'功能分类编码',width:'95'},
+                            {field:'FunctionClassName',title:'功能分类名称',width:'150'}
+                           ]],
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText4" style="text-align:right">
+                    <input type="checkbox" class="easyui-checkbox" id="xmda-SS_Project-IsFinance" data-options="forbidstatus:[4,3]"></input>&nbsp;
+                </td>
+                <td class="tdText4">
+                    财政项目
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label for="field1" id="lbl-PKey">
+                        &nbsp;上级项目编号</label>
+                </td>
+                <td class="tdValue4">
+                    <select class="easyui-combogrid" id="xmda-SS_Project-PKey" data-options="                          
+                           method:'post',
+                           panelWidth:'415',
+                           filterField:'ProjectKey,ProjectName',
+                           remoteUrl:'/Combogrid/ProjectJCEx',
+                           idField:'GUID',
+                           textField:'ProjectKey',
+                           sortName:'ProjectKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'PGUID',hidden:'true'},
+                            {field:'ProjectKey',title:'上级项目编码',width:'90'},
+                            {field:'ProjectName',title:'上级项目名称',width:'300'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'xmda-SS_Project-PName':['ProjectName'],
+                            'xmda-SS_Project-PGUID':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-PName">
+                        &nbsp;上级项目名称</label>
+                </td>
+                <td class="tdValue4">
+                    <select class="easyui-combogrid" id="xmda-SS_Project-PName" data-options="
+                           panelWidth:'415',                          
+                           method:'post',
+                           filterField:'ProjectKey,ProjectName',
+                           remoteUrl:'/Combogrid/ProjectJCEx',
+                           idField:'GUID',
+                           textField:'ProjectName',
+                           sortName:'ProjectKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'PGUID',hidden:'true'},
+                                {field:'ProjectKey',title:'上级项目编码',width:'90'},
+                                {field:'ProjectName',title:'上级项目名称',width:'300'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'xmda-SS_Project-PKey':['ProjectKey'],
+                                 'xmda-SS_Project-PGUID':['GUID']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-FinanceProjectKey">
+                        &nbsp;财政编号</label>
+                </td>
+                <td class="tdValue4">
+                    <input class="easyui-validatebox" id="xmda-SS_Project-FinanceProjectKey" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td class="tdText4" style="text-align:right">
+                    <input type="checkbox" class="easyui-checkbox" id="xmda-SS_Project-IsBalanced" data-options="forbidstatus:[4,3]"></input>&nbsp;
+                </td>
+                <td class="tdText4">
+                    平衡控制
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-DWKey">
+                        <font color="red">*</font>单&nbsp;位&nbsp;&nbsp;编&nbsp;号</label>
+                </td>
+                <td class="tdValue4">
+                    <select class="easyui-combogrid" id="xmda-SS_Project-DWKey" data-options="                          
+                           method:'post',
+                           panelWidth:'270',
+                           filterField:'DWKey,DWName',
+                           remoteUrl:'/Combogrid/DW',
+                           idField:'GUID',
+                           textField:'DWKey',
+                           sortName:'DWKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'95'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                           ]],
+                            bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'xmda-SS_Project-DWName':['GUID','DWName'],
+                            'xmda-SS_Project-GUID_DW':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-DWName">
+                        <font color="red">*</font>单&nbsp;位&nbsp;&nbsp;名&nbsp;称</label>
+                </td>
+                <td class="tdValue4">
+                     <select class="easyui-combogrid" id="xmda-SS_Project-DWName" data-options="                          
+                           method:'post',
+                           panelWidth:'270',
+                           filterField:'DWKey,DWName',
+                           remoteUrl:'/Combogrid/DW',
+                           idField:'GUID',
+                           textField:'DWName',
+                           sortName:'DWKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_DW',hidden:'true'},
+                            {field:'DWKey',title:'单位编码',width:'95'},
+                            {field:'DWName',title:'单位名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'xmda-SS_Project-DWKey':['DWKey','DWKey'],
+                            'xmda-SS_Project-GUID_DW':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-ExtraCode">
+                        &nbsp;附&nbsp;加&nbsp;码</label>
+                </td>
+                <td class="tdValue4">
+                    <input class="easyui-validatebox" id="xmda-SS_Project-ExtraCode" 
+                        data-options="forbidstatus:[4,3]"> </input>
+                </td>
+                <td class="tdText4" style="text-align:right">
+                    <input type="checkbox" class="easyui-checkbox" id="xmda-SS_Project-IsStop" data-options="forbidstatus:[4,3]"></input>&nbsp;
+                </td>
+                <td class="tdText4">
+                    是否停用
+                </td>
+           </tr>
+            <tr>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-ProjectClassKey">
+                        <font color="red">*</font>所属分类编号</label>
+                </td>
+                <td class="tdValue4">
+                    <select class="easyui-combogrid" id="xmda-SS_Project-ProjectClassKey" data-options="                          
+                           method:'post',
+                           panelWidth:'270',
+                           filterField:'ProjectClassKey,ProjectClassName',
+                           remoteUrl:'/Combogrid/ProjectClass',
+                           idField:'GUID',
+                           textField:'ProjectClassKey',
+                           sortName:'ProjectClassKey',
+                           columns:[[
+                            {field:'GUID',hidden:'true'},
+                            {field:'GUID_ProjectClass',hidden:'true'},
+                            {field:'ProjectClassKey',title:'所属分类编码',width:'95'},
+                            {field:'ProjectClassName',title:'所属分类名称',width:'150'}
+                           ]],
+                           bindmethod:{'onCloseEx':['setAssociate']},
+                           associate:{
+                            'xmda-SS_Project-ProjectClassName':['GUID','ProjectClassName'],
+                            'xmda-SS_Project-GUID_ProjectClass':['GUID']
+                           },
+                           forbidstatus:[4,3]">
+                    </select>
+                </td>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-ProjectClassName">
+                        <font color="red">*</font>所属分类名称</label>
+                </td>
+                <td class="tdValue4">
+                    <select class="easyui-combogrid" id="xmda-SS_Project-ProjectClassName" data-options="
+                           panelWidth:'270',                          
+                           method:'post',
+                           filterField:'ProjectClassKey,ProjectClassName',
+                           remoteUrl:'/Combogrid/ProjectClass',
+                           idField:'GUID',
+                           textField:'ProjectClassName',
+                           sortName:'ProjectClassKey',
+                           columns:[[
+                                {field:'GUID',hidden:'true'},
+                                {field:'GUID_ProjectClass',hidden:'true'},
+                                {field:'ProjectClassKey',title:'所属分类编码',width:'95'},
+                                {field:'ProjectClassName',title:'所属分类名称',width:'150'}
+                           ]],
+                           bindmethod: { 'onCloseEx': ['setAssociate'] },
+                           associate:
+                            {
+                                 'xmda-SS_Project-ProjectClassKey':['ProjectClassKey','ProjectClassKey'],
+                                 'xmda-SS_Project-GUID_ProjectClass':['GUID']
+                            }, 
+                           forbidstatus:[4,3]
+                           ">
+                    </select>
+                </td>
+                <td  class="tdText4" style=" text-align:right; padding-right:25px;">
+                    <input type="checkbox" class="easyui-checkbox" id="SS_Project-ShowStop" data-options="forbidstatus:[1,2]"></input>&nbsp;
+                </td>
+                <td class="tdValue4" colspan="3">
+                     显示停用会计科目
+                </td>
+            </tr>
+            <tr>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-BeginYear">
+                        <font color="red">*</font>开&nbsp;始&nbsp;&nbsp;年&nbsp;度</label>
+                </td>
+                <td class="tdValue4">
+                    <select id="xmda-SS_Project-BeginYear" class="easyui-combobox"  data-options="forbidstatus:[4,3], editable:false">  
+                        <option value="0">全部</option>  
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                        <option value="2005">2005</option>
+                        <option value="2006">2006</option>
+                        <option value="2007">2007</option>
+                        <option value="2008">2008</option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+                    </select> 
+                </td>
+                <td class="tdText4">
+                    <label for="field1" id="lbl-StopYear">
+                        &nbsp;结&nbsp;束&nbsp;&nbsp;年&nbsp;度</label>
+                </td>
+                <td class="tdValue4" colspan="5">
+                    <select id="xmda-SS_Project-StopYear" class="easyui-combobox"  data-options="forbidstatus:[4,3], editable:false">  
+                        <option value="0">全部</option>  
+                        <option value="2000">2000</option>
+                        <option value="2001">2001</option>
+                        <option value="2002">2002</option>
+                        <option value="2003">2003</option>
+                        <option value="2004">2004</option>
+                        <option value="2005">2005</option>
+                        <option value="2006">2006</option>
+                        <option value="2007">2007</option>
+                        <option value="2008">2008</option>
+                        <option value="2009">2009</option>
+                        <option value="2010">2010</option>  
+                        <option value="2011">2011</option>  
+                        <option value="2012">2012</option>
+                        <option value="2013">2013</option>
+                        <option value="2014">2014</option>  
+                        <option value="2015">2015</option>
+                        <option value="2016">2016</option>    
+                        <option value="2017">2017</option>  
+                        <option value="2018">2018</option>
+                        <option value="2019">2019</option>    
+                        <option value="2020">2020</option>  
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>    
+                        <option value="2023">2023</option>  
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>    
+                        <option value="2026">2026</option>  
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>    
+                        <option value="2029">2029</option>  
+                        <option value="2030">2030</option>
+                        <option value="2031">2031</option>    
+                        <option value="2032">2032</option>  
+                        <option value="2033">2033</option>
+                        <option value="2034">2034</option>    
+                        <option value="2035">2035</option>  
+                        <option value="2036">2036</option>
+                        <option value="2037">2037</option>    
+                        <option value="2038">2038</option>  
+                        <option value="2039">2039</option>
+                        <option value="2040">2040</option>    
+                        <option value="2041">2041</option>  
+                        <option value="2042">2042</option>
+                        <option value="2043">2043</option>    
+                        <option value="2044">2044</option>  
+                        <option value="2045">2045</option>
+                        <option value="2046">2046</option>    
+                        <option value="2047">2047</option>  
+                        <option value="2048">2048</option>
+                        <option value="2049">2049</option>    
+                        <option value="2050">2050</option>  
+                    </select> 
+                </td>
+                
+            </tr>
+            <tr>
+                <td colspan="8">
+                    <table class="easyui-edatagrid" id="xmda-SS_Project" data-options="
+                    fitColumns:false,
+                    method:'get',
+                    singleSelect:true,
+                    checkOnSelect:true,
+                    height:360,                   
+                    scope:'xmda',
+                    pagination:true,
+                    pageSize:20,
+                    pageList:[20,50,100],
+                    rownumbers:true,
+                    associateEx:{
+                       'xmda-SS_Project-DWKey':['xmda-SS_Project-DWKey','xmda-SS_Project-DWKey'],
+                       'xmda-SS_Project-DWName':['xmda-SS_Project-DWName'],
+                       'xmda-SS_Project-PKey':['xmda-SS_Project-PKey','xmda-SS_Project-PKey'],
+                       'xmda-SS_Project-PName':['xmda-SS_Project-PName'],
+                       'xmda-SS_Project-ProjectKey':['xmda-SS_Project-ProjectKey','xmda-SS_Project-ProjectKey'],
+                       'xmda-SS_Project-ProjectName':['xmda-SS_Project-ProjectName'],
+                       'xmda-SS_Project-PGUID':['xmda-SS_Project-PGUID'],
+                       'xmda-SS_Project-GUID':['xmda-SS_Project-GUID'],
+                       'xmda-SS_Project-GUID_DW':['xmda-SS_Project-GUID_DW'],
+                       'xmda-SS_Project-GUID_FunctionClass':['xmda-SS_Project-GUID_FunctionClass'],
+                       'xmda-SS_Project-BeginYear':['xmda-SS_Project-BeginYear'],
+                       'xmda-SS_Project-StopYear':['xmda-SS_Project-StopYear'],
+                       'xmda-SS_Project-IsFinance':['xmda-SS_Project-IsFinance'],
+                       'xmda-SS_Project-FinanceProjectKey':['xmda-SS_Project-FinanceProjectKey'],
+                       'xmda-SS_Project-IsBalanced':['xmda-SS_Project-IsBalanced'],
+                       'xmda-SS_Project-ExtraCode':['xmda-SS_Project-ExtraCode'],
+                       'xmda-SS_Project-IsStop':['xmda-SS_Project-IsStop'],
+                       'xmda-SS_Project-ProjectClassKey':['xmda-SS_Project-ProjectClassKey','xmda-SS_Project-ProjectClassKey'],
+                       'xmda-SS_Project-ProjectClassName':['xmda-SS_Project-ProjectClassName']
+                                
+                    },
+                    formatters:{'xmda-SS_Project-IsStop':'boolbox','xmda-SS_Project-IsFinance':'boolbox'},
+                    forbidstatus:[-1]
+                       ">
+                        <thead>
+                            <tr>
+                                <th field="xmda-SS_Project-GUID" hidden="true"></th>
+                                <th field="xmda-SS_Project-GUID_ProjectClass" hidden="true"></th>
+                                <th field="xmda-SS_Project-PGUID" hidden="true"></th>
+                                <th field="xmda-SS_Project-GUID_FunctionClass" hidden="true"></th>
+                                <th field="xmda-SS_Project-IsBalanced" hidden="true"></th>
+                                <th field="xmda-SS_Project-GUID_DW" hidden="true"></th>
+                                <th field="xmda-SS_Project-DWKey" hidden="true"></th>
+                                <th field="xmda-SS_Project-DWName" hidden="true"></th>
+                                <th field="xmda-SS_Project-ProjectKey" title="项目编码" width="120" sortable="false"
+                                    align="left">
+                                    项目编码
+                                </th>
+                                <th field="xmda-SS_Project-ProjectName" title="项目名称" sortable="false"
+                                    align="left" width="260">
+                                    项目名称
+                                </th>
+                                <th field="xmda-SS_Project-PKey" title="上级项目编码" sortable="false" align="left"
+                                    width="120">
+                                    上级项目编码
+                                </th>
+                                <th field="xmda-SS_Project-PName" width="190" title="上级项目名称" sortable="false"
+                                    align="left">
+                                    上级项目名称
+                                </th>
+                                <th field="xmda-SS_Project-ProjectClassKey" width="120" title="所属分类编码" sortable="false"
+                                    align="left">
+                                    所属分类编码
+                                </th>
+                                <th field="xmda-SS_Project-ProjectClassName" width="190" title="所属分类名称" sortable="false"
+                                    align="left">
+                                    所属分类名称
+                                </th>
+                                <th field="xmda-SS_Project-BeginYear" title="启用日期" sortable="false" align="left"
+                                    width="90">
+                                    启用日期
+                                </th>
+                                <th field="xmda-SS_Project-StopYear" title="结束日期" sortable="false" align="left"
+                                    width="90">
+                                    结束日期
+                                </th>
+                                <th field="xmda-SS_Project-FunctionClassName" title="功能分类" sortable="false" align="left"
+                                    width="120">
+                                    功能分类
+                                </th>
+                                <th field="xmda-SS_Project-FinanceProjectKey" title="财政编码" sortable="false" align="left"
+                                    width="120">
+                                    财政编码
+                                </th>
+                                <th field="xmda-SS_Project-ExtraCode" title="附加码" sortable="false" align="left"
+                                    width="120">
+                                    附加码
+                                </th>
+                                <th field="xmda-SS_Project-IsFinance" title="是否财政项目" sortable="false" align="left"
+                                    width="80" editor="{type:'booleanbox',forbidstatus:[-1]}">
+                                    是否财政项目
+                                </th>
+                                <th field="xmda-SS_Project-IsStop" title="是否停用" sortable="false" align="left"
+                                    width="80" editor="{type:'booleanbox',forbidstatus:[-1]}">
+                                    是否停用
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <input class="easyui-validatebox" id="xmda-SS_Project-GUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="xmda-SS_Project-PGUID" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="xmda-SS_Project-GUID_DW" type="hidden" keyattr="1"></input>
+    <input class="easyui-validatebox" id="xmda-SS_Project-GUID_ProjectClass" type="hidden" keyattr="1"></input>
+</div>
+<label id="xmda-extendregion" style="display: none">
+    <input id="xmda-status" type="text"></input>
+    <input id="initscope" type="text" value="xmda"></input>
+    <input id="initController" type="text" value="JCxmsz"></input>
+    <input id="initstatus" type="text" value="4"></input>
+    <input id="initguid" type="text" value=@ViewData["guid"]></input>
+    <div id="xmda-b-window" line="true">
+    </div>
+</label>
+<iframe id="printIframe" style="display: none"></iframe>
+<script type="text/javascript">
+    (function () {
+        var datagridId = "xmda-SS_Project";
+        var rowColCount = 8;
+        $.setControl("divWest", datagridId,rowColCount);
+    })();
+</script>

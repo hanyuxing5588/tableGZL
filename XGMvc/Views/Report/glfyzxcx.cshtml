@@ -1,0 +1,623 @@
+﻿<script>
+    function getThroughParms() {
+        var bgcode = ""; //科目
+        var bgresource = $('#glfyzxcx-history-BGResourceType').combobox('getValue'); //预算来源
+        var cyear = $('#glfyzxcx-history-Year').combobox('getValue');
+
+        var StartDate = $('#glfyzxcx-history-StartDate').combobox('getValue');
+        var EndDate = $('#glfyzxcx-history-EndDate').combobox('getValue');
+
+        var PayStatus = $('#glfyzxcx-history-HXStatus').combobox('getValue'); //核销状态
+        if (PayStatus == "1" || PayStatus == 1) {
+            PayStatus = "2";
+        }
+        else if (PayStatus == "2" || PayStatus == 2) {
+            PayStatus = "1";
+        }
+
+        var ApproveStatus = $('#glfyzxcx-history-ApproveStatus').combobox('getValue'); //审批状态
+        var CertificateStatus = $('#glfyzxcx-history-CertificateStatus').combobox('getValue'); //凭证状态
+        //功能分类
+        debugger
+        var depguids = [];
+        //去树上自己配置模型
+        var nodes = $('#glfyzxcx-tree-dep').tree('getSelected');
+        for (var m = 0, n = nodes.length; m < n; m++) {
+            var node = nodes[m];
+            //判断是否是叶子节点
+            if ($('#zxjdyl-tree-dep').tree('isLeaf', node.target)) {
+                //带不带引号
+                depguids.push(node.attributes["GUID"]);
+            }
+        }
+        if (nodes.id) {
+            depguids.push(nodes.id);
+        };
+
+
+
+        var parms = {};
+        parms.bgcode = bgcode;
+        parms.bgresource = bgresource;
+        parms.StartDate = StartDate;
+        parms.EndDate = EndDate;
+        parms.PayStatus = PayStatus;
+        parms.ApproveStatus = ApproveStatus;
+        parms.CertificateStatus = CertificateStatus;
+        parms.departmentex = depguids ? depguids.join(',') : "";
+        return parms;
+    };
+    function CascadeTree(cTree, selectnode, values) {
+        var childrens = cTree.tree('getChildren', selectnode.target) || [];
+        childrens.push(selectnode);
+        for (var i = 0; i < childrens.length; i++) {
+            var itemnode = childrens[i];
+            var model = itemnode.attributes.m;
+            if (model == "SS_Project") {
+                var isLeaf = cTree.tree('isLeaf', itemnode.target);
+                if (isLeaf) {
+                    values.push(itemnode.id);
+
+                }
+            }
+        }
+    };
+    function AllNodes(cTree) {
+
+        var roots = cTree.tree('getRoots');
+        var allnodes = new Array();
+        for (var i = 0; i < roots.length; i++) {
+            var root = roots[i];
+            var cnodes = cTree.tree('getChildren', root.target) || [];
+            allnodes = allnodes.concat(cnodes);
+        }
+        allnodes = allnodes.concat(roots);
+        return allnodes;
+    };
+    $(document).ready(function () {
+
+        $('#glfyzxcx-tuichu').bind('click', function () {
+            parent.window.CloseTabs();
+        });
+        /*下列函数调用的顺序不能改变，否则会数据错误 2015-3-38 libin*/
+        //绑定事件
+        BindEvent();
+        //加载数据
+        LoadData();
+        //设置默认值
+        SetDefaultData();
+        //自适应窗体大小
+        SetFitWindows();
+    })
+
+    //自适应窗体大小
+    function SetFitWindows() {
+        var clientWidth = document.body.clientWidth;
+        $('#glfyzxcx-dataregion').layout('panel', 'west').panel('resize', { width: clientWidth * 0.2 });
+        $('#glfyzxcx-dataregion').layout('resize');
+        var th = $('#glfyzxcx-dataregion').layout('panel', 'center').panel('panel').innerHeight();
+        var h1 = $('#report_fiters').height();
+        var h2 = $('#report_rules').height();
+        var rh = th - h1 - h2;
+
+        $('#glfyzxcx_grid').datagrid('resize', { height: rh -2 });
+        $('#glfyzxcx-dataregion').layout('panel', 'center').panel({
+            onResize: function (width, height) {
+                var cv = $('#glfyzxcx-dataregion').layout('panel', 'center').panel('panel').innerWidth();
+                $('#glfyzxcx_grid').datagrid('resize', { width: cv - 3 });
+            }
+        });
+    };
+
+
+    //设置默认数据
+    function SetDefaultData() {
+        var newDate = new Date();
+        var year = newDate.getFullYear();
+        $('#glfyzxcx-history-Year').combobox('select', year);
+
+
+        var month = newDate.getMonth();
+        month = month + 1;
+        if (month < 10) {
+            month = "0" + month;
+        }
+        var day = newDate.getDate();
+        if (day < 10) {
+            day = "0" + day;
+        }
+        $("#glfyzxcx-history-StartDate").datebox("setValue", year + "-01-01");
+        $("#glfyzxcx-history-EndDate").datebox("setValue", year + "-" + month + "-" + day);
+    }
+    //查询获取数据
+    function GetData() {
+        var data = $.view.retrieveData("glfyzxcx", "historydatafilter");
+        if (!data || data.m.length == 0) return;
+        var url;
+        var tcondition;
+        var result = {};
+        
+        if (data && data.m) {
+            for (var i = 0, j = data.m.length; i < j; i++) {
+                var temp = data.m[i];
+                if (!temp && !temp.v) continue;
+                result[temp.n] = temp.v;
+            }
+        }
+        debugger
+        var treeCondition = [];
+        //树节点
+        var r = $("#glfyzxcx-tree-dep").tree('getSelected');
+        if (r) {
+            tcondition = { treeModel: r.attributes.m, treeValue: r.id };
+            treeCondition.push(tcondition);
+            $("#glfyzxcx_department").html(r.text)
+        }
+        //预算步骤
+        r = $("#glfyzxcx-tree-step").tree('getSelected');
+        if (r) {
+            tcondition = { treeModel: r.attributes.m, treeValue: r.attributes.BGStepKey };
+            treeCondition.push(tcondition);
+        }
+        result = $.extend(result, { TreeNodeList: treeCondition });
+        $.ajax({
+            url: '/Report/GetLoadGLFYZXCXData/',
+            data: { condition: JSON.stringify(result) },
+            dataType: "json",
+            type: "POST",
+            error: function (xmlhttprequest, textStatus, errorThrown) {
+                $.messager.alert("错误", '网络超时,请重新登录', 'error');
+            },
+            success: function (data) {
+                if (!data || data == null) {
+                    return;
+                }
+                $('#glfyzxcx_grid').datagrid('loadData', data);
+            }
+        });
+        $("#glfyzxcx_Date").html($("#glfyzxcx-history-StartDate").datebox("getValue") + "至" + $("#glfyzxcx-history-EndDate").datebox("getValue"));
+    }
+    //导出
+    function ExportExcel() {
+        var l = $('#glfyzxcx_grid').datagrid('getRows');
+        if (l <= 1) {
+            $.messager.alert('系统提示', '没有要输出的数据！');
+            return;
+        }
+        var url = $.format("/Report/ExportGLFYZXCXReport?depname={0}&date={1}", $("#glfyzxcx_department").text(), $('#glfyzxcx_Date').text())
+        window.open(url);
+    }
+    //绑定事件
+    function BindEvent() {
+        //("glfyzxcx", "historydatafilter")
+        //   region ? selectortag = '#' + scope + "-" + region + " [id^='" + scope + "-']" : selectortag = "[id^='" + scope + "-']";
+
+        $('#glfyzxcx-historydatafilter [id^="glfyzxcx-"]').combo({
+            onHidePanel: function () {
+                GetData();
+            }
+        });
+        $('#glfyzxcx-print').bind('click', function () {
+            PrintData();
+        })
+        $('#glfyzxcx-select').bind('click', function () {
+
+            GetData();
+        })
+
+        $('#glfyzxcx-shuchu').bind('click', function () {
+            ExportExcel();
+        })
+        $('#glfyzxcx-tuichu').bind('click', function () {
+            $($(parent.document).find("#closeTab")).click();
+        })
+
+    }
+    function getDjlbByFilter(url, gridId, scope, region, tcondition) {
+        MaskUtil.mask();
+        var data = $.view.retrieveData(scope, region);
+        var url;
+        var result = {};
+        if (data && data.m) {
+            for (var i = 0, j = data.m.length; i < j; i++) {
+                var temp = data.m[i];
+                if (!temp && !temp.v) continue;
+                result[temp.n] = temp.v;
+            }
+        }
+        result = $.extend(result, tcondition || {});
+        if (url) {
+            $.ajax({
+                url: url,
+                data: { condition: JSON.stringify(result) },
+                dataType: "json",
+                type: "POST",
+                traditional: true,
+                error: function (xmlhttprequest, textStatus, errorThrown) {
+                    MaskUtil.unmask();
+                    $.messager.alert("错误", $.view.warning, 'error');
+                },
+                success: function (data) {
+
+                    if (result.IsShowDetail) {
+                        $('#djlb-list').datagrid('showColumn', 'BGCodeName');
+                        $('#djlb-list').datagrid('showColumn', 'BGCodeKey');
+                    } else {
+                        $('#djlb-list').datagrid('hideColumn', 'BGCodeName');
+                        $('#djlb-list').datagrid('hideColumn', 'BGCodeKey');
+                    }
+                    //单据列表当查询的时候默认将页码设置成第一页的数据  sxh 2014-03-20
+                    $('#' + gridId).datagrid('getPager').pagination('options').pageNumber = 1;
+                    $('#' + gridId).datagrid('loadData', data);
+                    MaskUtil.unmask();
+                }
+            });
+        }
+        else {
+            MaskUtil.unmask();
+        }
+    }
+    //打印
+    function PrintData() {
+        var d = $('#glfyzxcx_grid').datagrid('getRows');
+        if (d < 1) {
+            $.messager.alert('系统系统', '数据为空，请查询数据后打印！');
+            return;
+        }
+        gettabledata();
+    }
+
+    //加载数据
+    function LoadData() {
+        //部门
+        $("#glfyzxcx-tree-dep").tree({
+            url: '/Tree/GetDepartmentTree',
+            method: 'post',
+            onLoadSuccess: function (node, data) {
+                if (data && data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].isCheck == true) {
+                            $("#glfyzxcx-tree-dep li:eq(" + i + ")").find("div").first().addClass("tree-node-selected");
+                        }
+                    }
+                }
+            }
+        });
+        //预算步骤
+        $("#glfyzxcx-tree-step").tree({
+            url: '/Tree/GetBGStepTree',
+            method: 'post',
+            onLoadSuccess: function (node, data) {
+                if (data && data.length > 0) {
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].isCheck == true) {
+                            $("#glfyzxcx-tree-step li:eq(" + i + ")").find("div").addClass("tree-node-selected");
+                        }
+                    }
+                }
+            }
+        });
+
+        //设置Grid的行背景颜色
+        $("#glfyzxcx_grid").datagrid({
+            //            rowStyler: function (index, row) {
+            //                if (row.bgcodekey && row.bgcodekey.length == 2) {
+            //                    return "background-color:#CCFFCC";
+            //                }
+            //            },
+            onDblClickCell: function (index, field, value) {
+                if (field == "totalbx") {
+                    var throughtParms = getThroughParms();
+                    var rowData = $(this).datagrid('getSelected');
+                    if (!rowData) return;
+                    throughtParms.bgcode = rowData.guid;
+
+                    var url = "/djlb/ZXLHZBReportThrough?scope=djlb";
+                    for (var n in throughtParms) {
+                        url = url + "&" + n + "=" + throughtParms[n];
+                    }
+                    parent.window.openTabs2("单据列表", "djlb", "", 4, url);
+                }
+            },
+            columns: [[
+                     { field: 'guid', title: '科目编号', width: 100, halign: 'center', hidden: true },
+                    { field: 'bgcodekey', title: '科目编号', width: 100, halign: 'center' },
+                    { field: 'bgcodename', title: '科目名称', width: 200, halign: 'center' },
+                    { field: 'totalbg', title: '预算数', width: 150, halign: 'center', align: 'right' },
+                    { field: 'totalbx', title: '执行数', width: 80, halign: 'center',align:'right',
+                        formatter: function (value, row, index) {
+                            if (row.totalbx) {
+                                return "<font color='blue'>" + row.totalbx + "</font>"; //'<a id="btn_"' + index + '"" href="#" title="" onclick="window.open(\"baidu.com\")"><font color="blue">'+ row.totalbx + '</font></a>';
+                            } else {
+                                return value;
+                            }
+                        }
+                    },
+                    { field: 'jy', title: '结余', width: 80, halign: 'center', align: 'right' },
+                    { field: 'jybl', title: '结余比例', width: 80, halign: 'center', align: 'right' },
+            		{ field: 'wcl', title: '完成率', width: 80, halign: 'center',align:'right' }
+
+            ]]
+
+        });
+        //年度
+        $("#glfyzxcx-history-Year").combobox({
+            onSelect: function (record) {
+                var year = record.value;
+                var newDate = new Date();
+                var month = newDate.getMonth();
+                month = month + 1;
+                if (month < 10) {
+                    month = "0" + month;
+                }
+
+                var day = newDate.getDate();
+                if (day < 10) {
+                    day = "0" + day;
+                }
+
+                $("#glfyzxcx-history-StartDate").datebox("setValue", year + "-01-01");
+                $("#glfyzxcx-history-EndDate").datebox("setValue", year + "-" + month + "-" + day);
+                GetData();
+            }
+        });
+    }
+    //打开新窗体
+    function NewWindow(winId, url, title, width, height, scope) {
+        $("#" + winId).dialog({
+            resizable: false,
+            title: title || '查询',
+            width: width || 1000,
+            height: height || 600,
+            modal: true,
+            minimizable: false,
+            maximizable: false,
+            collapsible: false,
+            href: url,
+            onLoad: function (c) {
+                $.view.setViewEditStatus(scope, 4);
+                
+                //var fun = $.fn.linkbutton.methods["getDjlbByFilter"];
+
+                getDjlbByFilter('/djlb/History', 'djlb-list', 'djlb', 'djlbdatafilter', { "IsShowDetail": true, "treeModel": "SS_BGCode", "treeValue": "1d151f5d-9ba2-4c32-b4b4-6477f3016595" });
+            }
+        });
+    }
+    //{"YWType":"00","DocType":"00000000-0000-0000-0000-000000000000","IsShowDetail":true,"ApproveStatus":"0","CheckStatus":"0","WithdrawStatus":"0","PayStatus":"0","CertificateStatus":"0","CancelStatus":"1","StartDate":"2014-3-01","EndDate":"2014-3-5","DocNum":"","ModelUrl":"","treeModel":"SS_BGCode","treeValue":"1d151f5d-9ba2-4c32-b4b4-6477f3016595"}
+    //    {"YWType":"00","DocType":"00000000-0000-0000-0000-000000000000",
+    //    "IsShowDetail":true,
+    //    "ApproveStatus":"0",
+    //    "CheckStatus":"0",
+    //    "WithdrawStatus":"0",
+    //    "PayStatus":"0","CertificateStatus":"0",
+    //    "CancelStatus":"0","StartDate":"2014-3-01","EndDate":"2014-3-5","DocNum":"","ModelUrl":"",
+    //    "treeModel":"SS_BGCode","treeValue":"52a20c0d-d682-3445-bd37-62245014fd62"}
+</script>
+<script src="../../Scripts/bx/djlb.js" type="text/javascript"></script>
+<style type="text/css" media="print">
+    .noprint{dispaly:none;}
+</style>
+<body>
+    <div class="easyui-layout" id="glfyzxcx-dataregion" data-options="fit:true" z="1">
+        <div class="noprint" data-options="region:'west',split:'true'" style="width: 200px;" id="regionwest">
+            <div class="easyui-tabs" data-options="fit:true">
+                <div title="部门">
+                    <ul id="glfyzxcx-tree-dep" data-options="">
+                    </ul>
+                </div>
+                <div title="预算步骤">
+                    <ul id="glfyzxcx-tree-step" data-options="
+                    ">
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="noprint" data-options="region:'north'" style="height: 51px;">
+            <div style="padding: 2px 0 2px 2px; background: #fafafa; border: 1px solid #ccc;">
+             @*   <a href="#" class="easyui-linkbutton" id="glfyzxcx-printpr" data-options="plain:'true',iconCls:'icon-dayin',scope:'glfyzxcx',forbidstatus:[-1]
+                        ">打印</a> *@
+                        <a href="#" class="easyui-linkbutton" id="glfyzxcx-print" 
+                        data-options="plain:'true',iconCls:'icon-dayin',
+                        scope:'glfyzxcx',
+                        window:'b-window'
+                        ">打印</a>  
+                        
+                        <a href="#" b-type="1" class="easyui-linkbutton" id="glfyzxcx-shuchu"
+                            data-options="plain:'true',iconCls:'icon-shuchu',                 
+                       forbidstatus:[-1]">输出</a> <a href="#" class="easyui-linkbutton" id="glfyzxcx-select"
+                           data-options="plain:'true',iconCls:'icon-chaxun',
+                        scope:'glfyzxcx',
+                        forbidstatus:[-1]">查询</a> 
+         @*               <a href="#" class="easyui-linkbutton" id="glfyzxcx-help"
+                            data-options="
+                     plain:'true',iconCls:'icon-bangzhu', scope:'glfyzxcx',
+                      bindmethod:{ 'click': ['help'] }">帮助</a> *@
+                      <a href="#" class="easyui-linkbutton" id="glfyzxcx-tuichu"
+                          data-options="plain:'true',iconCls:'icon-tuichu',
+                       scope:'glfyzxcx'">退出</a>
+            </div>
+        </div>
+        <div data-options="region:'center'" id="glfyzxcx-historydatafilter">
+            <table id="report_fiters" class="noprint" border="0" style="width: 100%;padding: 0px; margin: 0">
+                <tr>
+                    <td style="width:10%;">
+                        <label for="field1" style="width:100%;">
+                            报销年度</label>
+                    </td>
+                    <td style="width:10%;">
+                        <select id="glfyzxcx-history-Year" class="easyui-combobox" data-options="editable:false"
+                            style="width:100%;">
+                            <option value="2011">2011</option>
+                            <option value="2012">2012</option>
+                            <option value="2013">2013</option>
+                            <option value="2014">2014</option>
+                            <option value="2015">2015</option>
+                            <option value="2016">2016</option>
+                            <option value="2017">2017</option>
+                            <option value="2018">2018</option>
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                            <option value="2025">2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                            <option value="2029">2029</option>
+                            <option value="2030">2030</option>
+                            <option value="2031">2031</option>
+                            <option value="2032">2032</option>
+                            <option value="2033">2033</option>
+                            <option value="2034">2034</option>
+                            <option value="2035">2035</option>
+                            <option value="2036">2036</option>
+                            <option value="2037">2037</option>
+                            <option value="2038">2038</option>
+                            <option value="2039">2039</option>
+                            <option value="2040">2040</option>
+                            <option value="2041">2041</option>
+                            <option value="2042">2042</option>
+                            <option value="2043">2043</option>
+                            <option value="2044">2044</option>
+                            <option value="2045">2045</option>
+                            <option value="2046">2046</option>
+                            <option value="2047">2047</option>
+                            <option value="2048">2048</option>
+                            <option value="2049">2049</option>
+                            <option value="2050">2050</option>
+                        </select>
+                    </td>
+                    <td style="width:10%;">
+                        <label for="field1" style="width:100%;">
+                            预算来源</label>
+                    </td>
+                    <td style="width:10%;">
+                        <select id="glfyzxcx-history-BGResourceType" class="easyui-combobox" data-options="editable:false"
+                            style="width:100%;">
+                            <option value="0">全部</option>
+                            <option value="1">当年预算</option>
+                            <option value="2">上年结转</option>
+                        </select>
+                    </td>
+                    <td style="width:10%;">
+                        起始日期
+                    </td>
+                    <td style="width:10%;">
+                        <input class="easyui-datebox" id="glfyzxcx-history-StartDate" value="" style="width:100%;"></input>
+                    </td>
+                    <td style="width:10%;">
+                        截止日期
+                    </td>
+                    <td style="width:10%;">
+                        <input class="easyui-datebox" id="glfyzxcx-history-EndDate" value="" style="width:100%;"></input>
+                    </td>
+                    <td style="width:10%;">
+                        金额单位
+                    </td>
+                    <td style="width:10%;">
+                        <select id="glfyzxcx-history-RMBUnit" class="easyui-combobox" data-options="editable:false,value:10000"
+                            style="width:100%;">
+                            <option value="1">元</option>
+                            <option value="100">百元</option>
+                            <option value="1000">千元</option>
+                            <option value="10000" selected="selected">万元</option>
+                            <option value="100000">十万元</option>
+                            <option value="1000000">百万元</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width:10%;">
+                        付款状态                    </td>
+                    <td style="width:10%;">
+                        <select id="glfyzxcx-history-PayStatus" class="easyui-combobox" data-options="editable:false,value:0"
+                            style="width: 100%;">
+                            <option value="0">全部</option>
+                            <option value="1">未付款</option>
+                            <option value="2">已付款</option>
+                        </select>
+                    </td>
+                    <td style="width:10%;">
+                        审批状态
+                    </td>
+                    <td style="width:10%;">
+                        <select id="glfyzxcx-history-ApproveStatus" class="easyui-combobox" data-options="editable:false,value:2"
+                            style="width: 100%;">
+                            <option value="0">全部</option>
+                            <option value="1">未审核</option>
+                            <option value="2" selected>已审核</option>
+                            <option value="3">审核中</option>
+                        </select>
+                    </td>
+                    <td style="width:10%;">
+                        核销状态
+                    </td>
+                    <td style="width:10%;">
+                        <select id="glfyzxcx-history-HXStatus" class="easyui-combobox" data-options="editable:false,value:0"
+                            style="width: 100%;">
+                            <option value="0">全部</option>
+                            <option value="1">已核销</option>
+                            <option value="2">未核销</option>
+                        </select>
+                    </td>
+                    <td style="width:10%;">
+                        凭证状态
+                    </td>
+                    <td style="width:10%;">
+                        <select id="glfyzxcx-history-CertificateStatus" class="easyui-combobox" data-options="editable:false,value:0"
+                            style="width: 100%;">
+                            <option value="0">全部</option>
+                            <option value="1">未生成凭证</option>
+                            <option value="2">已生成凭证</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <table id="report_rules" reportSource="glfyzxcx_grid"   border="0" style="width: 100%; padding: 0px; margin: 0">
+                <tr>
+                    <td colspan="18" field="" style="font-size: x-large; text-align: center; height: 40px;">
+                        管理费用执行进度表                    </td>
+                </tr>
+                <tr>
+                    <td field="" style="text-align: center; width: 80px; height: 18px; float: left; text-align: left;">
+                        <label> 部门名称:</label>
+                           
+                    </td>
+                    <td field="" style="text-align: center; width: 250px; height: 18px; float: left;
+                        text-align: left;">
+                        <div id="glfyzxcx_department" reportFiled="department"></div>
+                    </td>
+                    <td field="" style="text-align: center; width: 80px; height: 18px; float: left; text-align: left;">
+                        <label>
+                            查询日期：</label>
+                    </td>
+                    <td field="" style="text-align: center; width: 180px; height: 18px; float: left;
+                        text-align: left;">
+                        <div id="glfyzxcx_Date"  reportFiled="date"></div>
+                    </td>
+                </tr>
+            </table>
+            <table class="easyui-datagrid" id="glfyzxcx_grid"
+                data-options="
+                fitColumns:true,
+                rownumbers:true,
+                singleSelect:true,
+                scope:'glfyzxcx'
+                ">
+            </table>
+        </div>
+        <label id="glfyzxcx-extendregion" style="display: none">
+            <input id="glfyzxcx-status" type="text" style="display:none;"></input>
+            <input id="initscope" type="text" value="glfyzxcx" style="display:none;"></input>
+            <input id="initstatus" style="display:none;" type="text" value=@ViewData["status"]></input>
+            <input id="initguid" style="display:none;" type="text" value=@ViewData["guid"]></input>
+            <div id="b-window" line="true">
+            </div>
+        </label>
+    </div>
+</body>
+
+
+<iframe id="printIframe" style="display: none"></iframe>
